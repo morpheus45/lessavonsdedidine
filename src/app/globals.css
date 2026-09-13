@@ -1,0 +1,119 @@
+@import 'tailwindcss';
+
+/*
+ * Palette validée sur l'ébauche du 13 septembre 2026.
+ *
+ * Les contrastes ont été mesurés, pas estimés. Le chiffre en commentaire est
+ * le ratio réel sur le fond concerné. Deux pièges à ne jamais réintroduire :
+ *
+ *   - Un terracotta clair (#C4643C) ne tient que 3,8:1 : il ne peut pas
+ *     porter de texte sous 24 px. C'est le grenat qui porte les actions.
+ *   - Un olive clair (#6B7043) est trop pâle pour recevoir du texte clair.
+ *     C'est le vert forêt sombre qui sert de fond aux bandes.
+ */
+@theme {
+  --color-nuage: #f2f0eb; /* fond général — Pantone Cloud Dancer 2026 */
+  --color-neige: #fbfaf8; /* surfaces levées */
+  --color-brume: #e6e3dc; /* filets */
+  --color-brume-2: #d3cfc6;
+
+  --color-foret: #0f3a2c; /* 11,1:1 sur nuage */
+  --color-foret-2: #17503c;
+  --color-foret-3: #a8c0a0; /* 6,5:1 sur forêt */
+
+  --color-grenat: #8a2b28; /* 7,5:1 sur nuage — actions, prix, accents */
+  --color-grenat-2: #dda39d; /* 5,9:1 sur forêt */
+
+  --color-graphite: #2a2a28; /* 12,6:1 — texte courant */
+  --color-taupe: #6e665c; /* 5,0:1 — texte atténué */
+  --color-taupe-f: #5c554c; /* 5,7:1 sur brume */
+
+  --color-savon: #e4dfd2; /* le savon dessiné */
+  --color-savon-t: #c4bca9;
+  --color-savon-e: #5f5949; /* 5,2:1 sur savon */
+
+  /* Sémantique du backoffice */
+  --color-ok: #2f6b45;
+  --color-ok-bg: #deeadf;
+  --color-attente: #6f4f0a;
+  --color-attente-bg: #f3e9cd;
+  --color-alerte: #8a2b28;
+  --color-alerte-bg: #f3dedc;
+  --color-route: #2a4e6e;
+  --color-route-bg: #dde5ec;
+
+  --font-serif: 'Instrument Serif', 'Hoefler Text', Georgia, serif;
+  --font-sans: 'Instrument Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: 'DM Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
+
+  --radius-s: 2px;
+  --radius-m: 4px;
+  --radius-l: 10px;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    /* La boutique assume un seul registre visuel : le quasi-blanc est la
+       matière du design, pas un thème parmi deux. */
+    color-scheme: light;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-nuage);
+    color: var(--color-graphite);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  /* Sans état de focus visible, le site devient inutilisable au clavier —
+     et c'est une régression qui passe inaperçue en test à la souris. */
+  :focus-visible {
+    outline: 2px solid var(--color-grenat);
+    outline-offset: 4px;
+  }
+
+  /* Partout où des chiffres s'alignent en colonne, ils doivent avoir la
+     même chasse, sinon les totaux dansent. */
+  .tabulaire {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer utilities {
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-taupe);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,207 @@
+// Schéma de la boutique Les Savons de Didine.
+//
+// Deux règles tiennent tout le modèle :
+//
+//   1. Les montants sont des entiers en CENTIMES. Jamais de flottant pour de
+//      l'argent — 0.1 + 0.2 ne fait pas 0.3 et une commande finit par être
+//      fausse d'un centime.
+//
+//   2. Aucune suppression de commande. Une commande payée est une pièce
+//      comptable, conservée dix ans. On change son statut, on ne l'efface pas.
+//
+// Le schéma est écrit pour rester portable : pas d'enum natif, pas de type
+// spécifique à un moteur. Le passage de SQLite à Postgres ne demandera que de
+// changer le provider et de régénérer les migrations.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// CATALOGUE
+// ─────────────────────────────────────────────────────────────────────
+
+model Produit {
+  id          String   @id @default(cuid())
+  /// Numéro de gamme affiché au client : 1 → « N°01 »
+  rang        Int      @unique
+  slug        String   @unique
+  nom         String
+  accroche    String
+  description String
+  /// Liste INCI réglementaire, dans l'ordre décroissant de concentration
+  inci        String
+  /// Pourcentage de surgras, ex. 8
+  surgras     Int      @default(8)
+  actif       Boolean  @default(true)
+  creeLe      DateTime @default(now())
+  modifieLe   DateTime @updatedAt
+
+  variantes Variante[]
+  lots      Lot[]
+
+  @@index([actif, rang])
+}
+
+/// Un format vendable : « 1 pain 100 g », « lot de 3 ».
+model Variante {
+  id            String  @id @default(cuid())
+  produitId     String
+  nom           String
+  /// Poids net en grammes, pour l'étiquetage réglementaire
+  poidsGrammes  Int
+  prixCentimes  Int
+  /// Nombre de pains dans la variante (1, ou 3 pour un lot)
+  unites        Int     @default(1)
+  actif         Boolean @default(true)
+
+  produit        Produit         @relation(fields: [produitId], references: [id], onDelete: Cascade)
+  lignesCommande LigneCommande[]
+
+  @@index([produitId, actif])
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// LOTS ET CURES
+//
+// Un savon à froid appartient toujours à un lot de fabrication, et ce lot
+// porte des dates qui ont une valeur légale. En cas de rappel, l'autorité
+// de contrôle demande quel lot est parti chez quel client : la chaîne
+// Lot → LigneCommande → Commande doit pouvoir répondre.
+// ─────────────────────────────────────────────────────────────────────
+
+model Lot {
+  id          String   @id @default(cuid())
+  /// Référence imprimée sur l'étiquette, ex. « 26-09-A »
+  reference   String   @unique
+  produitId   String
+  couleLe     DateTime
+  /// Fin de cure : le lot ne peut pas être vendu avant cette date
+  pretLe      DateTime
+  /// Date de durabilité minimale
+  durableJusquLe DateTime
+  quantiteProduite Int
+  quantiteRestante Int
+  notes       String?
+  creeLe      DateTime @default(now())
+
+  produit        Produit         @relation(fields: [produitId], references: [id])
+  lignesCommande LigneCommande[]
+
+  @@index([produitId, pretLe])
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// COMMANDES
+// ─────────────────────────────────────────────────────────────────────
+
+/// Statuts : panier · en_attente_paiement · payee · preparee · expediee
+///           livree · echouee · remboursement_demande · remboursee · annulee
+model Commande {
+  id        String @id @default(cuid())
+  /// Référence client, ex. « LD-0412 »
+  reference String @unique
+  statut    String @default("en_attente_paiement")
+
+  email       String
+  nom         String
+  adresse     String
+  codePostal  String
+  ville       String
+  pays        String @default("FR")
+  telephone   String?
+
+  /// Recalculés côté serveur à partir de la base — jamais reçus du client
+  sousTotalCentimes  Int
+  livraisonCentimes  Int
+  totalCentimes      Int
+
+  moyenPaiement    String?
+  paypalOrderId    String? @unique
+  paypalCaptureId  String?
+
+  creeeLe   DateTime @default(now())
+  payeeLe   DateTime?
+  expedieeLe DateTime?
+  modifieeLe DateTime @updatedAt
+
+  lignes     LigneCommande[]
+  evenements EvenementCommande[]
+
+  @@index([statut, creeeLe])
+  @@index([creeeLe])
+}
+
+model LigneCommande {
+  id         String @id @default(cuid())
+  commandeId String
+  varianteId String
+  lotId      String?
+
+  /// Copies figées au moment de la commande : changer un tarif ne réécrit
+  /// pas l'historique comptable.
+  libelle          String
+  prixUnitaireCentimes Int
+  quantite         Int
+  totalCentimes    Int
+
+  commande Commande @relation(fields: [commandeId], references: [id], onDelete: Cascade)
+  variante Variante @relation(fields: [varianteId], references: [id])
+  lot      Lot?     @relation(fields: [lotId], references: [id])
+
+  @@index([commandeId])
+  @@index([lotId])
+}
+
+/// Journal des transitions de statut. Quand un client conteste, c'est la
+/// seule réponse possible : qui a fait quoi, quand, et sous quelle référence.
+model EvenementCommande {
+  id         String   @id @default(cuid())
+  commandeId String
+  statut     String
+  auteur     String   /// « client », « webhook_paypal », ou l'e-mail d'un administrateur
+  detail     String?
+  creeLe     DateTime @default(now())
+
+  commande Commande @relation(fields: [commandeId], references: [id], onDelete: Cascade)
+
+  @@index([commandeId, creeLe])
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// ADMINISTRATION
+// ─────────────────────────────────────────────────────────────────────
+
+model Administrateur {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  nom          String
+  motDePasseHash String
+  creeLe       DateTime @default(now())
+  derniereConnexion DateTime?
+
+  sessions Session[]
+}
+
+model Session {
+  id               String   @id @default(cuid())
+  jeton            String   @unique
+  administrateurId String
+  expireLe         DateTime
+  creeLe           DateTime @default(now())
+
+  administrateur Administrateur @relation(fields: [administrateurId], references: [id], onDelete: Cascade)
+
+  @@index([expireLe])
+}
+
+/// Réglages modifiables depuis le backoffice sans redéploiement.
+model Reglage {
+  cle    String @id
+  valeur String
+}
