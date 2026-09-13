@@ -1,0 +1,62 @@
+name: Publier l'ébauche
+
+# Toute modification du design part en ligne automatiquement : la page
+# publiée ne peut pas diverger du fichier source.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'design/**'
+      - 'scripts/build-pages.mjs'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Un seul déploiement à la fois ; les pushs rapprochés annulent le précédent.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  construire:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Reconstituer un document HTML complet
+        run: node scripts/build-pages.mjs
+
+      - name: Vérifier que la page est bien autonome
+        run: |
+          set -e
+          for balise in '<!doctype html>' '<html lang="fr">' 'name="viewport"'; do
+            if ! grep -qF "$balise" _site/index.html; then
+              echo "::error::Balise manquante dans la page construite : $balise"
+              exit 1
+            fi
+          done
+          echo "Document complet, viewport présent."
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deployer:
+    needs: construire
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - id: deploiement
+        uses: actions/deploy-pages@v4

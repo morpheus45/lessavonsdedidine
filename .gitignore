@@ -20,6 +20,9 @@ dist/
 .vercel/
 *.tsbuildinfo
 
+# Site construit pour GitHub Pages (généré, jamais versionné)
+_site/
+
 # Audit d'interface (généré, jamais versionné)
 ui-audit/
 design/.audit/
