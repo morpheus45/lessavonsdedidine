@@ -16,6 +16,38 @@ des commandes, des lots et des statistiques.
 Chaque bloc a sa spécification puis son plan d'implémentation. On ne passe au
 suivant qu'une fois le précédent livré et vérifié.
 
+## Voir l'ébauche en ligne
+
+**https://morpheus45.github.io/lessavonsdedidine/**
+
+Cette adresse est publique : n'importe qui peut l'ouvrir, sans compte et sans
+installation. Elle est régénérée automatiquement à chaque modification du
+design poussée sur `main` — la page en ligne ne peut donc pas diverger du
+fichier source.
+
+La page porte un `noindex` : c'est un document de travail, il n'a pas à
+remonter dans les moteurs de recherche sous le nom de la marque avant
+l'ouverture réelle de la boutique. Le retirer se fait en une ligne dans
+`scripts/build-pages.mjs`.
+
+### Comment ça marche
+
+`design/ebauche-visuelle.html` est écrit pour l'enveloppe des artefacts
+Claude : il commence directement par `<title>`, sans doctype, sans `<head>`,
+sans `<meta viewport>`. Servi tel quel par un serveur web, il s'afficherait
+cassé sur mobile.
+
+`scripts/build-pages.mjs` reconstitue un document complet autour du fragment
+et l'écrit dans `_site/` (non versionné). Le workflow
+`.github/workflows/pages.yml` le construit et le déploie, en refusant le
+déploiement si le doctype ou le viewport manquent.
+
+Pour le construire localement :
+
+```bash
+node scripts/build-pages.mjs && open _site/index.html
+```
+
 ## L'ébauche visuelle
 
 [`design/ebauche-visuelle.html`](design/ebauche-visuelle.html) — direction
