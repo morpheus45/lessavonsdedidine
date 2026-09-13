@@ -1,0 +1,31 @@
+# Dépendances
+node_modules/
+.pnp/
+.pnp.js
+
+# Secrets — rien de ce qui suit ne doit jamais partir sur un dépôt public.
+# Les clés PayPal, la chaîne de connexion Postgres et les jetons de déploiement
+# vivent dans les variables d'environnement de Vercel, pas dans le code.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Construction
+.next/
+out/
+build/
+dist/
+.vercel/
+*.tsbuildinfo
+
+# Audit d'interface (généré, jamais versionné)
+ui-audit/
+design/.audit/
+
+# Système
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
