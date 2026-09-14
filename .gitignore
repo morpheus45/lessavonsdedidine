@@ -37,3 +37,11 @@ design/.audit/
 Thumbs.db
 *.log
 npm-debug.log*
+
+# Photos déposées depuis le backoffice en développement local.
+# En production elles vont dans le stockage Netlify, pas sur le disque.
+.photos-locales/
+
+# Export statique de l'ancienne version GitHub Pages.
+out/
+_site/

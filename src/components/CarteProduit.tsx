@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { formaterPrix } from '@/lib/argent';
-import { Photo } from './Photo';
+import { Photo, type PhotoAffichable } from './Photo';
 
 export type ProduitCarte = {
   slug: string;
@@ -9,7 +9,7 @@ export type ProduitCarte = {
   accroche: string;
   prixDepuisCentimes: number;
   /** Première photo du produit. */
-  photo?: string;
+  photo?: PhotoAffichable;
   /** Précision affichée à côté du prix : « 4 achetés, 1 offert »… */
   detail?: string;
 };
@@ -35,7 +35,7 @@ export function CarteProduit({
       >
         {produit.photo ? (
           <Photo
-            chemin={produit.photo}
+            photo={produit.photo}
             tailles={tailles}
             prioritaire={prioritaire}
             className="aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"

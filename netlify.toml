@@ -1,0 +1,17 @@
+# Hébergement de la boutique.
+#
+# Le dépôt reste sur GitHub : Netlify s'y branche et reconstruit le site à
+# chaque push sur `main`. Rien d'autre ne change dans la façon de travailler.
+#
+# Le plan gratuit de Netlify autorise l'usage commercial, contrairement au
+# plan gratuit de Vercel qui l'interdit explicitement pour une boutique.
+
+[build]
+  command = "npx prisma generate && npx prisma migrate deploy && npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

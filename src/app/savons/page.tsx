@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
-import { PRODUITS } from '@/donnees/catalogue';
+import { lireProduits } from '@/lib/catalogue-serveur';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { CarteProduit, type ProduitCarte } from '@/components/CarteProduit';
 
-// Site statique.
+// Le catalogue vient de la base : un produit ajouté depuis le backoffice
+// apparaît ici sans redéploiement.
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Les savons',
@@ -11,15 +13,14 @@ export const metadata: Metadata = {
     'Savons parfumés faits main sur base au beurre de karité bio sans SLS, et vitrines personnalisées à offrir.',
 };
 
-export default function ListeSavons() {
-  const gamme: ProduitCarte[] = PRODUITS.map((p) => ({
+export default async function ListeSavons() {
+  const gamme: ProduitCarte[] = (await lireProduits()).map((p) => ({
     slug: p.slug,
     rang: p.rang,
     nom: p.nom,
     accroche: p.accroche,
     prixDepuisCentimes: Math.min(...p.formules.map((f) => f.prixCentimes)),
     photo: p.photos[0],
-    detail: p.formules[0]?.detail,
   }));
 
   return (

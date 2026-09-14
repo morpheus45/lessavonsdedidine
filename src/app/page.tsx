@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { PRODUITS } from '@/donnees/catalogue';
+import { lireProduits } from '@/lib/catalogue-serveur';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { CarteProduit, type ProduitCarte } from '@/components/CarteProduit';
 import { Photo } from '@/components/Photo';
@@ -10,7 +10,8 @@ import { DotPattern } from '@/components/magic/DotPattern';
 import { NumberTicker } from '@/components/magic/NumberTicker';
 import { BlurFade } from '@/components/magic/BlurFade';
 
-// Site statique : la page est produite à la construction, pas à la demande.
+// La gamme vient de la base, donc la page se refait à la demande.
+export const dynamic = 'force-dynamic';
 
 const ARGUMENTS = [
   'Beurre de karité bio',
@@ -70,17 +71,15 @@ const ETAPES: EtapeAtelier[] = [
   },
 ];
 
-const GAMME: ProduitCarte[] = PRODUITS.map((p) => ({
-  slug: p.slug,
-  rang: p.rang,
-  nom: p.nom,
-  accroche: p.accroche,
-  prixDepuisCentimes: Math.min(...p.formules.map((f) => f.prixCentimes)),
-  photo: p.photos[0],
-  detail: p.formules[0]?.detail,
-}));
-
-export default function Accueil() {
+export default async function Accueil() {
+  const GAMME: ProduitCarte[] = (await lireProduits()).map((p) => ({
+    slug: p.slug,
+    rang: p.rang,
+    nom: p.nom,
+    accroche: p.accroche,
+    prixDepuisCentimes: Math.min(...p.formules.map((f) => f.prixCentimes)),
+    photo: p.photos[0],
+  }));
 
   return (
     <>
@@ -142,14 +141,16 @@ export default function Accueil() {
 
             </div>
 
-            <SavonParallaxe>
-              <Photo
-                chemin="/photos/savons-coffret.webp"
-                tailles="(min-width: 1024px) 46vw, 100vw"
-                prioritaire
-                className="w-full rounded-l border border-brume object-cover"
-              />
-            </SavonParallaxe>
+            {GAMME[0]?.photo && (
+              <SavonParallaxe>
+                <Photo
+                  photo={GAMME[0].photo}
+                  tailles="(min-width: 1024px) 46vw, 100vw"
+                  prioritaire
+                  className="w-full rounded-l border border-brume object-cover"
+                />
+              </SavonParallaxe>
+            )}
           </div>
         </section>
 

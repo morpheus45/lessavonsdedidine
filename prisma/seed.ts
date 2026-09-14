@@ -49,26 +49,71 @@ const PARFUMS = [
 ];
 
 /** Thèmes de vitrine repérés sur ses réalisations. */
+/**
+ * Photos livrées avec le code, sous public/photos/.
+ *
+ * Celles-ci sont versionnées : elles ne passent pas par le stockage d'objets,
+ * et leurs adresses sont donc des chemins de fichiers. Les photos ajoutées
+ * ensuite depuis le backoffice pointeront vers /photos-envoyees/.
+ */
+function photoLivree(nom: string, alt: string, largeur: number, hauteur: number, ordre = 0) {
+  return {
+    url: `/photos/${nom}.webp`,
+    urlPetite: `/photos/${nom}@small.webp`,
+    alt,
+    largeur,
+    hauteur,
+    ordre,
+  };
+}
+
 const THEMES = [
   {
     slug: 'safari',
     nom: 'Safari',
     description: "Lion, éléphant, zèbre et girafe devant un coucher de soleil sur la savane.",
+    photos: [
+      photoLivree(
+        'theme-safari',
+        'Vitrine sur le thème safari : lion, éléphant, zèbre et girafe devant un coucher de soleil sur la savane',
+        1200,
+        900,
+      ),
+    ],
   },
   {
     slug: 'chevaux',
     nom: 'Chevaux',
     description: 'Jument, poulain et bottes de foin sur une prairie, montagnes en fond.',
+    photos: [
+      photoLivree(
+        'theme-chevaux',
+        'Vitrine sur le thème chevaux, au prénom de Guy : jument, poulain et bottes de foin devant des montagnes',
+        1200,
+        975,
+      ),
+    ],
   },
   {
     slug: 'salon',
     nom: 'Salon',
     description: "Canapé, meuble télé, tapis et bouquet — une pièce à vivre en miniature.",
+    photos: [
+      photoLivree(
+        'theme-salon',
+        'Vitrine sur le thème salon, au prénom de Josiane : canapé, meuble télé, tapis et bouquet',
+        1200,
+        874,
+      ),
+    ],
   },
   {
+    // Pas de photo : la seule disponible porte des autocollants ajoutés dans
+    // une messagerie. Didine en déposera une propre depuis le backoffice.
     slug: 'chambre-enfant',
     nom: "Chambre d'enfant",
     description: 'Berceau, cheval à bascule et papier peint fleuri, dans des tons doux.',
+    photos: [],
   },
 ];
 
@@ -78,6 +123,7 @@ async function main() {
   await prisma.ligneCommande.deleteMany();
   await prisma.commande.deleteMany();
   await prisma.lot.deleteMany();
+  await prisma.photo.deleteMany();
   await prisma.variante.deleteMany();
   await prisma.produit.deleteMany();
   await prisma.themeVitrine.deleteMany();
@@ -106,11 +152,21 @@ async function main() {
           { nom: 'Grande', poidsGrammes: 0, prixCentimes: 9000, unites: 1 },
         ],
       },
+      photos: {
+        create: [
+          photoLivree('theme-salon', 'Vitrine sur le thème salon, au prénom de Josiane : canapé, meuble télé, tapis et bouquet', 1200, 874, 0),
+          photoLivree('theme-safari', 'Vitrine sur le thème safari : lion, éléphant, zèbre et girafe devant un coucher de soleil sur la savane', 1200, 900, 1),
+          photoLivree('theme-chevaux', 'Vitrine sur le thème chevaux, au prénom de Guy : jument, poulain et bottes de foin devant des montagnes', 1200, 975, 2),
+        ],
+      },
     },
   });
 
   for (const [i, t] of THEMES.entries()) {
-    await prisma.themeVitrine.create({ data: { ...t, ordre: i } });
+    const { photos, ...theme } = t;
+    await prisma.themeVitrine.create({
+      data: { ...theme, ordre: i, photos: { create: photos } },
+    });
   }
 
   // ── Savons ─────────────────────────────────────────────────────────
@@ -131,6 +187,15 @@ async function main() {
         create: [
           { nom: 'Lot de 5 — 4 achetés, 1 offert', poidsGrammes: 0, prixCentimes: 2000, unites: 5 },
           { nom: 'Lot de 10 — 8 achetés, 2 offerts', poidsGrammes: 0, prixCentimes: 4000, unites: 10 },
+        ],
+      },
+      photos: {
+        create: [
+          photoLivree('savons-parfums', 'Six savons en forme de fleur emballés et étiquetés : caramel, citron, fraise, bubble gum, miel et menthe', 1080, 932, 0),
+          photoLivree('savons-coffret', 'Coffret de quatre savons ovales au motif de brin d’olivier, posés sur du papier de soie à cœurs', 1080, 1372, 1),
+          photoLivree('savons-fleurs', 'Savons en forme de fleur, teintes crème et lavande, présentés dans une caisse en bois', 1080, 1228, 2),
+          photoLivree('savons-parfums-ovales', 'Cinq savons ovales étiquetés à la main : miel, café, olive, black opium et coco-vanille', 1200, 1029, 3),
+          photoLivree('savons-coffret-2', 'Coffret de quatre savons ovales parfumés café, olive et vanille, et un savon bleu', 1079, 1094, 4),
         ],
       },
     },

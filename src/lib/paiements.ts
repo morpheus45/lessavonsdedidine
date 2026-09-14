@@ -181,3 +181,17 @@ export async function testerPaypal(): Promise<{ ok: boolean; message: string }> 
     return { ok: false, message: 'Impossible de joindre PayPal. Vérifiez la connexion réseau.' };
   }
 }
+
+/**
+ * Identifiant client PayPal destiné au navigateur.
+ *
+ * Celui-ci n'est pas un secret : il figure dans l'adresse du script PayPal
+ * chargé par la page. Il est renvoyé à part pour qu'aucun appelant n'ait à
+ * manipuler l'objet qui contient, lui, la clé secrète.
+ */
+export async function clientIdPublicPaypal(): Promise<string | null> {
+  const config = await lireConfigPaiements();
+  if (!config.paypal.utilisable) return null;
+  const r = await lireReglages();
+  return r.get(CLES.paypalClientId) ?? null;
+}

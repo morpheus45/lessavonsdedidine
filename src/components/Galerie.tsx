@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Photo } from './Photo';
-import { fichePhoto } from '@/donnees/photos';
+import { Photo, type PhotoAffichable } from './Photo';
 
 /**
  * Galerie d'une fiche produit : une grande photo, des vignettes en dessous.
@@ -11,7 +10,7 @@ import { fichePhoto } from '@/donnees/photos';
  * les vignettes ne font que changer laquelle est en grand. Sans JavaScript on
  * garde donc une page correcte avec une seule photo, plutôt qu'un cadre vide.
  */
-export function Galerie({ photos, nom }: { photos: string[]; nom: string }) {
+export function Galerie({ photos, nom }: { photos: PhotoAffichable[]; nom: string }) {
   const [choisie, setChoisie] = useState(0);
   const grande = photos[choisie] ?? photos[0];
 
@@ -21,7 +20,7 @@ export function Galerie({ photos, nom }: { photos: string[]; nom: string }) {
     <div className="lg:sticky lg:top-8">
       <div className="overflow-hidden rounded-m border border-brume bg-neige">
         <Photo
-          chemin={grande}
+          photo={grande}
           tailles="(min-width: 1024px) 46vw, 100vw"
           prioritaire
           className="aspect-[4/3] w-full object-cover"
@@ -33,7 +32,7 @@ export function Galerie({ photos, nom }: { photos: string[]; nom: string }) {
           {photos.map((p, i) => {
             const active = i === choisie;
             return (
-              <li key={p}>
+              <li key={p.url}>
                 <button
                   type="button"
                   onClick={() => setChoisie(i)}
@@ -43,7 +42,7 @@ export function Galerie({ photos, nom }: { photos: string[]; nom: string }) {
                   }`}
                 >
                   <Photo
-                    chemin={p}
+                    photo={p}
                     tailles="120px"
                     className="aspect-square w-full object-cover"
                     // Le bouton porte déjà la description : la répéter ferait
@@ -51,7 +50,7 @@ export function Galerie({ photos, nom }: { photos: string[]; nom: string }) {
                     alt=""
                   />
                   <span className="sr-only">
-                    {fichePhoto(p)?.alt ?? `Photo ${i + 1}`}
+                    {p.alt || `Photo ${i + 1}`}
                     {active ? ' — affichée' : ''}
                   </span>
                 </button>

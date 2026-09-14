@@ -1,16 +1,15 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { PRODUITS, THEMES, produitParSlug } from '@/donnees/catalogue';
+import { lireProduit, lireThemes } from '@/lib/catalogue-serveur';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { Galerie } from '@/components/Galerie';
 import { AjoutPanier } from '@/components/AjoutPanier';
 import { ConfigurateurVitrine } from '@/components/ConfigurateurVitrine';
 import { formaterPrix } from '@/lib/argent';
 
-/** Site statique : une page HTML est produite par produit à la construction. */
-export function generateStaticParams() {
-  return PRODUITS.map((p) => ({ slug: p.slug }));
-}
+// Le catalogue est modifiable depuis le backoffice : la fiche est donc
+// reconstruite à la demande, pas figée à la construction.
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
   params,
@@ -18,16 +17,17 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const produit = produitParSlug(slug);
+  const produit = await lireProduit(slug);
   if (!produit) return { title: 'Article introuvable' };
   return { title: produit.nom, description: produit.accroche };
 }
 
 export default async function FicheProduit({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const produit = produitParSlug(slug);
+  const produit = await lireProduit(slug);
   if (!produit) notFound();
 
+  const themes = produit.personnalisable ? await lireThemes() : [];
   const premiere = produit.formules[0]!;
   const moinsCher = Math.min(...produit.formules.map((f) => f.prixCentimes));
 
@@ -51,9 +51,7 @@ export default async function FicheProduit({ params }: { params: Promise<{ slug:
             <span className="text-[18px] text-taupe">à partir de </span>
             {formaterPrix(moinsCher)}
           </p>
-          <p className="mb-8 font-mono text-[12.5px] text-taupe">
-            {premiere.detail ? `${premiere.detail} · ` : ''}TVA incluse
-          </p>
+          <p className="mb-8 font-mono text-[12.5px] text-taupe">TVA incluse</p>
 
           <p className="mb-8 text-[16.5px] text-taupe">{produit.description}</p>
 
@@ -64,7 +62,7 @@ export default async function FicheProduit({ params }: { params: Promise<{ slug:
                 nom: f.nom,
                 prixCentimes: f.prixCentimes,
               }))}
-              themes={THEMES.map((t) => ({
+              themes={themes.map((t) => ({
                 slug: t.slug,
                 nom: t.nom,
                 description: t.description,
@@ -75,7 +73,7 @@ export default async function FicheProduit({ params }: { params: Promise<{ slug:
             <AjoutPanier
               variantes={produit.formules.map((f) => ({
                 id: f.id,
-                nom: f.detail ? `${f.nom} — ${f.detail}` : f.nom,
+                nom: f.nom,
                 prixCentimes: f.prixCentimes,
               }))}
               nomProduit={produit.nom}

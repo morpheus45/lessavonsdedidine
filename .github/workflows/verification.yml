@@ -1,0 +1,80 @@
+name: Vérification
+
+# Le déploiement n'est plus fait ici : Netlify se branche sur ce dépôt et
+# reconstruit le site à chaque push. Ce workflow sert de filet — il échoue
+# avant Netlify si quelque chose ne va pas, et sur les pull requests où
+# Netlify ne publie qu'un aperçu.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verification-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    env:
+      # Aucune base n'est jointe : les pages qui interrogent Postgres sont
+      # toutes en rendu à la demande, donc la construction ne s'y connecte
+      # pas. Cette adresse ne sert qu'à satisfaire la validation du schéma.
+      DATABASE_URL: 'postgresql://verification:verification@localhost:5432/verification'
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Schéma de données
+        run: |
+          npx prisma validate
+          npx prisma generate
+
+      - name: Types
+        run: npx tsc --noEmit
+
+      - name: Construction
+        run: npm run build
+
+      - name: Vérifier le contenu publié
+        run: |
+          set -e
+
+          # Les savons sont fondus et coulés, pas saponifiés à froid. Ces mots
+          # ont déjà été publiés par erreur : la vérification échoue s'ils
+          # reviennent, dans le code comme dans les données.
+          if grep -rniE 'saponifi|semaines de cure|surgras' src/ prisma/ public/ 2>/dev/null; then
+            echo "::error::Mention de fabrication inexacte détectée."
+            exit 1
+          fi
+
+          # Un secret ne doit jamais entrer dans le dépôt : il vit dans les
+          # variables d'environnement de Netlify.
+          if grep -rnE '(sk_live|AIza|-----BEGIN [A-Z ]*PRIVATE KEY)' src/ prisma/ 2>/dev/null; then
+            echo "::error::Un secret semble présent dans le code."
+            exit 1
+          fi
+          if git ls-files --error-unmatch .env >/dev/null 2>&1; then
+            echo "::error::Le fichier .env est suivi par git."
+            exit 1
+          fi
+
+          # Les photos de Didine doivent rester publiées, en deux tailles.
+          for p in savons-parfums savons-fleurs savons-coffret savons-coffret-2 \
+                   savons-parfums-ovales theme-safari theme-salon theme-chevaux; do
+            test -f "public/photos/$p.webp"       || { echo "::error::Photo absente : $p.webp"; exit 1; }
+            test -f "public/photos/$p@small.webp" || { echo "::error::Photo absente : $p@small.webp"; exit 1; }
+          done
+
+          echo "Vérifications passées."

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ajouter } from '@/lib/panier-client';
 import { formaterPrix } from '@/lib/argent';
-import { Photo } from './Photo';
+import { Photo, type PhotoAffichable } from './Photo';
 
 export type FormuleVitrine = {
   id: string;
@@ -17,7 +17,7 @@ export type ThemeChoix = {
   nom: string;
   description: string;
   /** Photo d'une vitrine déjà faite sur ce thème, si elle existe. */
-  photo?: string;
+  photo?: PhotoAffichable;
 };
 
 /**
@@ -123,7 +123,7 @@ export function ConfigurateurVitrine({
             >
               {t.photo && (
                 <Photo
-                  chemin={t.photo}
+                  photo={t.photo}
                   tailles="(min-width: 1024px) 22vw, (min-width: 640px) 44vw, 92vw"
                   className="aspect-[4/3] w-full object-cover"
                   // Le nom et la description du thème suivent immédiatement :

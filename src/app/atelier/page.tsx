@@ -4,7 +4,7 @@ import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { FriseAtelier, type EtapeAtelier } from '@/components/ScenesAnimees';
 import { BlurFade } from '@/components/magic/BlurFade';
 import { Photo } from '@/components/Photo';
-import { PARFUMS, THEMES } from '@/donnees/catalogue';
+import { PARFUMS, lireThemes } from '@/lib/catalogue-serveur';
 
 export const metadata: Metadata = {
   title: "L'atelier",
@@ -39,7 +39,11 @@ const ETAPES: EtapeAtelier[] = [
   },
 ];
 
-export default function Atelier() {
+export const dynamic = 'force-dynamic';
+
+export default async function Atelier() {
+  const themes = await lireThemes();
+
   return (
     <>
       <EnTeteBoutique actif="/atelier" />
@@ -79,7 +83,13 @@ export default function Atelier() {
             <FriseAtelier etapes={ETAPES} />
 
             <Photo
-              chemin="/photos/savons-parfums-ovales.webp"
+              photo={{
+                url: '/photos/savons-parfums-ovales.webp',
+                urlPetite: '/photos/savons-parfums-ovales@small.webp',
+                alt: 'Cinq savons ovales étiquetés à la main : miel, café, olive, black opium et coco-vanille',
+                largeur: 1200,
+                hauteur: 1029,
+              }}
               tailles="(min-width: 1240px) 1192px, 100vw"
               className="mt-20 aspect-[16/9] w-full rounded-l object-cover"
             />
@@ -125,14 +135,14 @@ export default function Atelier() {
               </p>
 
               <ul className="grid gap-5 sm:grid-cols-2">
-                {THEMES.map((t) => (
+                {themes.map((t) => (
                   <li
                     key={t.slug}
                     className="overflow-hidden rounded-m border border-brume bg-neige"
                   >
                     {t.photo && (
                       <Photo
-                        chemin={t.photo}
+                        photo={t.photo}
                         tailles="(min-width: 640px) 46vw, 92vw"
                         className="aspect-[4/3] w-full object-cover"
                         // Le nom et la description suivent : décrire la photo
