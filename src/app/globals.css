@@ -20,6 +20,7 @@
   --color-foret: #0f3a2c; /* 11,1:1 sur nuage */
   --color-foret-2: #17503c;
   --color-foret-3: #a8c0a0; /* 6,5:1 sur forêt */
+  --color-or: #c8a455; /* 6,7:1 sur forêt — séparateurs du bandeau */
 
   --color-grenat: #8a2b28; /* 7,5:1 sur nuage — actions, prix, accents */
   --color-grenat-2: #dda39d; /* 5,9:1 sur forêt */
@@ -49,6 +50,28 @@
   --radius-s: 2px;
   --radius-m: 4px;
   --radius-l: 10px;
+
+  /*
+   * Bandeau défilant du haut de page.
+   *
+   * La durée est lue depuis --duree-defilement, posée en ligne par le
+   * composant : une propriété personnalisée s'hérite, donc l'enfant animé
+   * voit la valeur du parent. Le repli à 42s couvre le cas où elle manque.
+   *
+   * translateX(-100%) sur un contenu dupliqué deux fois donne une boucle
+   * sans couture : quand la première copie a fini de sortir par la gauche,
+   * la seconde occupe exactement sa place.
+   */
+  --animate-defilement: defilement var(--duree-defilement, 42s) linear infinite;
+
+  @keyframes defilement {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+  }
 }
 
 @layer base {

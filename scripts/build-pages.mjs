@@ -1,63 +1,120 @@
 /**
- * Construit le site statique publié sur GitHub Pages.
+ * Construction de la page publiée sur GitHub Pages.
  *
- * `design/ebauche-visuelle.html` est écrit pour l'enveloppe des artefacts
- * Claude : il commence directement par <title>, <link> et <style>, sans
- * doctype, sans <head>, sans <body>, et surtout sans <meta viewport>.
- * Servi tel quel par un serveur web, il s'afficherait cassé sur mobile.
+ * ⚠️  14 septembre 2026 — l'ébauche visuelle n'est PLUS publiée.
  *
- * Ce script reconstitue un document HTML complet autour du fragment, et
- * l'écrit dans `_site/index.html`. Rien n'est dupliqué dans le dépôt : la
- * source reste l'unique fichier de design, et la page publiée est
- * régénérée à chaque push par le workflow `.github/workflows/pages.yml`.
+ * Elle décrivait les savons comme « saponifiés à froid », avec « six semaines
+ * de cure » et un « surgras à 8 % ». C'est faux : Didine travaille en
+ * fondre-et-verser sur une base commerciale au beurre de karité bio sans SLS,
+ * et le savon durcit en 30 à 60 minutes.
+ *
+ * Publier ces mentions sur la boutique d'un commerce réel serait une pratique
+ * commerciale trompeuse. Ce script publie donc une page d'attente véridique,
+ * qui écrase au passage le contenu resté en cache sur le CDN de GitHub.
+ *
+ * Pour republier l'ébauche : corriger `design/ebauche-visuelle.html`, puis
+ * remettre l'enveloppe d'origine ci-dessous (voir l'historique Git).
  */
 
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 
-const racine = join(dirname(fileURLToPath(import.meta.url)), '..');
-const source = join(racine, 'design', 'ebauche-visuelle.html');
-const sortie = join(racine, '_site');
+const SORTIE = '_site';
 
-const fragment = readFileSync(source, 'utf8');
-
-/* Le fragment se termine toujours par son bloc <style> avant le contenu :
-   tout ce qui précède appartient au <head>, le reste au <body>. */
-const fin = fragment.indexOf('</style>');
-if (fin === -1) {
-  console.error('Bloc <style> introuvable dans ' + source + ' — structure inattendue.');
-  process.exit(1);
-}
-const tete = fragment.slice(0, fin + '</style>'.length);
-const corps = fragment.slice(fin + '</style>'.length);
-
-if (!/<title>/.test(tete)) {
-  console.error('Balise <title> introuvable dans l’en-tête — structure inattendue.');
-  process.exit(1);
-}
-
-const document = `<!doctype html>
+const PAGE = `<!doctype html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Ébauche visuelle de la boutique Les Savons de Didine : direction artistique, identité, écrans de la boutique, tunnel de paiement et backoffice.">
-<!-- Document de travail : on ne veut pas qu'il soit référencé sous le nom
-     de la marque avant l'ouverture réelle de la boutique. -->
 <meta name="robots" content="noindex, nofollow">
-<meta name="color-scheme" content="light dark">
-<style>img{max-width:100%}[hidden]{display:none!important}</style>
-${tete}
+<title>Les Savons de Didine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400&display=swap">
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 32px;
+    background: #f2f0eb;
+    color: #2a2a28;
+    font-family: 'Instrument Sans', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  main { max-width: 56ch; }
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #6e665c;
+    margin: 0 0 24px;
+  }
+  h1 {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(38px, 7vw, 64px);
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+    margin: 0 0 24px;
+  }
+  h1 em { font-style: italic; color: #8a2b28; }
+  p { margin: 0 0 18px; color: #6e665c; }
+  .encadre {
+    margin-top: 32px;
+    border-left: 2px solid #8a2b28;
+    padding: 4px 0 4px 20px;
+    font-size: 14.5px;
+  }
+  .encadre strong { color: #2a2a28; }
+  footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #e6e3dc;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: #6e665c;
+  }
+</style>
 </head>
 <body>
-${corps}
+<main>
+  <p class="eyebrow">Savons &amp; vitrines faits main</p>
+  <h1>La boutique est <em>en cours d'écriture</em></h1>
+
+  <p>
+    Le site est en construction. La page qui se trouvait ici décrivait un
+    procédé de fabrication qui n'était pas le bon&nbsp;: elle a été retirée.
+  </p>
+
+  <div class="encadre">
+    <p style="margin-bottom:10px">
+      <strong>Pourquoi cette page a été retirée</strong>
+    </p>
+    <p style="margin:0">
+      L'ébauche annonçait des savons « saponifiés à froid » avec « six semaines
+      de cure ». Ce n'est pas le procédé réel de l'atelier. Plutôt que de
+      laisser une description inexacte en ligne le temps de la corriger, elle a
+      été retirée le jour même.
+    </p>
+  </div>
+
+  <footer>
+    Les Savons de Didine · page d'attente · 14 septembre 2026
+  </footer>
+</main>
 </body>
 </html>
 `;
 
-mkdirSync(sortie, { recursive: true });
-writeFileSync(join(sortie, 'index.html'), document, 'utf8');
+mkdirSync(SORTIE, { recursive: true });
+writeFileSync(join(SORTIE, 'index.html'), PAGE, 'utf8');
 
-const ko = Math.round(Buffer.byteLength(document, 'utf8') / 1024);
-console.log(`_site/index.html écrit — ${ko} ko`);
+const taille = Math.round(Buffer.byteLength(PAGE, 'utf8') / 1024);
+console.log(`_site/index.html écrit — page d'attente, ${taille} ko`);
+console.log("L'ébauche n'est pas publiée : son contenu produit est faux (voir l'en-tête de ce fichier).");
