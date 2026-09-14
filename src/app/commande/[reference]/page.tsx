@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { formaterPrix, formaterDate } from '@/lib/argent';
+import { lireConfigPaiements } from '@/lib/paiements';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,7 +27,13 @@ export default async function ConfirmationCommande({
 
   if (!commande) notFound();
 
-  const paiementConfigure = Boolean(process.env.PAYPAL_CLIENT_ID);
+  // État réel des moyens de paiement, tel que réglé dans le backoffice.
+  const paiements = await lireConfigPaiements();
+  const moyens = [
+    paiements.paypal.utilisable && 'PayPal',
+    paiements.cb.utilisable && 'carte bancaire',
+  ].filter(Boolean) as string[];
+  const paiementConfigure = moyens.length > 0;
 
   return (
     <>
@@ -40,8 +47,8 @@ export default async function ConfirmationCommande({
 
         {paiementConfigure ? (
           <p className="mb-10 max-w-[62ch] text-[17px] text-taupe">
-            Il reste à la régler. Vous allez être redirigé vers PayPal ; tant que le paiement
-            n&rsquo;est pas confirmé, rien n&rsquo;est débité et les savons restent réservés.
+            Il reste à la régler par {moyens.join(' ou ')}. Tant que le paiement n&rsquo;est
+            pas confirmé, rien n&rsquo;est débité et votre commande reste réservée.
           </p>
         ) : (
           <div className="mb-10 rounded-s border border-attente-bg bg-attente-bg px-6 py-5">
@@ -49,9 +56,9 @@ export default async function ConfirmationCommande({
               Le paiement en ligne n&rsquo;est pas encore actif
             </p>
             <p className="max-w-[62ch] text-[14.5px] text-attente">
-              La commande est bien enregistrée et le stock réservé, mais aucun moyen de paiement
-              n&rsquo;est configuré : le compte PayPal Business de la savonnerie n&rsquo;est pas
-              encore relié. Didine vous recontactera pour le règlement.
+              La commande est bien enregistrée et votre article réservé, mais aucun moyen de
+              paiement en ligne n&rsquo;est actif pour le moment. Didine vous recontactera pour
+              convenir du règlement.
             </p>
           </div>
         )}
@@ -67,7 +74,7 @@ export default async function ConfirmationCommande({
                   <span className="text-taupe"> × {l.quantite}</span>
                   {l.lot && (
                     <span className="mt-1 block font-mono text-[12px] text-taupe">
-                      Lot {l.lot.reference} · sorti de cure le {formaterDate(l.lot.pretLe)}
+                      Série {l.lot.reference} · coulée le {formaterDate(l.lot.couleLe)}
                     </span>
                   )}
                 </span>

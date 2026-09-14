@@ -31,6 +31,7 @@ export default async function LayoutAdmin({ children }: { children: React.ReactN
     { href: '/admin/commandes', libelle: 'Commandes', pastille: aTraiter },
     { href: '/admin/catalogue', libelle: 'Catalogue' },
     { href: '/admin/series', libelle: 'Séries & stock', pastille: sousSeuil },
+    { href: '/admin/paiements', libelle: 'Paiements' },
   ];
 
   return (

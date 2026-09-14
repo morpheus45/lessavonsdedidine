@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { validerPanier, prochaineReference, ErreurPanier, type LigneDemandee } from '@/lib/boutique';
+import { lireConfigPaiements } from '@/lib/paiements';
 
 /**
  * Création d'une commande.
@@ -116,7 +117,7 @@ export async function POST(requete: Request) {
       {
         reference: commande.reference,
         totalCentimes: commande.totalCentimes,
-        paiementConfigure: Boolean(process.env.PAYPAL_CLIENT_ID),
+        paiementConfigure: await paiementDisponible(),
       },
       { status: 201 },
     );
@@ -210,4 +211,10 @@ function validerCoordonnees(corps: unknown): Resultat {
       telephone: telephone || null,
     },
   };
+}
+
+/** Un moyen de paiement en ligne est-il réellement utilisable ? */
+async function paiementDisponible(): Promise<boolean> {
+  const c = await lireConfigPaiements();
+  return c.paypal.utilisable || c.cb.utilisable;
 }

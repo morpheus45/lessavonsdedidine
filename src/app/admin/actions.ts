@@ -10,6 +10,7 @@ import {
   purgerSessions,
   administrateurCourant,
 } from '@/lib/auth';
+import { enregistrerPaiements, testerPaypal } from '@/lib/paiements';
 
 export type EtatConnexion = { erreur?: string };
 
@@ -57,6 +58,58 @@ export async function seConnecter(
 export async function seDeconnecter(): Promise<void> {
   await fermerSession();
   redirect('/admin/connexion');
+}
+
+export type EtatPaiements = { erreur?: string; succes?: string };
+
+/**
+ * Enregistrement des identifiants de paiement.
+ *
+ * Le secret n'est jamais renvoyé au navigateur, et un champ laissé vide
+ * signifie « ne pas modifier » : rouvrir la page puis enregistrer ne doit
+ * pas effacer la clé déjà en place.
+ *
+ * Après enregistrement, les identifiants sont testés auprès de PayPal. Dire
+ * « enregistré » sans avoir vérifié ferait découvrir une clé fausse au
+ * premier vrai paiement — c'est-à-dire au pire moment.
+ */
+export async function enregistrerPaiementsAction(
+  _precedent: EtatPaiements,
+  donnees: FormData,
+): Promise<EtatPaiements> {
+  const admin = await administrateurCourant();
+  if (!admin) return { erreur: 'Session expirée. Reconnectez-vous.' };
+
+  const environnement = donnees.get('environnement') === 'production' ? 'production' : 'sandbox';
+  const clientId = String(donnees.get('clientId') ?? '');
+  const secret = String(donnees.get('secret') ?? '');
+  const webhookId = String(donnees.get('webhookId') ?? '');
+  const paypalActif = donnees.get('paypalActif') === 'on';
+  const cbActif = donnees.get('cbActif') === 'on';
+
+  if (paypalActif && !clientId.trim()) {
+    return { erreur: "Pour activer PayPal, renseignez l'identifiant client." };
+  }
+
+  await enregistrerPaiements({
+    paypalActif,
+    cbActif,
+    environnement,
+    clientId,
+    secret,
+    webhookId,
+  });
+
+  revalidatePath('/admin/paiements');
+
+  if (!clientId.trim()) {
+    return { succes: 'Réglages enregistrés.' };
+  }
+
+  const test = await testerPaypal();
+  return test.ok
+    ? { succes: `Réglages enregistrés. ${test.message}` }
+    : { erreur: `Réglages enregistrés, mais le test a échoué : ${test.message}` };
 }
 
 /** Transitions autorisées. Toute autre combinaison est refusée. */
