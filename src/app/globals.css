@@ -140,3 +140,31 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+@layer components {
+  /* Pages légales : un texte long qui doit rester lisible d'un bout à
+     l'autre. Interlignage large, mesure courte, hiérarchie franche. */
+  .legal h2 {
+    font-family: var(--font-serif);
+    font-size: 26px;
+    letter-spacing: -0.02em;
+    margin: 40px 0 14px;
+    padding-top: 24px;
+    border-top: 1px solid var(--color-brume);
+  }
+  .legal h2:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+  .legal p { margin-bottom: 14px; color: var(--color-taupe); font-size: 15.5px; }
+  .legal p strong { color: var(--color-graphite); }
+  .legal ul { margin: 0 0 16px; padding-left: 22px; color: var(--color-taupe); font-size: 15.5px; }
+  .legal li { margin-bottom: 8px; }
+  .legal a { color: var(--color-grenat); border-bottom: 1px solid currentColor; }
+
+  /* Remarque destinée à Didine, pas au client : visuellement distincte du
+     texte contractuel pour qu'on ne la publie pas par inadvertance. */
+  .legal .remarque {
+    border-left: 2px solid var(--color-brume-2);
+    padding-left: 16px;
+    font-size: 14px;
+    font-style: italic;
+  }
+}
