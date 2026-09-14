@@ -3,11 +3,11 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Les Savons de Didine — savons saponifiés à froid',
+    default: 'Les Savons de Didine — savons parfumés et vitrines faites main',
     template: '%s · Les Savons de Didine',
   },
   description:
-    'Savons artisanaux saponifiés à froid, surgras à 8 %, six semaines de cure. Petites séries, coupés au fil, fabriqués à la main.',
+    'Savons parfumés faits main sur base au beurre de karité bio sans SLS, et vitrines personnalisées à offrir. Petites séries.',
   applicationName: 'Les Savons de Didine',
   manifest: '/manifest.webmanifest',
   appleWebApp: {

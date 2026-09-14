@@ -135,7 +135,7 @@ export function Sceau({
       height={taille}
       className={className}
       role="img"
-      aria-label="Les Savons de Didine — saponifié à froid, fait main"
+      aria-label="Les Savons de Didine — fait main avec amour"
     >
       <defs>
         <path id={`${id}-h`} fill="none" d="M 49,120 A 71,71 0 0,1 191,120" />
@@ -174,7 +174,7 @@ export function Sceau({
         fontWeight={500}
       >
         <textPath href={`#${id}-b`} startOffset="50%" textAnchor="middle" fill={encre}>
-          SAPONIFIÉ À FROID · FAIT MAIN
+          FAIT MAIN · AVEC AMOUR
         </textPath>
       </text>
 

@@ -14,58 +14,60 @@ import { formaterDate } from '@/lib/argent';
 export const dynamic = 'force-dynamic';
 
 const ARGUMENTS = [
-  'Saponifié à froid',
-  'Surgras 8 %',
-  'Cure 6 semaines',
-  'Coupé au fil',
-  'Petites séries',
+  'Beurre de karité bio',
+  'Sans SLS',
+  'Miel et arômes naturels',
+  'Colorants naturels',
+  'Fait main en petites séries',
   'Livraison offerte dès 39 €',
 ];
 
 const PREUVES = [
   {
-    valeur: 6,
+    valeur: 11,
     suffixe: '',
-    unite: 'semaines',
-    titre: 'De cure sur claies',
-    texte: 'Le pain perd son eau et durcit. Un savon jeune fond trois fois plus vite.',
+    unite: 'parfums',
+    titre: 'Au choix, à la commande',
+    texte: "Café, vanille, coco-vanille, black opium, olive, miel, menthe, fraise, bubble gum, caramel, citron.",
   },
   {
-    valeur: 8,
+    valeur: 0,
+    suffixe: '',
+    unite: 'SLS',
+    titre: 'Aucun sulfate moussant',
+    texte: 'La base est choisie sans laurylsulfate de sodium, enrichie en beurre de karité bio.',
+  },
+  {
+    valeur: 100,
     suffixe: ' %',
     unite: '',
-    titre: 'De surgras',
-    texte: "Une part des huiles reste non saponifiée dans le pain. C'est ce qui ne tire pas.",
-  },
-  {
-    valeur: 4,
-    suffixe: '',
-    unite: 'huiles',
-    titre: 'Végétales, pas une de plus',
-    texte: "Olive, coco, karité, ricin. Pesées au gramme, fondues à 40 °C, rien d'autre.",
+    titre: 'Coulé et emballé à la main',
+    texte: "Chaque savon sort d'un moule en silicone, est démoulé, étiqueté et ensaché un par un.",
   },
 ];
 
 const ETAPES: EtapeAtelier[] = [
   {
-    rang: 'Jour 1 · matin',
-    titre: 'La pesée',
-    texte: 'Olive, coco, karité, ricin pesés au gramme et fondus à 40 °C. Un écart de 2 % change le pain.',
+    rang: 'Étape 1',
+    titre: 'La base',
+    texte: 'Une base au beurre de karité biologique, sans SLS. Opaque, douce, choisie pour ne pas décaper.',
   },
   {
-    rang: 'Jour 1 · midi',
-    titre: 'La trace',
-    texte: "La soude rejoint les huiles. On mixe jusqu'à ce que la pâte nappe le fouet : c'est la trace.",
+    rang: 'Étape 2',
+    titre: 'La fonte',
+    texte: 'Coupée en cubes puis fondue au bain-marie, doucement — une base surchauffée perd sa transparence et sa tenue.',
   },
   {
-    rang: 'Jour 1 – 3',
-    titre: 'La phase de gel',
-    texte: 'Coulée en moule de bois, couverte. La pâte monte seule à 70 °C, puis fige en refroidissant.',
+    rang: 'Étape 3',
+    titre: 'Le parfum',
+    texte:
+      "Arôme naturel, colorant naturel, parfois du miel. C'est ici que se décide le savon : au gramme et au nez.",
   },
   {
-    rang: 'Semaine 1 – 6',
-    titre: 'La cure',
-    texte: "Démoulage, découpe au fil, puis six semaines sur claies. Aucun moyen d'aller plus vite.",
+    rang: 'Étape 4',
+    titre: 'La coulée',
+    texte:
+      "Versée en moule de silicone à motif — brin d'olivier ou fleur. Prise en trente à soixante minutes, puis démoulage à la main.",
   },
 ];
 
@@ -133,20 +135,20 @@ export default async function Accueil() {
           <div className="relative mx-auto grid max-w-[1240px] items-center gap-12 px-6 py-28 lg:grid-cols-2">
             <div>
               <BlurFade delai={0}>
-                <p className="eyebrow mb-6">Saponification à froid · petites séries</p>
+                <p className="eyebrow mb-6">Savons parfumés · faits main · petites séries</p>
               </BlurFade>
 
               <TitreAnime
-                texte={'Six semaines de séchage.\nPas une de moins.'}
-                accent="Pas une de moins."
+                texte={'Onze parfums,\ncoulés à la main.'}
+                accent="coulés à la main."
                 className="mb-8 font-serif text-[clamp(48px,6.4vw,88px)] leading-[0.94] tracking-[-0.035em]"
               />
 
               <BlurFade delai={0.55}>
                 <p className="mb-8 max-w-[40ch] text-[17px] text-taupe">
-                  Didine pèse ses huiles au gramme, coule en moule de bois et coupe au fil.
-                  Ensuite le pain attend sur claies — la seule étape qu&rsquo;on ne peut pas
-                  raccourcir, et celle qui fait la différence sous la douche.
+                  Didine part d&rsquo;une base au beurre de karité bio, sans SLS. Elle la fond au
+                  bain-marie, la parfume et la colore avec des arômes et des colorants naturels,
+                  puis la coule dans des moules à motif. Démoulé, étiqueté, ensaché&nbsp;: un par un.
                 </p>
               </BlurFade>
 
@@ -167,26 +169,29 @@ export default async function Accueil() {
                 </div>
               </BlurFade>
 
-              {/* ── Lot réel ──────────────────────────────────────────
-                  Pas un compteur d'urgence inventé : la quantité vient
-                  de la table des lots, et elle baisse à chaque commande. */}
+              {/* ── Série en cours ───────────────────────────────────
+                  Pas un compteur d'urgence inventé : la quantité vient de
+                  la base et baisse à chaque commande. La référence de série
+                  reste utile — c'est elle qui figure sur l'étiquette, et la
+                  réglementation cosmétique impose de pouvoir la retrouver. */}
               {lotVedette && (
                 <BlurFade delai={0.75}>
                   <p className="mt-10 inline-flex flex-wrap items-center gap-x-3 gap-y-1 border-l-2 border-foret py-1 pl-4 font-mono text-[12.5px] text-taupe">
                     <span>
-                      Lot <strong className="font-medium text-foret">{lotVedette.reference}</strong>
+                      Série{' '}
+                      <strong className="font-medium text-foret">{lotVedette.reference}</strong>
                     </span>
                     <span aria-hidden="true">·</span>
                     <span>
-                      sorti de cure le{' '}
+                      coulée le{' '}
                       <strong className="font-medium text-foret">
                         {formaterDate(lotVedette.pretLe)}
                       </strong>
                     </span>
                     <span aria-hidden="true">·</span>
                     <span>
-                      <strong className="font-medium text-foret">{lotVedette.restant}</strong> pains
-                      restants
+                      <strong className="font-medium text-foret">{lotVedette.restant}</strong> savons
+                      disponibles
                     </span>
                   </p>
                 </BlurFade>
@@ -268,13 +273,12 @@ export default async function Accueil() {
             <BlurFade>
               <p className="eyebrow mb-6 text-foret-3">Dans l&rsquo;atelier</p>
               <h2 className="mb-6 max-w-[19ch] font-serif text-[58px] tracking-[-0.035em] text-nuage">
-                Quatre gestes, et <em className="italic text-grenat-2">six semaines</em>{' '}
-                d&rsquo;attente
+                Quatre gestes, et le savon est <em className="italic text-grenat-2">prêt en une heure</em>
               </h2>
               <p className="mb-24 max-w-[58ch] text-[16.5px] text-foret-3">
-                La saponification à froid ne cuit rien : la soude et les huiles réagissent
-                seules, lentement, et la glycérine reste dans le pain au lieu d&rsquo;être
-                récupérée. En échange, il faut attendre — c&rsquo;est tout le contrat.
+                Fondre, parfumer, colorer, couler. Le procédé est court, et c&rsquo;est
+                justement ce qui permet de faire du sur-mesure&nbsp;: un parfum demandé le matin
+                peut être coulé l&rsquo;après-midi, en petite série, sans stock à écouler.
               </p>
             </BlurFade>
 

@@ -23,7 +23,7 @@ export function EnTeteBoutique({ actif }: { actif?: string }) {
           <span className="font-serif text-[23px] leading-none tracking-[-0.02em] text-graphite">
             Les Savons de Didine
             <span className="mt-[5px] block font-mono text-[8.5px] tracking-[0.2em] text-taupe">
-              SAPONIFIÉ À FROID
+              FAIT MAIN
             </span>
           </span>
         </Link>
@@ -58,9 +58,9 @@ export function PiedBoutique() {
         <div>
           <Sceau variante="reduit" taille={44} />
           <p className="mt-4 text-[14px] text-taupe">
-            Savons saponifiés à froid, en petites séries.
+            Savons parfumés et vitrines personnalisées,
             <br />
-            Six semaines de cure, surgras à 8 %.
+            faits main en petites séries.
           </p>
         </div>
 
