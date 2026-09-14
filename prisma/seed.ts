@@ -1,14 +1,22 @@
 /**
- * Jeu de données de départ.
+ * Jeu de données de départ — offre réelle de Didine.
  *
- * ⚠️  LES CINQ RECETTES CI-DESSOUS SONT DES PLACEHOLDERS.
- *     Elles viennent de l'ébauche visuelle, pas de Didine. Dès que ses
- *     vraies recettes, ses vrais prix et ses vraies listes INCI sont
- *     connus, c'est ce fichier qu'il faut modifier — puis `npm run db:reset`.
+ * Source : ses propres messages du 13 septembre 2026.
  *
- * Les données doivent rester réalistes : un jeu d'essai avec « Produit 1,
- * Produit 2 » rend toute revue d'interface impossible, on ne voit plus si
- * la mise en page tient avec de vrais libellés.
+ *   « Je prends une base de savon au beurre de karité bio, sans SLS. »
+ *   « Fondre et verser : coupez en cubes, faites fondre au micro-ondes ou au
+ *     bain-marie, parfumez, colorez et coulez dans vos moules en silicone.
+ *     Le savon durcit en 30 à 60 minutes. »
+ *   « 4 savons achetés le 5ème offert, pour 20 euros. »
+ *   « 8 savons achetés = 2 savons offerts, pour 40 euros. »
+ *   « Les vitrines, ça se vend entre 45 € et 90 euros, ça dépend de ce
+ *     qu'ils veulent comme petits objets. »
+ *
+ * ⚠️  À FAIRE VALIDER PAR DIDINE avant toute mise en ligne :
+ *     - le nombre d'objets par formule de vitrine (inventé ici)
+ *     - les dimensions des cadres
+ *     - la liste définitive des thèmes
+ *     - le délai de fabrication d'une vitrine
  */
 
 import { PrismaClient } from '@prisma/client';
@@ -20,81 +28,47 @@ const scrypt = promisify(scryptCb) as (m: string, s: Buffer, l: number) => Promi
 
 async function hacher(motDePasse: string): Promise<string> {
   const sel = randomBytes(16);
-  const derive = await scrypt(motDePasse, sel, 64);
-  return `${sel.toString('hex')}:${derive.toString('hex')}`;
+  return `${sel.toString('hex')}:${(await scrypt(motDePasse, sel, 64)).toString('hex')}`;
 }
 
 const jours = (n: number) => new Date(Date.now() + n * 86_400_000);
 
-type Recette = {
-  rang: number;
-  slug: string;
-  nom: string;
-  accroche: string;
-  description: string;
-  inci: string;
-  surgras: number;
-  variantes: { nom: string; poidsGrammes: number; prixCentimes: number; unites: number }[];
-};
+/** Les parfums réellement vus sur ses photos et cités dans ses messages. */
+const PARFUMS = [
+  'Café',
+  'Vanille',
+  'Coco-vanille',
+  'Black Opium',
+  'Olive',
+  'Miel',
+  'Menthe',
+  'Fraise',
+  'Bubble gum',
+  'Caramel',
+  'Citron',
+];
 
-const RECETTES: Recette[] = [
+/** Thèmes de vitrine repérés sur ses réalisations. */
+const THEMES = [
   {
-    rang: 1,
-    slug: 'douceur-avoine',
-    nom: "Douceur d'avoine",
-    accroche: 'Avoine colloïdale et miel de lavandin',
-    description:
-      "Avoine colloïdale moulue à l'atelier et miel de lavandin. Surgras à 8 % : une part des huiles n'est pas saponifiée et reste dans le pain, ce qui évite la sensation de tiraillement après la douche.",
-    inci: 'Olea Europaea Fruit Oil, Aqua, Cocos Nucifera Oil, Sodium Hydroxide, Butyrospermum Parkii Butter, Ricinus Communis Seed Oil, Avena Sativa Kernel Flour, Mel',
-    surgras: 8,
-    variantes: [
-      { nom: '1 pain', poidsGrammes: 100, prixCentimes: 750, unites: 1 },
-      { nom: 'Lot de 3', poidsGrammes: 300, prixCentimes: 2000, unites: 3 },
-    ],
+    slug: 'safari',
+    nom: 'Safari',
+    description: "Lion, éléphant, zèbre et girafe devant un coucher de soleil sur la savane.",
   },
   {
-    rang: 2,
-    slug: 'argile-verte',
-    nom: 'Argile verte',
-    accroche: 'Peaux mixtes à grasses',
-    description:
-      "Argile verte montmorillonite incorporée à la trace. Elle absorbe l'excès de sébum sans décaper — le surgras compense ce que l'argile emporte.",
-    inci: 'Olea Europaea Fruit Oil, Aqua, Cocos Nucifera Oil, Sodium Hydroxide, Butyrospermum Parkii Butter, Illite, Ricinus Communis Seed Oil',
-    surgras: 8,
-    variantes: [{ nom: '1 pain', poidsGrammes: 100, prixCentimes: 700, unites: 1 }],
+    slug: 'chevaux',
+    nom: 'Chevaux',
+    description: 'Jument, poulain et bottes de foin sur une prairie, montagnes en fond.',
   },
   {
-    rang: 3,
-    slug: 'lavandin-romarin',
-    nom: 'Lavandin & romarin',
-    accroche: "Huiles essentielles distillées à 20 km de l'atelier",
-    description:
-      "Lavandin grosso et romarin à cinéole, ajoutés hors chauffe pour préserver les molécules aromatiques. Déconseillé aux femmes enceintes et aux enfants de moins de trois ans.",
-    inci: 'Olea Europaea Fruit Oil, Aqua, Cocos Nucifera Oil, Sodium Hydroxide, Butyrospermum Parkii Butter, Lavandula Hybrida Oil, Rosmarinus Officinalis Leaf Oil, Linalool, Limonene',
-    surgras: 8,
-    variantes: [{ nom: '1 pain', poidsGrammes: 100, prixCentimes: 700, unites: 1 }],
+    slug: 'salon',
+    nom: 'Salon',
+    description: "Canapé, meuble télé, tapis et bouquet — une pièce à vivre en miniature.",
   },
   {
-    rang: 4,
-    slug: 'coffret-quatre-recettes',
-    nom: 'Les quatre recettes',
-    accroche: 'Dans un écrin de carton recyclé',
-    description:
-      "Les quatre pains de la gamme, dans un coffret de carton recyclé non blanchi. Chaque pain porte son propre numéro de lot.",
-    inci: 'Voir la composition de chaque pain sur sa fiche',
-    surgras: 8,
-    variantes: [{ nom: 'Coffret de 4', poidsGrammes: 400, prixCentimes: 2600, unites: 4 }],
-  },
-  {
-    rang: 5,
-    slug: 'shampoing-solide',
-    nom: 'Shampoing solide',
-    accroche: 'Sans sulfate · environ 60 lavages',
-    description:
-      "Base lavante douce sans sulfate, enrichie en huile de ricin. Un temps d'adaptation de deux à trois semaines est normal : le cuir chevelu régule sa production de sébum.",
-    inci: 'Sodium Cocoyl Isethionate, Aqua, Ricinus Communis Seed Oil, Butyrospermum Parkii Butter, Cetearyl Alcohol, Panthenol',
-    surgras: 5,
-    variantes: [{ nom: '1 pain', poidsGrammes: 80, prixCentimes: 950, unites: 1 }],
+    slug: 'chambre-enfant',
+    nom: "Chambre d'enfant",
+    description: 'Berceau, cheval à bascule et papier peint fleuri, dans des tons doux.',
   },
 ];
 
@@ -106,59 +80,77 @@ async function main() {
   await prisma.lot.deleteMany();
   await prisma.variante.deleteMany();
   await prisma.produit.deleteMany();
+  await prisma.themeVitrine.deleteMany();
   await prisma.session.deleteMany();
   await prisma.administrateur.deleteMany();
   await prisma.reglage.deleteMany();
 
-  console.log('Produits et variantes…');
-  for (const r of RECETTES) {
-    await prisma.produit.create({
-      data: {
-        rang: r.rang,
-        slug: r.slug,
-        nom: r.nom,
-        accroche: r.accroche,
-        description: r.description,
-        inci: r.inci,
-        surgras: r.surgras,
-        variantes: { create: r.variantes.map((v) => ({ ...v })) },
+  // ── Vitrines ───────────────────────────────────────────────────────
+  // Fabriquées à la commande : aucun lot, aucun stock. Le prix dépend de
+  // la taille du cadre et du nombre de petits objets.
+  console.log('Vitrines…');
+  const vitrine = await prisma.produit.create({
+    data: {
+      type: 'vitrine',
+      rang: 1,
+      slug: 'vitrine-personnalisee',
+      nom: 'Vitrine personnalisée',
+      accroche: 'Une scène en miniature, au prénom de la personne',
+      description:
+        "Un cadre en bois peint à la main, garni d'une scène composée objet par objet, avec le prénom en lettres sur le dessus. Chaque vitrine est montée à la commande : le thème, le prénom et les petits objets sont choisis par vous.",
+      inci: 'Sans objet — la vitrine est un objet de décoration, pas un cosmétique.',
+      surgras: 0,
+      variantes: {
+        create: [
+          { nom: 'Petite', poidsGrammes: 0, prixCentimes: 4500, unites: 1 },
+          { nom: 'Moyenne', poidsGrammes: 0, prixCentimes: 6500, unites: 1 },
+          { nom: 'Grande', poidsGrammes: 0, prixCentimes: 9000, unites: 1 },
+        ],
       },
-    });
+    },
+  });
+
+  for (const [i, t] of THEMES.entries()) {
+    await prisma.themeVitrine.create({ data: { ...t, ordre: i } });
   }
 
-  console.log('Lots…');
-  const produits = await prisma.produit.findMany({ orderBy: { rang: 'asc' } });
-  const lettres = ['A', 'B', 'C', 'D', 'E'];
-
-  for (const [i, p] of produits.entries()) {
-    // Un lot déjà sorti de cure, vendable aujourd'hui.
-    await prisma.lot.create({
-      data: {
-        reference: `26-09-${lettres[i]}`,
-        produitId: p.id,
-        couleLe: jours(-42),
-        pretLe: jours(-1),
-        durableJusquLe: jours(365),
-        quantiteProduite: 60,
-        quantiteRestante: 60 - i * 6,
+  // ── Savons ─────────────────────────────────────────────────────────
+  // Son offre est en lots, pas à l'unité : 4 achetés + 1 offert pour 20 €,
+  // 8 achetés + 2 offerts pour 40 €.
+  console.log('Savons…');
+  const savon = await prisma.produit.create({
+    data: {
+      type: 'savon',
+      rang: 2,
+      slug: 'savons-parfumes',
+      nom: 'Savons parfumés',
+      accroche: `${PARFUMS.length} parfums au choix, coulés à la main`,
+      description:
+        "Base de savon au beurre de karité biologique, sans SLS. Fondue au bain-marie, parfumée avec un arôme naturel, colorée avec un colorant naturel, parfois enrichie de miel, puis coulée dans un moule en silicone à motif — brin d'olivier ou fleur. Prise en trente à soixante minutes, démoulage, étiquetage et mise en sachet à la main.",
+      inci: 'Base commerciale au beurre de karité biologique, sans laurylsulfate de sodium (SLS). La liste INCI complète figure sur le sachet — à reporter ici depuis l’étiquette du fournisseur.',
+      surgras: 0,
+      variantes: {
+        create: [
+          { nom: 'Lot de 5 — 4 achetés, 1 offert', poidsGrammes: 0, prixCentimes: 2000, unites: 5 },
+          { nom: 'Lot de 10 — 8 achetés, 2 offerts', poidsGrammes: 0, prixCentimes: 4000, unites: 10 },
+        ],
       },
-    });
+    },
+  });
 
-    // Un lot encore en cure : il doit apparaître dans le backoffice comme
-    // à venir, et ne jamais être servi à un client.
-    await prisma.lot.create({
-      data: {
-        reference: `26-10-${lettres[i]}`,
-        produitId: p.id,
-        couleLe: jours(-9),
-        pretLe: jours(33),
-        durableJusquLe: jours(398),
-        quantiteProduite: 60,
-        quantiteRestante: 60,
-        notes: 'En cure — ne pas mettre en vente avant la date de sortie.',
-      },
-    });
-  }
+  // Une série en cours, pour que le stock affiché soit réel.
+  await prisma.lot.create({
+    data: {
+      reference: '26-09-A',
+      produitId: savon.id,
+      couleLe: jours(-3),
+      pretLe: jours(-3), // prêt le jour même : le savon durcit en une heure
+      durableJusquLe: jours(730),
+      quantiteProduite: 120,
+      quantiteRestante: 96,
+      notes: `Parfums de la série : ${PARFUMS.join(', ')}.`,
+    },
+  });
 
   console.log('Compte administrateur…');
   const motDePasse = 'didine2026';
@@ -174,16 +166,22 @@ async function main() {
     data: [
       { cle: 'seuil_livraison_offerte_centimes', valeur: '3900' },
       { cle: 'livraison_centimes', valeur: '490' },
-      { cle: 'delai_expedition_heures', valeur: '48' },
+      { cle: 'parfums_disponibles', valeur: PARFUMS.join('|') },
+      { cle: 'delai_fabrication_vitrine_jours', valeur: '7' },
     ],
   });
 
   console.log('\n─────────────────────────────────────────────');
-  console.log(`  ${produits.length} produits, ${produits.length * 2} lots`);
+  console.log(`  Vitrines : 3 formules (45 / 65 / 90 €), ${THEMES.length} thèmes`);
+  console.log(`  Savons   : 2 lots (20 / 40 €), ${PARFUMS.length} parfums`);
   console.log('  Backoffice : /admin');
-  console.log('  Identifiant : didine@les-savons-de-didine.fr');
-  console.log(`  Mot de passe : ${motDePasse}   ← à changer avant toute mise en ligne`);
+  console.log(`  ${'didine@les-savons-de-didine.fr'} · ${motDePasse}`);
+  console.log('\n  ⚠ À valider avec Didine : nombre d’objets et dimensions');
+  console.log('    par formule, liste définitive des thèmes, délai de');
+  console.log('    fabrication, et la vraie liste INCI du fournisseur.');
   console.log('─────────────────────────────────────────────\n');
+
+  void vitrine;
 }
 
 main()

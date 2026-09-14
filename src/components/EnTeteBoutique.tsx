@@ -115,7 +115,7 @@ export function PiedBoutique() {
 
       <div className="border-t border-brume">
         <p className="mx-auto max-w-[1240px] px-6 py-6 font-mono text-[12px] text-taupe">
-          Les Savons de Didine · Produits cosmétiques artisanaux · Saponification à froid
+          Les Savons de Didine · Savons parfumés faits main · Vitrines personnalisées
         </p>
       </div>
     </footer>

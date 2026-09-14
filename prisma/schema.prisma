@@ -28,6 +28,11 @@ datasource db {
 
 model Produit {
   id          String   @id @default(cuid())
+  /// « savon » ou « vitrine ». Les deux partagent panier, commande et
+  /// paiement ; ce qui les sépare tient en deux règles :
+  ///   - une vitrine est fabriquée à la commande, donc sans lot ni stock
+  ///   - une vitrine exige une personnalisation (prénom + thème)
+  type        String   @default("savon")
   /// Numéro de gamme affiché au client : 1 → « N°01 »
   rang        Int      @unique
   slug        String   @unique
@@ -137,11 +142,35 @@ model Commande {
   @@index([creeeLe])
 }
 
+/// Thèmes proposés pour les vitrines. Table plutôt que liste en dur : Didine
+/// en ajoute au fil de ses réalisations, et ça ne doit pas demander un
+/// déploiement.
+model ThemeVitrine {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  nom         String
+  description String
+  /// Chemin de la photo de référence, relatif à /public
+  photo       String?
+  ordre       Int     @default(0)
+  actif       Boolean @default(true)
+
+  lignes LigneCommande[]
+
+  @@index([actif, ordre])
+}
+
 model LigneCommande {
   id         String @id @default(cuid())
   commandeId String
   varianteId String
   lotId      String?
+
+  /// Personnalisation d'une vitrine. Nuls pour un savon.
+  /// Le prénom est une donnée personnelle : il sert à fabriquer l'objet, il
+  /// n'a aucune autre utilité et ne doit jamais alimenter un profil client.
+  prenom  String?
+  themeId String?
 
   /// Copies figées au moment de la commande : changer un tarif ne réécrit
   /// pas l'historique comptable.
@@ -150,9 +179,10 @@ model LigneCommande {
   quantite         Int
   totalCentimes    Int
 
-  commande Commande @relation(fields: [commandeId], references: [id], onDelete: Cascade)
-  variante Variante @relation(fields: [varianteId], references: [id])
-  lot      Lot?     @relation(fields: [lotId], references: [id])
+  commande Commande      @relation(fields: [commandeId], references: [id], onDelete: Cascade)
+  variante Variante      @relation(fields: [varianteId], references: [id])
+  lot      Lot?          @relation(fields: [lotId], references: [id])
+  theme    ThemeVitrine? @relation(fields: [themeId], references: [id])
 
   @@index([commandeId])
   @@index([lotId])

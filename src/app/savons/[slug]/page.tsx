@@ -116,9 +116,9 @@ export default async function FicheProduit({ params }: { params: Promise<{ slug:
               <div className="pb-5 text-[14px] leading-relaxed text-taupe">
                 <p className="font-mono text-[12.5px] text-foret">{produit.inci}</p>
                 <p className="mt-3">
-                  Surgras à {produit.surgras} %. La soude est mentionnée parce que la
-                  réglementation l&rsquo;exige : après saponification, il n&rsquo;en reste rien
-                  dans le pain.
+                  La liste complète figure sur le sachet, comme l&rsquo;exige la
+                  réglementation cosmétique. Elle sera reportée ici telle quelle, depuis
+                  l&rsquo;étiquette du fournisseur de la base.
                 </p>
               </div>
             </details>

@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Les savons',
   description:
-    'La gamme complète : savons saponifiés à froid, surgras à 8 %, six semaines de cure, coupés au fil.',
+    'Savons parfumés faits main sur base au beurre de karité bio sans SLS, et vitrines personnalisées à offrir.',
 };
 
 export default async function ListeSavons() {
@@ -40,10 +40,10 @@ export default async function ListeSavons() {
             {gamme.length} recettes, numérotées
           </h1>
           <p className="text-[17.5px] text-taupe">
-            Chaque pain est coulé en moule de bois, coupé au fil et séché six semaines sur
-            claies. Le numéro de lot et la date de sortie de cure figurent sur chaque fiche —
-            c&rsquo;est une obligation réglementaire, et c&rsquo;est aussi ce qui permet de
-            savoir ce qu&rsquo;on achète.
+            Les savons partent d&rsquo;une base au beurre de karité biologique, sans SLS&nbsp;:
+            fondue au bain-marie, parfumée et colorée avec des produits naturels, coulée dans
+            un moule à motif. Les vitrines, elles, sont montées à la commande — cadre, thème,
+            prénom et petits objets sont choisis par vous.
           </p>
         </header>
 
