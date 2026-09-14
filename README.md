@@ -1,8 +1,8 @@
 # Les Savons de Didine
 
-Boutique en ligne installable (PWA) pour une savonnerie artisanale en
-saponification à froid : catalogue, paiement PayPal, et un backoffice de gestion
-des commandes, des lots et des statistiques.
+Boutique en ligne pour Didine : **vitrines personnalisées** (dioramas au prénom,
+45 / 65 / 90 €) et **savons parfumés faits main** vendus en lots. Avec backoffice
+de gestion des commandes, des séries et du stock.
 
 ## État du projet
 
@@ -73,13 +73,28 @@ connexion et jetons de déploiement se configurent dans les variables
 d'environnement de Vercel. Le `.gitignore` bloque `.env*`, mais il ne rattrape
 pas une clé écrite en dur dans un fichier source — d'où l'agent de revue.
 
+## Procédé réel — à ne jamais déformer
+
+Les savons sont faits en **fondre-et-verser** (melt & pour) sur une base
+commerciale au beurre de karité bio, sans SLS : fondue au bain-marie, parfumée
+et colorée avec des produits naturels, parfois additionnée de miel, coulée en
+moule silicone. Le savon durcit en **30 à 60 minutes**.
+
+Ce n'est **pas** de la saponification à froid. Une version antérieure du site
+annonçait « six semaines de cure » et « surgras à 8 % » : c'était inventé, et
+sur une boutique réelle cela constituerait une pratique commerciale trompeuse.
+Ces mentions ont été retirées le 14 septembre 2026.
+
 ## Obligation réglementaire
 
-Un savon vendu est un produit cosmétique au sens du règlement européen 1223/2009.
-Avant la première vente : dossier d'information produit par recette, évaluation
-de la sécurité signée, déclaration au portail CPNP, et un responsable de la mise
-sur le marché établi dans l'UE. Comptez plusieurs semaines — à lancer en
-parallèle du développement.
+Un savon vendu reste un produit cosmétique au sens du règlement européen
+1223/2009, y compris en fondre-et-verser dès lors qu'on modifie la base
+(parfum, colorant, miel). Avant la première vente : dossier d'information
+produit, évaluation de la sécurité signée, déclaration au portail CPNP, et un
+responsable de la mise sur le marché établi dans l'UE.
+
+La liste INCI affichée doit être recopiée depuis l'étiquette du fournisseur de
+la base — elle ne peut pas être devinée.
 
 ## Agents du projet
 

@@ -109,5 +109,5 @@ jamais depuis le dossier temporaire de session.
 - Une largeur fixe en pixels qui provoque un défilement horizontal en 375 px
 - Du contenu de remplissage : vraies recettes, vrais prix, vrai INCI, vrais lots
 - Toute mention de savon de Marseille, de chaudron ou de « 72 % » : ce sont des
-  savons **saponifiés à froid**, un métier différent avec son propre vocabulaire
-  — la trace, la phase de gel, la cure, le surgras
+  savons **faits main en fondre-et-verser**, un métier différent avec son propre vocabulaire
+  — la base, la fonte, le parfum, la coulée

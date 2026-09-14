@@ -34,12 +34,17 @@ export async function POST(requete: Request) {
   try {
     const panier = await validerPanier(lignes);
     return NextResponse.json({
+      // L'ordre est celui de la requête : le panier côté client apparie
+      // ses lignes par position, ce qui reste juste même quand deux lignes
+      // partagent la même variante avec des prénoms différents.
       lignes: panier.lignes.map((l) => ({
         varianteId: l.varianteId,
         libelle: l.libelle,
         prixUnitaireCentimes: l.prixUnitaireCentimes,
         quantite: l.quantite,
         totalCentimes: l.totalCentimes,
+        prenom: l.prenom,
+        themeNom: l.themeNom,
       })),
       sousTotalCentimes: panier.sousTotalCentimes,
       livraisonCentimes: panier.livraisonCentimes,
@@ -62,10 +67,23 @@ function extraireLignes(corps: unknown): LigneDemandee[] | null {
   const lignes: LigneDemandee[] = [];
   for (const l of brut) {
     if (typeof l !== 'object' || l === null) return null;
-    const { varianteId, quantite } = l as { varianteId?: unknown; quantite?: unknown };
+    const { varianteId, quantite, prenom, themeSlug } = l as {
+      varianteId?: unknown;
+      quantite?: unknown;
+      prenom?: unknown;
+      themeSlug?: unknown;
+    };
     if (typeof varianteId !== 'string' || !varianteId) return null;
     if (typeof quantite !== 'number' || !Number.isInteger(quantite)) return null;
-    lignes.push({ varianteId, quantite });
+    lignes.push({
+      varianteId,
+      quantite,
+      // Bornés ici : la validation métier refusera de toute façon une
+      // valeur hors limites, mais on ne laisse pas entrer une chaîne de
+      // dix mille caractères jusque-là.
+      prenom: typeof prenom === 'string' ? prenom.slice(0, 24) : undefined,
+      themeSlug: typeof themeSlug === 'string' ? themeSlug.slice(0, 60) : undefined,
+    });
   }
   return lignes;
 }

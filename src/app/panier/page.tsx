@@ -8,6 +8,7 @@ import {
   lirePanier,
   changerQuantite,
   retirer,
+  ligneId,
   surChangement,
   type ArticlePanier,
 } from '@/lib/panier-client';
@@ -15,7 +16,15 @@ import {
 const SEUIL_LIVRAISON_OFFERTE = 3900;
 
 type PanierServeur = {
-  lignes: { varianteId: string; libelle: string; prixUnitaireCentimes: number; quantite: number; totalCentimes: number }[];
+  lignes: {
+    varianteId: string;
+    libelle: string;
+    prixUnitaireCentimes: number;
+    quantite: number;
+    totalCentimes: number;
+    prenom?: string | null;
+    themeNom?: string | null;
+  }[];
   sousTotalCentimes: number;
   livraisonCentimes: number;
   totalCentimes: number;
@@ -38,7 +47,12 @@ export default function PagePanier() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          lignes: liste.map((a) => ({ varianteId: a.varianteId, quantite: a.quantite })),
+          lignes: liste.map((a) => ({
+            varianteId: a.varianteId,
+            quantite: a.quantite,
+            prenom: a.prenom,
+            themeSlug: a.themeSlug,
+          })),
         }),
       });
       const donnees = await reponse.json();
@@ -106,21 +120,30 @@ export default function PagePanier() {
         {!chargement && articles.length > 0 && (
           <div className="grid gap-16 lg:grid-cols-[1fr_360px]">
             <ul className="border-t border-brume">
-              {articles.map((a) => {
-                const ligne = serveur?.lignes.find((l) => l.varianteId === a.varianteId);
+              {articles.map((a, index) => {
+                // Appariement par POSITION : le serveur renvoie les lignes dans
+                // l'ordre reçu. Chercher par varianteId confondrait deux
+                // vitrines de même format aux prénoms différents.
+                const ligne = serveur?.lignes[index];
+                const id = ligneId(a);
                 return (
                   <li
-                    key={a.varianteId}
+                    key={id}
                     className="grid grid-cols-[1fr_auto] items-center gap-6 border-b border-brume py-6"
                   >
                     <div>
                       <p className="mb-1 text-[15.5px] font-semibold">{ligne?.libelle ?? a.libelle}</p>
+                      {a.prenom && (
+                        <p className="mb-1 font-mono text-[12.5px] text-grenat">
+                          Prénom « {a.prenom} »
+                        </p>
+                      )}
                       <p className="font-mono text-[12.5px] text-taupe tabulaire">
                         {formaterPrix(ligne?.prixUnitaireCentimes ?? a.prixCentimes)} l&rsquo;unité
                       </p>
                       <button
                         type="button"
-                        onClick={() => retirer(a.varianteId)}
+                        onClick={() => retirer(id)}
                         className="mt-2 border-b border-brume-2 text-[13px] text-taupe hover:border-alerte hover:text-alerte"
                       >
                         Retirer
@@ -131,7 +154,7 @@ export default function PagePanier() {
                       <div className="flex items-center rounded-s border border-brume-2 bg-neige">
                         <button
                           type="button"
-                          onClick={() => changerQuantite(a.varianteId, a.quantite - 1)}
+                          onClick={() => changerQuantite(id, a.quantite - 1)}
                           aria-label={`Diminuer la quantité de ${a.libelle}`}
                           className="min-h-[44px] px-3.5 text-[17px] hover:text-grenat"
                         >
@@ -142,7 +165,7 @@ export default function PagePanier() {
                         </span>
                         <button
                           type="button"
-                          onClick={() => changerQuantite(a.varianteId, a.quantite + 1)}
+                          onClick={() => changerQuantite(id, a.quantite + 1)}
                           aria-label={`Augmenter la quantité de ${a.libelle}`}
                           className="min-h-[44px] px-3.5 text-[17px] hover:text-grenat"
                         >

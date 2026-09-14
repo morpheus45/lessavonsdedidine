@@ -8,8 +8,8 @@ import { useInView, useReducedMotion } from 'motion/react';
  *
  * Écarts volontaires :
  *
- *   1. La valeur finale est rendue côté serveur. Le chiffre « 6 » de
- *      « six semaines de cure » est une information, pas une décoration :
+ *   1. La valeur finale est rendue côté serveur. Le chiffre « 11 » de
+ *      « onze parfums » est une information, pas une décoration :
  *      il doit être lisible sans JavaScript et par un lecteur d'écran.
  *      L'animation ne remplace la valeur qu'après montage.
  *

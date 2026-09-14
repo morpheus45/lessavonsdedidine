@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { IllustrationProduit } from '@/components/PainSavon';
 import { AjoutPanier } from '@/components/AjoutPanier';
+import { ConfigurateurVitrine } from '@/components/ConfigurateurVitrine';
 import { formaterPrix, prixAuKilo, formaterDate } from '@/lib/argent';
 
 export const dynamic = 'force-dynamic';
@@ -42,6 +43,12 @@ export default async function FicheProduit({ params }: { params: Promise<{ slug:
 
   const premiere = produit.variantes[0]!;
   const lot = produit.lots[0];
+  const estVitrine = produit.type === 'vitrine';
+
+  // Les thèmes ne servent qu'aux vitrines : inutile de les charger sinon.
+  const themes = estVitrine
+    ? await prisma.themeVitrine.findMany({ where: { actif: true }, orderBy: { ordre: 'asc' } })
+    : [];
   const numero = `N°${String(produit.rang).padStart(2, '0')}`;
 
   return (
@@ -67,7 +74,7 @@ export default async function FicheProduit({ params }: { params: Promise<{ slug:
 
           {/* Traçabilité : obligation réglementaire, affichée sous le prix
               plutôt qu'enterrée dans un onglet. */}
-          {lot ? (
+          {!estVitrine && lot ? (
             <dl className="mb-8 flex flex-wrap gap-x-8 gap-y-2 border-y border-brume py-4 font-mono text-[12.5px] text-taupe">
               <div>
                 <dt className="inline">Lot </dt>
@@ -86,14 +93,27 @@ export default async function FicheProduit({ params }: { params: Promise<{ slug:
                 <dd className="inline font-medium text-foret">{premiere.poidsGrammes} g ± 5 g</dd>
               </div>
             </dl>
-          ) : (
+          ) : estVitrine ? null : (
             <p className="mb-8 rounded-s border border-attente-bg bg-attente-bg px-4 py-3 text-[14px] text-attente">
               Ce savon est en cure : aucun lot n&rsquo;est encore sorti de séchage. Il sera
               disponible dès la fin de la cure.
             </p>
           )}
 
-          {lot ? (
+          {estVitrine ? (
+            <ConfigurateurVitrine
+              formules={produit.variantes.map((v) => ({
+                id: v.id,
+                nom: v.nom,
+                prixCentimes: v.prixCentimes,
+              }))}
+              themes={themes.map((t) => ({
+                slug: t.slug,
+                nom: t.nom,
+                description: t.description,
+              }))}
+            />
+          ) : lot ? (
             <AjoutPanier
               variantes={produit.variantes.map((v) => ({
                 id: v.id,

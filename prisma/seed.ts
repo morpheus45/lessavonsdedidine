@@ -99,7 +99,6 @@ async function main() {
       description:
         "Un cadre en bois peint à la main, garni d'une scène composée objet par objet, avec le prénom en lettres sur le dessus. Chaque vitrine est montée à la commande : le thème, le prénom et les petits objets sont choisis par vous.",
       inci: 'Sans objet — la vitrine est un objet de décoration, pas un cosmétique.',
-      surgras: 0,
       variantes: {
         create: [
           { nom: 'Petite', poidsGrammes: 0, prixCentimes: 4500, unites: 1 },
@@ -128,7 +127,6 @@ async function main() {
       description:
         "Base de savon au beurre de karité biologique, sans SLS. Fondue au bain-marie, parfumée avec un arôme naturel, colorée avec un colorant naturel, parfois enrichie de miel, puis coulée dans un moule en silicone à motif — brin d'olivier ou fleur. Prise en trente à soixante minutes, démoulage, étiquetage et mise en sachet à la main.",
       inci: 'Base commerciale au beurre de karité biologique, sans laurylsulfate de sodium (SLS). La liste INCI complète figure sur le sachet — à reporter ici depuis l’étiquette du fournisseur.',
-      surgras: 0,
       variantes: {
         create: [
           { nom: 'Lot de 5 — 4 achetés, 1 offert', poidsGrammes: 0, prixCentimes: 2000, unites: 5 },

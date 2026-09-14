@@ -16,7 +16,13 @@ export function calculerLivraison(sousTotalCentimes: number): number {
   return sousTotalCentimes >= SEUIL_LIVRAISON_OFFERTE_CENTIMES ? 0 : LIVRAISON_CENTIMES;
 }
 
-export type LigneDemandee = { varianteId: string; quantite: number };
+export type LigneDemandee = {
+  varianteId: string;
+  quantite: number;
+  /** Personnalisation d'une vitrine. Ignorées pour un savon. */
+  prenom?: string;
+  themeSlug?: string;
+};
 
 export type LigneValidee = {
   varianteId: string;
@@ -25,6 +31,9 @@ export type LigneValidee = {
   quantite: number;
   totalCentimes: number;
   lotId: string | null;
+  prenom: string | null;
+  themeId: string | null;
+  themeNom: string | null;
 };
 
 export type PanierValide = {
@@ -68,8 +77,42 @@ export async function validerPanier(lignesDemandees: LigneDemandee[]): Promise<P
       throw new ErreurPanier(`Quantité invalide pour ${variante.produit.nom}.`);
     }
 
-    // On sert le lot dont la cure est terminée et qui périme le plus tôt :
-    // c'est la rotation correcte pour un produit daté.
+    // ── Vitrine : fabriquée à la commande ────────────────────────────
+    // Pas de lot, pas de stock à décrémenter. En revanche la
+    // personnalisation est obligatoire : sans prénom ni thème, Didine ne
+    // peut rien fabriquer, et la commande serait ingérable.
+    if (variante.produit.type === 'vitrine') {
+      const prenom = (demandee.prenom ?? '').trim();
+      if (prenom.length < 1 || prenom.length > 24) {
+        throw new ErreurPanier(
+          'Indiquez le prénom à poser sur la vitrine (24 caractères maximum).',
+        );
+      }
+
+      const theme = await prisma.themeVitrine.findFirst({
+        where: { slug: demandee.themeSlug ?? '', actif: true },
+      });
+      if (!theme) {
+        throw new ErreurPanier('Choisissez un thème pour votre vitrine.');
+      }
+
+      lignes.push({
+        varianteId: variante.id,
+        libelle: `Vitrine ${variante.nom} — ${theme.nom}`,
+        prixUnitaireCentimes: variante.prixCentimes,
+        quantite,
+        totalCentimes: variante.prixCentimes * quantite,
+        lotId: null,
+        prenom,
+        themeId: theme.id,
+        themeNom: theme.nom,
+      });
+      continue;
+    }
+
+    // ── Savon : servi depuis une série en stock ──────────────────────
+    // On sert la série qui périme le plus tôt : c'est la rotation
+    // correcte pour un produit daté.
     const lot = await prisma.lot.findFirst({
       where: {
         produitId: variante.produitId,
@@ -87,11 +130,14 @@ export async function validerPanier(lignesDemandees: LigneDemandee[]): Promise<P
 
     lignes.push({
       varianteId: variante.id,
-      libelle: `N°${String(variante.produit.rang).padStart(2, '0')} ${variante.produit.nom} — ${variante.nom}`,
+      libelle: `${variante.produit.nom} — ${variante.nom}`,
       prixUnitaireCentimes: variante.prixCentimes,
       quantite,
       totalCentimes: variante.prixCentimes * quantite,
       lotId: lot.id,
+      prenom: null,
+      themeId: null,
+      themeNom: null,
     });
   }
 

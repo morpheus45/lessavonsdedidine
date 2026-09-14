@@ -12,7 +12,7 @@ agrégées qui alimentent le tableau de bord.
 ## Ce que ce commerce a de particulier
 
 Ce n'est pas une boutique de produits interchangeables. Chaque pain appartient à
-un **lot** de saponification à froid, et ce lot porte des dates qui ont une valeur
+un **lot** de fondre-et-verser, et ce lot porte des dates qui ont une valeur
 légale. Le modèle doit refléter ça dès le départ — le rajouter après coup imposerait
 une migration douloureuse sur des commandes déjà passées.
 

@@ -41,8 +41,6 @@ model Produit {
   description String
   /// Liste INCI réglementaire, dans l'ordre décroissant de concentration
   inci        String
-  /// Pourcentage de surgras, ex. 8
-  surgras     Int      @default(8)
   actif       Boolean  @default(true)
   creeLe      DateTime @default(now())
   modifieLe   DateTime @updatedAt
@@ -53,15 +51,15 @@ model Produit {
   @@index([actif, rang])
 }
 
-/// Un format vendable : « 1 pain 100 g », « lot de 3 ».
+/// Un format vendable : « lot de 5 savons », « vitrine moyenne ».
 model Variante {
   id            String  @id @default(cuid())
   produitId     String
   nom           String
-  /// Poids net en grammes, pour l'étiquetage réglementaire
+  /// Poids net en grammes, pour l'étiquetage réglementaire. 0 pour une vitrine.
   poidsGrammes  Int
   prixCentimes  Int
-  /// Nombre de pains dans la variante (1, ou 3 pour un lot)
+  /// Nombre d'unités dans la variante (5 ou 10 savons, 1 vitrine)
   unites        Int     @default(1)
   actif         Boolean @default(true)
 
@@ -72,9 +70,9 @@ model Variante {
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// LOTS ET CURES
+// SÉRIES DE FABRICATION
 //
-// Un savon à froid appartient toujours à un lot de fabrication, et ce lot
+// Un savon appartient toujours à une série de fabrication, et ce lot
 // porte des dates qui ont une valeur légale. En cas de rappel, l'autorité
 // de contrôle demande quel lot est parti chez quel client : la chaîne
 // Lot → LigneCommande → Commande doit pouvoir répondre.
@@ -86,7 +84,7 @@ model Lot {
   reference   String   @unique
   produitId   String
   couleLe     DateTime
-  /// Fin de cure : le lot ne peut pas être vendu avant cette date
+  /// Date à partir de laquelle la série peut être vendue
   pretLe      DateTime
   /// Date de durabilité minimale
   durableJusquLe DateTime

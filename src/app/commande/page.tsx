@@ -46,7 +46,12 @@ export default function PageCommande() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          lignes: liste.map((a) => ({ varianteId: a.varianteId, quantite: a.quantite })),
+          lignes: liste.map((a) => ({
+            varianteId: a.varianteId,
+            quantite: a.quantite,
+            prenom: a.prenom,
+            themeSlug: a.themeSlug,
+          })),
         }),
       });
       const donnees = await reponse.json();
@@ -82,7 +87,12 @@ export default function PageCommande() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...valeurs,
-          lignes: articles.map((a) => ({ varianteId: a.varianteId, quantite: a.quantite })),
+          lignes: articles.map((a) => ({
+            varianteId: a.varianteId,
+            quantite: a.quantite,
+            prenom: a.prenom,
+            themeSlug: a.themeSlug,
+          })),
         }),
       });
       const donnees = await reponse.json();
