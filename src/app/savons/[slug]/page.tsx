@@ -1,28 +1,15 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
+import { PRODUITS, THEMES, produitParSlug } from '@/donnees/catalogue';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
-import { IllustrationProduit } from '@/components/PainSavon';
+import { Galerie } from '@/components/Galerie';
 import { AjoutPanier } from '@/components/AjoutPanier';
 import { ConfigurateurVitrine } from '@/components/ConfigurateurVitrine';
-import { formaterPrix, prixAuKilo, formaterDate } from '@/lib/argent';
+import { formaterPrix } from '@/lib/argent';
 
-export const dynamic = 'force-dynamic';
-
-async function chargerProduit(slug: string) {
-  return prisma.produit.findFirst({
-    where: { slug, actif: true },
-    include: {
-      variantes: { where: { actif: true }, orderBy: { prixCentimes: 'asc' } },
-      // Le lot servi est celui dont la cure est finie et qui périme le plus
-      // tôt : c'est la rotation correcte pour un produit daté.
-      lots: {
-        where: { pretLe: { lte: new Date() }, quantiteRestante: { gt: 0 } },
-        orderBy: { durableJusquLe: 'asc' },
-        take: 1,
-      },
-    },
-  });
+/** Site statique : une page HTML est produite par produit à la construction. */
+export function generateStaticParams() {
+  return PRODUITS.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({
@@ -31,127 +18,97 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const produit = await chargerProduit(slug);
-  if (!produit) return { title: 'Savon introuvable' };
+  const produit = produitParSlug(slug);
+  if (!produit) return { title: 'Article introuvable' };
   return { title: produit.nom, description: produit.accroche };
 }
 
 export default async function FicheProduit({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const produit = await chargerProduit(slug);
-  if (!produit || produit.variantes.length === 0) notFound();
+  const produit = produitParSlug(slug);
+  if (!produit) notFound();
 
-  const premiere = produit.variantes[0]!;
-  const lot = produit.lots[0];
-  const estVitrine = produit.type === 'vitrine';
-
-  // Les thèmes ne servent qu'aux vitrines : inutile de les charger sinon.
-  const themes = estVitrine
-    ? await prisma.themeVitrine.findMany({ where: { actif: true }, orderBy: { ordre: 'asc' } })
-    : [];
-  const numero = `N°${String(produit.rang).padStart(2, '0')}`;
+  const premiere = produit.formules[0]!;
+  const moinsCher = Math.min(...produit.formules.map((f) => f.prixCentimes));
 
   return (
     <>
       <EnTeteBoutique actif="/savons" />
 
-      <main id="contenu" className="mx-auto grid max-w-[1240px] items-start gap-16 px-6 py-16 lg:grid-cols-2">
-        <div className="grid place-items-center rounded-m border border-brume bg-neige p-12">
-          <IllustrationProduit slug={produit.slug} taille={360} />
-        </div>
+      <main
+        id="contenu"
+        className="mx-auto grid max-w-[1240px] items-start gap-16 px-6 py-16 lg:grid-cols-2"
+      >
+        <Galerie photos={produit.photos} nom={produit.nom} />
 
         <div>
-          <p className="mb-5 font-mono text-[12.5px] text-taupe">{numero} · Les savons</p>
+          <p className="mb-5 font-mono text-[12.5px] text-taupe">
+            {produit.type === 'vitrine' ? 'Sur mesure' : 'Fait main'} · Les savons
+          </p>
           <h1 className="mb-4 font-serif text-[58px] tracking-[-0.035em]">{produit.nom}</h1>
 
-          <p className="mb-2 font-mono text-[30px] tabulaire">{formaterPrix(premiere.prixCentimes)}</p>
+          <p className="mb-2 font-mono text-[30px] tabulaire">
+            <span className="text-[18px] text-taupe">à partir de </span>
+            {formaterPrix(moinsCher)}
+          </p>
           <p className="mb-8 font-mono text-[12.5px] text-taupe">
-            {premiere.poidsGrammes} g · {prixAuKilo(premiere.prixCentimes, premiere.poidsGrammes)} ·
-            TVA incluse
+            {premiere.detail ? `${premiere.detail} · ` : ''}TVA incluse
           </p>
 
           <p className="mb-8 text-[16.5px] text-taupe">{produit.description}</p>
 
-          {/* Traçabilité : obligation réglementaire, affichée sous le prix
-              plutôt qu'enterrée dans un onglet. */}
-          {!estVitrine && lot ? (
-            <dl className="mb-8 flex flex-wrap gap-x-8 gap-y-2 border-y border-brume py-4 font-mono text-[12.5px] text-taupe">
-              <div>
-                <dt className="inline">Lot </dt>
-                <dd className="inline font-medium text-foret">{lot.reference}</dd>
-              </div>
-              <div>
-                <dt className="inline">Coulé le </dt>
-                <dd className="inline font-medium text-foret">{formaterDate(lot.couleLe)}</dd>
-              </div>
-              <div>
-                <dt className="inline">Sorti de cure le </dt>
-                <dd className="inline font-medium text-foret">{formaterDate(lot.pretLe)}</dd>
-              </div>
-              <div>
-                <dt className="inline">Poids net </dt>
-                <dd className="inline font-medium text-foret">{premiere.poidsGrammes} g ± 5 g</dd>
-              </div>
-            </dl>
-          ) : estVitrine ? null : (
-            <p className="mb-8 rounded-s border border-attente-bg bg-attente-bg px-4 py-3 text-[14px] text-attente">
-              Ce savon est en cure : aucun lot n&rsquo;est encore sorti de séchage. Il sera
-              disponible dès la fin de la cure.
-            </p>
-          )}
-
-          {estVitrine ? (
+          {produit.personnalisable ? (
             <ConfigurateurVitrine
-              formules={produit.variantes.map((v) => ({
-                id: v.id,
-                nom: v.nom,
-                prixCentimes: v.prixCentimes,
+              formules={produit.formules.map((f) => ({
+                id: f.id,
+                nom: f.nom,
+                prixCentimes: f.prixCentimes,
               }))}
-              themes={themes.map((t) => ({
+              themes={THEMES.map((t) => ({
                 slug: t.slug,
                 nom: t.nom,
                 description: t.description,
+                photo: t.photo,
               }))}
             />
-          ) : lot ? (
+          ) : (
             <AjoutPanier
-              variantes={produit.variantes.map((v) => ({
-                id: v.id,
-                nom: v.nom,
-                prixCentimes: v.prixCentimes,
-                poidsGrammes: v.poidsGrammes,
+              variantes={produit.formules.map((f) => ({
+                id: f.id,
+                nom: f.detail ? `${f.nom} — ${f.detail}` : f.nom,
+                prixCentimes: f.prixCentimes,
               }))}
               nomProduit={produit.nom}
               slug={produit.slug}
-              rang={produit.rang}
             />
-          ) : null}
+          )}
 
           <div className="mt-10 border-t border-brume">
-            <details open className="border-b border-brume">
-              <summary className="flex cursor-pointer items-center justify-between py-5 text-[15.5px] font-semibold">
-                Composition
-                <span aria-hidden className="font-mono text-[18px] text-grenat">+</span>
-              </summary>
-              <div className="pb-5 text-[14px] leading-relaxed text-taupe">
-                <p className="font-mono text-[12.5px] text-foret">{produit.inci}</p>
-                <p className="mt-3">
-                  La liste complète figure sur le sachet, comme l&rsquo;exige la
-                  réglementation cosmétique. Elle sera reportée ici telle quelle, depuis
-                  l&rsquo;étiquette du fournisseur de la base.
-                </p>
-              </div>
-            </details>
+            {produit.inci && (
+              <details open className="border-b border-brume">
+                <summary className="flex cursor-pointer items-center justify-between py-5 text-[15.5px] font-semibold">
+                  Composition
+                  <span aria-hidden className="font-mono text-[18px] text-grenat">+</span>
+                </summary>
+                <div className="pb-5 text-[14px] leading-relaxed text-taupe">
+                  <p className="font-mono text-[12.5px] text-foret">{produit.inci}</p>
+                  <p className="mt-3">
+                    La liste complète figure sur le sachet, comme l&rsquo;exige la
+                    réglementation cosmétique.
+                  </p>
+                </div>
+              </details>
+            )}
 
             <details className="border-b border-brume">
               <summary className="flex cursor-pointer items-center justify-between py-5 text-[15.5px] font-semibold">
-                Utilisation et conservation
+                {produit.type === 'vitrine' ? 'Fabrication' : 'Utilisation et conservation'}
                 <span aria-hidden className="font-mono text-[18px] text-grenat">+</span>
               </summary>
               <div className="pb-5 text-[14px] leading-relaxed text-taupe">
-                Rangez le pain hors de l&rsquo;eau entre deux usages, sur un porte-savon qui
-                draine — un savon à froid est riche en glycérine, donc il ramollit s&rsquo;il
-                reste dans une flaque. À utiliser de préférence dans les 12 mois après ouverture.
+                {produit.type === 'vitrine'
+                  ? "Chaque vitrine est montée à la commande : cadre peint, fond choisi, objets disposés un par un, et le prénom en lettres collées sur le dessus. Comptez environ une semaine avant expédition."
+                  : "Rangez le pain hors de l’eau entre deux usages, sur un porte-savon qui draine. À utiliser de préférence dans les 12 mois après ouverture."}
               </div>
             </details>
 
@@ -161,9 +118,10 @@ export default async function FicheProduit({ params }: { params: Promise<{ slug:
                 <span aria-hidden className="font-mono text-[18px] text-grenat">+</span>
               </summary>
               <div className="pb-5 text-[14px] leading-relaxed text-taupe">
-                Expédié sous 48 h. Livraison offerte dès 39 €. Retour accepté 14 jours si
-                l&rsquo;emballage n&rsquo;est pas ouvert — un cosmétique descellé ne peut pas
-                être repris pour des raisons d&rsquo;hygiène, et la loi le prévoit.
+                Livraison offerte dès 39 €.{' '}
+                {produit.type === 'vitrine'
+                  ? "Une vitrine étant confectionnée à votre demande et portant un prénom, elle n’ouvre pas droit à rétractation — c’est prévu par la loi pour les biens personnalisés."
+                  : "Retour accepté 14 jours si l’emballage n’est pas ouvert : un cosmétique descellé ne peut pas être repris pour des raisons d’hygiène."}
               </div>
             </details>
           </div>

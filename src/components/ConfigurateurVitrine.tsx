@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ajouter } from '@/lib/panier-client';
 import { formaterPrix } from '@/lib/argent';
+import { Photo } from './Photo';
 
 export type FormuleVitrine = {
   id: string;
@@ -15,14 +16,16 @@ export type ThemeChoix = {
   slug: string;
   nom: string;
   description: string;
+  /** Photo d'une vitrine déjà faite sur ce thème, si elle existe. */
+  photo?: string;
 };
 
 /**
  * Composition d'une vitrine : formule, thème, prénom.
  *
  * Les trois sont obligatoires — une vitrine sans prénom ni thème n'est pas
- * fabricable, et le serveur refusera la commande de toute façon. Autant le
- * dire ici, au moment du choix, plutôt qu'à la validation du panier.
+ * fabricable, et la page de commande bloquera le paiement de toute façon.
+ * Autant le dire ici, au moment du choix, plutôt qu'à la validation.
  */
 export function ConfigurateurVitrine({
   formules,
@@ -114,16 +117,33 @@ export function ConfigurateurVitrine({
               role="radio"
               aria-checked={actif}
               onClick={() => setThemeSlug(t.slug)}
-              className={`cursor-pointer rounded-m border p-4 text-left transition-colors ${
+              className={`cursor-pointer overflow-hidden rounded-m border text-left transition-colors ${
                 actif ? 'border-foret bg-neige' : 'border-brume-2 bg-neige hover:border-taupe'
               }`}
             >
-              <span
-                className={`mb-1 block text-[15px] font-semibold ${actif ? 'text-foret' : 'text-graphite'}`}
-              >
-                {t.nom}
+              {t.photo && (
+                <Photo
+                  chemin={t.photo}
+                  tailles="(min-width: 1024px) 22vw, (min-width: 640px) 44vw, 92vw"
+                  className="aspect-[4/3] w-full object-cover"
+                  // Le nom et la description du thème suivent immédiatement :
+                  // décrire la photo en plus ferait un doublon à l'écoute.
+                  alt=""
+                />
+              )}
+              <span className="block p-4">
+                <span
+                  className={`mb-1 block text-[15px] font-semibold ${actif ? 'text-foret' : 'text-graphite'}`}
+                >
+                  {t.nom}
+                </span>
+                <span className="block text-[13px] text-taupe">{t.description}</span>
+                {!t.photo && (
+                  <span className="mt-2 block font-mono text-[11.5px] uppercase tracking-[0.14em] text-taupe">
+                    Photo à venir
+                  </span>
+                )}
               </span>
-              <span className="block text-[13px] text-taupe">{t.description}</span>
             </button>
           );
         })}

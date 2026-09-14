@@ -5,16 +5,10 @@
   "description": "Boutique en ligne et backoffice de la savonnerie Les Savons de Didine",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
-    "start": "next start",
-    "db:push": "prisma db push",
-    "db:seed": "tsx prisma/seed.ts",
+    "build": "next build",
+    "start": "npx serve out",
     "db:reset": "prisma db push --force-reset && npm run db:seed",
-    "db:studio": "prisma studio",
     "pages": "node scripts/build-pages.mjs"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.1.0",
@@ -31,6 +25,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "prisma": "^6.1.0",
+    "sharp": "^0.35.4",
     "tailwindcss": "^4.0.0",
     "tsx": "^4.19.0",
     "typescript": "^5.7.0"

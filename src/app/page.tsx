@@ -1,17 +1,16 @@
 import Link from 'next/link';
-import { prisma } from '@/lib/prisma';
+import { PRODUITS } from '@/donnees/catalogue';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { CarteProduit, type ProduitCarte } from '@/components/CarteProduit';
-import { PainSavon } from '@/components/PainSavon';
+import { Photo } from '@/components/Photo';
 import { TitreAnime } from '@/components/TitreAnime';
 import { SavonParallaxe, FriseAtelier, type EtapeAtelier } from '@/components/ScenesAnimees';
 import { Marquee, ElementMarquee } from '@/components/magic/Marquee';
 import { DotPattern } from '@/components/magic/DotPattern';
 import { NumberTicker } from '@/components/magic/NumberTicker';
 import { BlurFade } from '@/components/magic/BlurFade';
-import { formaterDate } from '@/lib/argent';
 
-export const dynamic = 'force-dynamic';
+// Site statique : la page est produite à la construction, pas à la demande.
 
 const ARGUMENTS = [
   'Beurre de karité bio',
@@ -71,45 +70,17 @@ const ETAPES: EtapeAtelier[] = [
   },
 ];
 
-type LotCourant = { reference: string; restant: number; pretLe: Date } | null;
+const GAMME: ProduitCarte[] = PRODUITS.map((p) => ({
+  slug: p.slug,
+  rang: p.rang,
+  nom: p.nom,
+  accroche: p.accroche,
+  prixDepuisCentimes: Math.min(...p.formules.map((f) => f.prixCentimes)),
+  photo: p.photos[0],
+  detail: p.formules[0]?.detail,
+}));
 
-async function chargerGamme(): Promise<{ gamme: ProduitCarte[]; lotVedette: LotCourant }> {
-  const produits = await prisma.produit.findMany({
-    where: { actif: true },
-    orderBy: { rang: 'asc' },
-    include: {
-      variantes: { where: { actif: true }, orderBy: { prixCentimes: 'asc' } },
-      lots: {
-        where: { pretLe: { lte: new Date() }, quantiteRestante: { gt: 0 } },
-        orderBy: { durableJusquLe: 'asc' },
-        take: 1,
-      },
-    },
-  });
-
-  const utilisables = produits.filter((p) => p.variantes.length > 0);
-
-  const gamme = utilisables.map((p) => ({
-    slug: p.slug,
-    rang: p.rang,
-    nom: p.nom,
-    accroche: p.accroche,
-    prixDepuisCentimes: p.variantes[0]!.prixCentimes,
-    poidsGrammes: p.variantes[0]!.poidsGrammes,
-  }));
-
-  const lot = utilisables[0]?.lots[0];
-  return {
-    gamme,
-    lotVedette: lot
-      ? { reference: lot.reference, restant: lot.quantiteRestante, pretLe: lot.pretLe }
-      : null,
-  };
-}
-
-export default async function Accueil() {
-  const { gamme, lotVedette } = await chargerGamme();
-  const [vedette, ...autres] = gamme;
+export default function Accueil() {
 
   return (
     <>
@@ -169,37 +140,15 @@ export default async function Accueil() {
                 </div>
               </BlurFade>
 
-              {/* ── Série en cours ───────────────────────────────────
-                  Pas un compteur d'urgence inventé : la quantité vient de
-                  la base et baisse à chaque commande. La référence de série
-                  reste utile — c'est elle qui figure sur l'étiquette, et la
-                  réglementation cosmétique impose de pouvoir la retrouver. */}
-              {lotVedette && (
-                <BlurFade delai={0.75}>
-                  <p className="mt-10 inline-flex flex-wrap items-center gap-x-3 gap-y-1 border-l-2 border-foret py-1 pl-4 font-mono text-[12.5px] text-taupe">
-                    <span>
-                      Série{' '}
-                      <strong className="font-medium text-foret">{lotVedette.reference}</strong>
-                    </span>
-                    <span aria-hidden="true">·</span>
-                    <span>
-                      coulée le{' '}
-                      <strong className="font-medium text-foret">
-                        {formaterDate(lotVedette.pretLe)}
-                      </strong>
-                    </span>
-                    <span aria-hidden="true">·</span>
-                    <span>
-                      <strong className="font-medium text-foret">{lotVedette.restant}</strong> savons
-                      disponibles
-                    </span>
-                  </p>
-                </BlurFade>
-              )}
             </div>
 
             <SavonParallaxe>
-              <PainSavon slug="douceur-avoine" taille={420} />
+              <Photo
+                chemin="/photos/savons-coffret.webp"
+                tailles="(min-width: 1024px) 46vw, 100vw"
+                prioritaire
+                className="w-full rounded-l border border-brume object-cover"
+              />
             </SavonParallaxe>
           </div>
         </section>
@@ -240,27 +189,21 @@ export default async function Accueil() {
             </header>
           </BlurFade>
 
-          {gamme.length === 0 ? (
+          {GAMME.length === 0 ? (
             <p className="rounded-l border border-brume bg-neige p-8 text-taupe">
-              Aucun savon n&rsquo;est publié pour le moment. Lancez{' '}
-              <code className="font-mono">npm run db:seed</code>.
+              Aucun produit n&rsquo;est publié pour le moment.
             </p>
           ) : (
-            <div className="grid items-start gap-10 sm:grid-cols-2 lg:grid-cols-4">
-              {vedette && (
-                <BlurFade className="col-span-full">
-                  <CarteProduit produit={vedette} vedette />
-                </BlurFade>
-              )}
-              {autres.map((p, i) => (
+            <div className="grid items-start gap-x-10 gap-y-14 sm:grid-cols-2">
+              {GAMME.map((p, i) => (
                 <BlurFade
                   key={p.slug}
                   delai={i * 0.05}
-                  // Quinconce : une rangée parfaitement alignée se lit comme
-                  // un peigne. Le décalage casse la régularité sans désordre.
-                  className={i % 2 === 1 ? 'lg:mt-10' : ''}
+                  // Quinconce : deux cartes parfaitement alignées se lisent
+                  // comme un tableau. Le décalage casse la symétrie.
+                  className={i % 2 === 1 ? 'sm:mt-14' : ''}
                 >
-                  <CarteProduit produit={p} />
+                  <CarteProduit produit={p} tailles="(min-width: 640px) 44vw, 100vw" />
                 </BlurFade>
               ))}
             </div>

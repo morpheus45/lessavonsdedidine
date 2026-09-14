@@ -9,7 +9,6 @@ export type VarianteChoix = {
   id: string;
   nom: string;
   prixCentimes: number;
-  poidsGrammes: number;
 };
 
 /**
@@ -23,12 +22,10 @@ export function AjoutPanier({
   variantes,
   nomProduit,
   slug,
-  rang,
 }: {
   variantes: VarianteChoix[];
   nomProduit: string;
   slug: string;
-  rang: number;
 }) {
   const [choisie, setChoisie] = useState(variantes[0]?.id ?? '');
   const [quantite, setQuantite] = useState(1);
@@ -42,7 +39,7 @@ export function AjoutPanier({
     ajouter({
       varianteId: variante.id,
       quantite,
-      libelle: `N°${String(rang).padStart(2, '0')} ${nomProduit} — ${variante.nom}`,
+      libelle: `${nomProduit} — ${variante.nom}`,
       prixCentimes: variante.prixCentimes,
       slug,
     });

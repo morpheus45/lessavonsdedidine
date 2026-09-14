@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import { prisma } from '@/lib/prisma';
+import { PRODUITS } from '@/donnees/catalogue';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { CarteProduit, type ProduitCarte } from '@/components/CarteProduit';
 
-export const dynamic = 'force-dynamic';
+// Site statique.
 
 export const metadata: Metadata = {
   title: 'Les savons',
@@ -11,23 +11,16 @@ export const metadata: Metadata = {
     'Savons parfumés faits main sur base au beurre de karité bio sans SLS, et vitrines personnalisées à offrir.',
 };
 
-export default async function ListeSavons() {
-  const produits = await prisma.produit.findMany({
-    where: { actif: true },
-    orderBy: { rang: 'asc' },
-    include: { variantes: { where: { actif: true }, orderBy: { prixCentimes: 'asc' } } },
-  });
-
-  const gamme: ProduitCarte[] = produits
-    .filter((p) => p.variantes.length > 0)
-    .map((p) => ({
-      slug: p.slug,
-      rang: p.rang,
-      nom: p.nom,
-      accroche: p.accroche,
-      prixDepuisCentimes: p.variantes[0]!.prixCentimes,
-      poidsGrammes: p.variantes[0]!.poidsGrammes,
-    }));
+export default function ListeSavons() {
+  const gamme: ProduitCarte[] = PRODUITS.map((p) => ({
+    slug: p.slug,
+    rang: p.rang,
+    nom: p.nom,
+    accroche: p.accroche,
+    prixDepuisCentimes: Math.min(...p.formules.map((f) => f.prixCentimes)),
+    photo: p.photos[0],
+    detail: p.formules[0]?.detail,
+  }));
 
   return (
     <>
@@ -37,7 +30,7 @@ export default async function ListeSavons() {
         <header className="mb-16 max-w-[60ch]">
           <p className="eyebrow mb-6">La gamme</p>
           <h1 className="mb-6 font-serif text-[clamp(38px,6vw,68px)] tracking-[-0.03em]">
-            {gamme.length} recettes, numérotées
+            La gamme complète
           </h1>
           <p className="text-[17.5px] text-taupe">
             Les savons partent d&rsquo;une base au beurre de karité biologique, sans SLS&nbsp;:
@@ -52,9 +45,14 @@ export default async function ListeSavons() {
             Aucun savon n&rsquo;est publié pour le moment.
           </p>
         ) : (
-          <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
-            {gamme.map((p) => (
-              <CarteProduit key={p.slug} produit={p} />
+          <div className="grid gap-x-10 gap-y-14 sm:grid-cols-2">
+            {gamme.map((p, i) => (
+              <CarteProduit
+                key={p.slug}
+                produit={p}
+                tailles="(min-width: 640px) 44vw, 100vw"
+                prioritaire={i === 0}
+              />
             ))}
           </div>
         )}

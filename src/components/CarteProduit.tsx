@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { formaterPrix } from '@/lib/argent';
-import { IllustrationProduit } from './PainSavon';
+import { Photo } from './Photo';
 
 export type ProduitCarte = {
   slug: string;
@@ -8,58 +8,57 @@ export type ProduitCarte = {
   nom: string;
   accroche: string;
   prixDepuisCentimes: number;
-  poidsGrammes: number;
+  /** Première photo du produit. */
+  photo?: string;
+  /** Précision affichée à côté du prix : « 4 achetés, 1 offert »… */
+  detail?: string;
 };
 
-export function CarteProduit({ produit, vedette }: { produit: ProduitCarte; vedette?: boolean }) {
+export function CarteProduit({
+  produit,
+  tailles = '(min-width: 640px) 50vw, 100vw',
+  prioritaire,
+}: {
+  produit: ProduitCarte;
+  tailles?: string;
+  prioritaire?: boolean;
+}) {
   const numero = `N°${String(produit.rang).padStart(2, '0')}`;
 
-  if (vedette) {
-    return (
-      <article className="col-span-full grid items-center gap-12 lg:grid-cols-2">
-        <Link
-          href={`/savons/${produit.slug}`}
-          className="grid min-h-[340px] place-items-center rounded-m border border-brume bg-neige p-8 transition-colors hover:border-foret"
-        >
-          <IllustrationProduit slug={produit.slug} taille={270} />
-        </Link>
-        <div>
-          <p className="mb-2 font-mono text-[12px] uppercase tracking-[0.18em] text-grenat">
-            {numero} · Le plus vendu
-          </p>
-          <h3 className="mb-4 font-serif text-[52px] tracking-[-0.03em]">
-            <Link href={`/savons/${produit.slug}`} className="hover:text-grenat">
-              {produit.nom}
-            </Link>
-          </h3>
-          <p className="mb-6 max-w-[44ch] text-[16.5px] text-taupe">{produit.accroche}</p>
-          <p className="font-mono text-[22px] tabulaire">
-            {formaterPrix(produit.prixDepuisCentimes)}
-            <span className="text-taupe"> · {produit.poidsGrammes} g</span>
-          </p>
-        </div>
-      </article>
-    );
-  }
-
   return (
-    <article className="flex flex-col">
+    <article className="group flex flex-col">
       <Link
         href={`/savons/${produit.slug}`}
-        className="grid min-h-[190px] place-items-center rounded-m border border-brume bg-neige p-6 transition-all duration-200 hover:-translate-y-1 hover:border-foret"
+        // Le cadre porte le recadrage : les photos vont du portrait au paysage,
+        // et une grille dont chaque case a sa propre hauteur se lit mal.
+        className="block overflow-hidden rounded-m border border-brume bg-neige transition-colors duration-200 hover:border-foret"
       >
-        <IllustrationProduit slug={produit.slug} taille={150} />
+        {produit.photo ? (
+          <Photo
+            chemin={produit.photo}
+            tailles={tailles}
+            prioritaire={prioritaire}
+            className="aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+          />
+        ) : (
+          <div className="aspect-[4/3] w-full" />
+        )}
       </Link>
-      <div className="pt-4">
-        <p className="mb-2 font-mono text-[12px] uppercase tracking-[0.18em] text-grenat">{numero}</p>
-        <h3 className="mb-2 font-serif text-[24px] tracking-[-0.02em]">
+
+      <div className="pt-5">
+        <p className="mb-2 font-mono text-[12px] uppercase tracking-[0.18em] text-grenat">
+          {numero}
+        </p>
+        <h3 className="mb-2 font-serif text-[clamp(24px,3vw,32px)] tracking-[-0.025em]">
           <Link href={`/savons/${produit.slug}`} className="hover:text-grenat">
             {produit.nom}
           </Link>
         </h3>
-        <p className="mb-4 text-[14px] text-taupe">{produit.accroche}</p>
-        <p className="mt-auto font-mono text-[16px] tabulaire">
+        <p className="mb-4 max-w-[44ch] text-[15px] text-taupe">{produit.accroche}</p>
+        <p className="mt-auto font-mono text-[17px] tabulaire">
+          <span className="text-taupe">à partir de </span>
           {formaterPrix(produit.prixDepuisCentimes)}
+          {produit.detail && <span className="text-taupe"> · {produit.detail}</span>}
         </p>
       </div>
     </article>
