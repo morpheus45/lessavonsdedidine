@@ -1,12 +1,13 @@
-name: Publier l'ébauche
+name: Publier l'aperçu du catalogue
 
-# Toute modification du design part en ligne automatiquement : la page
-# publiée ne peut pas diverger du fichier source.
+# La page publiée est une VITRINE, pas la boutique : GitHub Pages ne sert que
+# des fichiers. Le panier, le backoffice et le paiement ont besoin d'un
+# serveur — voir MISE-EN-LIGNE.md.
 on:
   push:
     branches: [main]
     paths:
-      - 'design/**'
+      - 'prisma/**'
       - 'scripts/build-pages.mjs'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
@@ -16,7 +17,6 @@ permissions:
   pages: write
   id-token: write
 
-# Un seul déploiement à la fois ; les pushs rapprochés annulent le précédent.
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -24,26 +24,48 @@ concurrency:
 jobs:
   construire:
     runs-on: ubuntu-latest
+    env:
+      # Base éphémère, reconstruite à chaque fois depuis le jeu de données du
+      # dépôt. La vraie base de production n'est jamais touchée ici, et la
+      # page publiée reflète donc le catalogue versionné.
+      DATABASE_URL: 'file:./ci.db'
+      SESSION_SECRET: 'construction-seulement-aucun-secret-reel'
+
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24'
+          cache: 'npm'
 
-      - name: Reconstituer un document HTML complet
+      - run: npm ci
+
+      - name: Base temporaire et catalogue
+        run: |
+          npx prisma db push --skip-generate
+          npx prisma generate
+          npm run db:seed
+
+      - name: Construire la vitrine
         run: node scripts/build-pages.mjs
 
-      - name: Vérifier que la page est bien autonome
+      - name: Vérifier que la page est complète et honnête
         run: |
           set -e
           for balise in '<!doctype html>' '<html lang="fr">' 'name="viewport"'; do
-            if ! grep -qF "$balise" _site/index.html; then
-              echo "::error::Balise manquante dans la page construite : $balise"
-              exit 1
-            fi
+            grep -qF "$balise" _site/index.html || { echo "::error::Balise manquante : $balise"; exit 1; }
           done
-          echo "Document complet, viewport présent."
+          # La page DOIT dire qu'on ne peut pas y commander. Sans cette
+          # mention, elle laisserait croire à une boutique ouverte.
+          grep -qF "pas la boutique" _site/index.html \
+            || { echo "::error::L'avertissement « aperçu, pas la boutique » a disparu"; exit 1; }
+          # Aucune mention du procédé à froid ne doit revenir.
+          if grep -qiE 'saponifi|six semaines de cure|surgras' _site/index.html; then
+            echo "::error::Mention de fabrication inexacte détectée dans la page publiée"
+            exit 1
+          fi
+          echo "Page complète, avertissement présent, aucune mention inexacte."
 
       - uses: actions/configure-pages@v5
 
