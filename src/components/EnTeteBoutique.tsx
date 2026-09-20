@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { reponses, phraseDelaiExpedition } from '@/lib/reponses';
 import { Sceau } from './Sceau';
 import { JetonPanier } from './JetonPanier';
 
@@ -59,6 +60,9 @@ export function EnTeteBoutique({ actif }: { actif?: string }) {
 }
 
 export function PiedBoutique() {
+  const expedition = phraseDelaiExpedition();
+  const seuilOffert = reponses.livraison.seuilOffert;
+
   return (
     <footer className="mt-40 border-t border-brume">
       <div className="mx-auto grid max-w-[1240px] gap-8 px-6 py-16 sm:grid-cols-2 lg:grid-cols-4">
@@ -131,11 +135,23 @@ export function PiedBoutique() {
         <div>
           <h2 className="eyebrow mb-3">Livraison</h2>
           <p className="text-[14px] text-taupe">
-            Expédié sous 48 h.
-            <br />
-            Offerte dès 39 €.
-            <br />
-            Retour 14 jours, emballage non ouvert.
+              {/* Le délai d'expédition et le seuil de gratuité ne s'affichent
+                  que si Didine les a donnés. Le site a longtemps annoncé
+                  « expédié sous 48 h » et « offerte dès 39 € » : deux chiffres
+                  que j'avais inventés, sur toutes les pages. */}
+              {expedition && (
+                <>
+                  {expedition}
+                  <br />
+                </>
+              )}
+              {seuilOffert && (
+                <>
+                  Livraison offerte dès {seuilOffert}.
+                  <br />
+                </>
+              )}
+              Retour 14 jours, emballage non ouvert.
           </p>
         </div>
       </div>

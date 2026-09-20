@@ -6,6 +6,7 @@ import {
   SEUIL_LIVRAISON_OFFERTE_CENTIMES,
 } from '@/lib/catalogue';
 import type { Tarif } from '@/lib/panier-calcul';
+import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { Commande } from './Commande';
 
 export const metadata: Metadata = {
@@ -32,7 +33,9 @@ export default function PageCommande() {
   );
 
   return (
-    <Commande
+    <>
+      <EnTeteBoutique />
+      <Commande
       tarifs={tarifs}
       nomsDesThemes={Object.fromEntries(lireThemes().map((t) => [t.slug, t.nom]))}
       reglages={{
@@ -40,6 +43,8 @@ export default function PageCommande() {
         seuilLivraisonOfferteCentimes: SEUIL_LIVRAISON_OFFERTE_CENTIMES,
       }}
       clientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? ''}
-    />
+      />
+      <PiedBoutique />
+    </>
   );
 }

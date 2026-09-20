@@ -47,6 +47,8 @@ collections:
   # qu'elle seule peut trancher. Chaque champ vide ici est une chose que
   # personne d'autre ne peut inventer sans mentir.
   # ── Ce qu'il manque pour finir le site ─────────────────────────────
+  # PRODUIT PAR scripts/generer-questionnaire.mjs — ne pas modifier à la main.
+  #
   # Uniquement des questions dont la réponse change quelque chose sur une
   # page. Rien d'administratif : l'immatriculation et les mentions légales
   # attendront que l'activité soit déclarée.
@@ -57,129 +59,216 @@ collections:
         label: Questions en attente
         file: contenu/reponses.md
         description: >-
-          Répondez à votre rythme, champ par champ — rien n'est à valider en
-          bloc. Laissez vide ce dont vous n'êtes pas sûre : un blanc vaut
-          mieux qu'une information fausse. Ce que vous écrivez part
-          directement sur le site.
+          Chaque section se déplie. Répondez à votre rythme, rien n'est à
+          valider en bloc. Laissez vide ce dont vous n'êtes pas sûre : un
+          blanc vaut mieux qu'une information fausse sur un site de vente.
         fields:
-          - label: La liste INCI de votre base de savon
-            name: inci
-            widget: text
-            required: false
+          - label: "La livraison"
+            name: livraison
+            widget: object
+            collapsed: true
             hint: >-
-              Recopiez mot à mot la liste de l'étiquette de votre fournisseur,
-              dans le même ordre. La fiche des savons contient aujourd'hui un
-              texte d'attente à la place.
+              Ces chiffres s'affichent déjà sur le site, et c'est moi qui les ai
+              écrits sans vous les demander.
+            fields:
+              - label: "Combien facturez-vous la livraison ?"
+                name: frais
+                widget: string
+                required: false
+                hint: >-
+                  EN ATTENTE POUR OUVRIR LA BOUTIQUE. Le site annonce 4,90 €. C'est
+                  un chiffre que j'ai inventé. Exemple de réponse : « 5,50 », ou « 0
+                  » si vous l'offrez toujours.
+              - label: "À partir de quel montant est-elle offerte ?"
+                name: seuilOffert
+                widget: string
+                required: false
+                hint: >-
+                  EN ATTENTE POUR OUVRIR LA BOUTIQUE. Inventé aussi : le site
+                  annonce « offerte dès 39 € ». Exemple : « 50 », ou « jamais ».
+              - label: "Sous combien de temps expédiez-vous un savon ?"
+                name: delaiExpedition
+                widget: string
+                required: false
+                hint: >-
+                  EN ATTENTE POUR OUVRIR LA BOUTIQUE. Le site affirme « expédié sous
+                  48 h » sur toutes ses pages. Je l'ai inventé. Exemple : « 3 à 4
+                  jours ».
+              - label: "Comment livrez-vous ?"
+                name: mode
+                widget: text
+                required: false
+                hint: >-
+                  La Poste, point relais, en main propre ? Et partout en France, ou
+                  seulement autour de chez vous ?
 
-          - label: Combien facturez-vous la livraison ?
-            name: fraisPort
-            widget: string
-            required: false
+          - label: "Les produits"
+            name: produits
+            widget: object
+            collapsed: true
+            hint: "Ce que le site dit de vos savons et de vos vitrines."
+            fields:
+              - label: "La liste INCI de votre base de savon"
+                name: inci
+                widget: text
+                required: false
+                hint: >-
+                  EN ATTENTE POUR OUVRIR LA BOUTIQUE. Recopiez mot à mot l'étiquette
+                  de votre fournisseur, dans le même ordre. La fiche contient
+                  aujourd'hui un texte d'attente.
+              - label: "Combien pèse un savon ?"
+                name: poids
+                widget: string
+                required: false
+                hint: >-
+                  En grammes. Le site n'affiche aucun poids aujourd'hui, alors qu'un
+                  cosmétique doit le porter.
+              - label: "Combien de temps se garde un savon ?"
+                name: conservation
+                widget: string
+                required: false
+                hint: >-
+                  J'ai écrit « de préférence dans les 12 mois après ouverture » sans
+                  le savoir. Vrai ?
+              - label: "Combien de temps pour monter une vitrine ?"
+                name: delaiVitrine
+                widget: string
+                required: false
+                hint: >-
+                  EN ATTENTE POUR OUVRIR LA BOUTIQUE. J'avais écrit « environ une
+                  semaine ». Je l'ai retiré du site en attendant : aucun délai n'est
+                  annoncé pour l'instant.
+              - label: "Ce qui distingue la petite, la moyenne et la grande vitrine"
+                name: tailles
+                widget: text
+                required: false
+                hint: >-
+                  J'ai inventé « quelques objets », « scène complète », « scène
+                  détaillée », et je n'ai aucune dimension.
+              - label: "Acceptez-vous un thème qui ne figure pas dans la liste ?"
+                name: surMesure
+                widget: text
+                required: false
+                hint: >-
+                  Le site l'affirme aujourd'hui, sans que personne l'ait confirmé. Y
+                  a-t-il des thèmes que vous ne savez pas ou ne voulez pas faire ?
+              - label: "Travaillez-vous vraiment à la commande, en petites quantités ?"
+                name: petitesSeries
+                widget: text
+                required: false
+                hint: >-
+                  Le site le répète partout : « faits main en petites séries », « à
+                  la demande ». Je l'ai déduit, pas vérifié.
+
+          - label: "L'allure du site"
+            name: visuel
+            widget: object
+            collapsed: true
             hint: >-
-              J'ai écrit 4,90 € sans vous le demander — c'est un chiffre que
-              j'ai inventé, et il s'affiche aujourd'hui dans tous les paniers.
-              Dites-moi le vrai. Exemple : « 5,50 » ou « 0 » si vous l'offrez
-              toujours.
+              Tout ce que vous voyez — couleurs, logo, typographie — vient de
+              moi. Rien n'a été validé par vous, et tout peut changer.
+            fields:
+              - label: "Les couleurs vous plaisent-elles ?"
+                name: couleurs
+                widget: text
+                required: false
+                hint: >-
+                  Vert forêt, crème, rouge grenat, un peu de doré. Dites franchement
+                  si ça ne vous ressemble pas — c'est votre boutique.
+              - label: "Le logo — le rond vert avec le D"
+                name: logo
+                widget: text
+                required: false
+                hint: >-
+                  Je l'ai dessiné faute de mieux. Avez-vous déjà un logo, une
+                  enseigne, quelque chose que vous utilisez sur vos étiquettes ?
+              - label: "Vos étiquettes et vos emballages actuels"
+                name: etiquettes
+                widget: text
+                required: false
+                hint: >-
+                  J'ai vu « FAIT MAIN · AVEC AMOUR » sur vos autocollants et je l'ai
+                  repris. Décrivez ce que vous utilisez — ou déposez-en une photo
+                  dans Produits.
+              - label: "Le nom de la boutique est-il le bon ?"
+                name: nom
+                widget: text
+                required: false
+                hint: >-
+                  Le site s'appelle « Les Savons de Didine ». Mais vous faites aussi
+                  des vitrines, qui ne sont pas des savons. Est-ce le nom que vous
+                  voulez ?
+              - label: "Ce qui vous gêne quand vous regardez le site"
+                name: aVoir
+                widget: text
+                required: false
+                hint: >-
+                  Une page, une photo, une phrase. Même « je ne sais pas dire
+                  pourquoi mais ça ne me plaît pas » est une réponse utile.
 
-          - label: À partir de quel montant la livraison est-elle offerte ?
-            name: seuilPortOffert
-            widget: string
-            required: false
-            hint: >-
-              Inventé aussi : le site annonce « offerte dès 39 € ». Exemple :
-              « 50 », ou « jamais » si vous la facturez toujours.
+          - label: "Vous"
+            name: vous
+            widget: object
+            collapsed: true
+            hint: "Pour la page qui parle de vous, aujourd'hui vide de votre parole."
+            fields:
+              - label: "Depuis quand faites-vous du savon ?"
+                name: depuisQuand
+                widget: string
+                required: false
+                hint: "Une année suffit."
+              - label: "Qu'est-ce qui vous a donné envie de commencer ?"
+                name: pourquoi
+                widget: text
+                required: false
+                hint: >-
+                  Deux ou trois phrases, avec vos mots. C'est ce qui distingue une
+                  boutique artisanale d'un site de revente.
+              - label: "Ce que vous préférez fabriquer"
+                name: preference
+                widget: text
+                required: false
+                hint: "Les savons, les vitrines ? Et pourquoi ?"
+              - label: "Ce qu'on vous demande le plus souvent"
+                name: demande
+                widget: text
+                required: false
+                hint: "Un parfum, un thème ? Ça aide à mettre en avant ce qui se vend."
+              - label: "Votre adresse électronique, celle que les clientes verront"
+                name: email
+                widget: string
+                required: false
+                hint: >-
+                  EN ATTENTE POUR OUVRIR LA BOUTIQUE. Elle sera PUBLIQUE, donc
+                  visible des robots à spam : prenez-en une dédiée à la boutique.
+                  Sans elle, personne ne peut vous joindre.
+              - label: "Votre compte Instagram"
+                name: instagram
+                widget: string
+                required: false
+                hint: >-
+                  Pour un lien depuis le site. Exemple : didine991. Laissez vide si
+                  vous préférez.
 
-          - label: Comment livrez-vous ?
-            name: modeLivraison
-            widget: text
-            required: false
-            hint: >-
-              La Poste, un point relais, en main propre, les trois ? Et
-              livrez-vous partout en France, ou seulement autour de chez vous ?
-
-          - label: Combien de temps pour monter une vitrine ?
-            name: delaiVitrine
-            widget: string
-            required: false
-            hint: >-
-              J'avais écrit « environ une semaine » sans le savoir. Je l'ai
-              retiré du site en attendant votre réponse : aucun délai n'est
-              annoncé pour l'instant. Exemple : « 4 à 5 jours ».
-
-          - label: Ce qui distingue la petite, la moyenne et la grande vitrine
-            name: taillesVitrines
-            widget: text
-            required: false
-            hint: >-
-              J'ai inventé « quelques objets », « scène complète » et « scène
-              détaillée », et je n'ai aucune dimension. Dites ce qui change
-              vraiment entre les trois, et leurs tailles si vous les savez.
-
-          - label: Acceptez-vous les thèmes sur mesure ?
-            name: themesSurMesure
-            widget: text
-            required: false
-            hint: >-
-              Le site affirme aujourd'hui qu'un thème absent de la liste peut
-              être demandé. Est-ce vrai ? Y a-t-il des thèmes que vous ne
-              savez pas faire, ou que vous ne voulez pas faire ?
-
-          - label: Votre adresse électronique, celle que les clientes verront
-            name: emailContact
-            widget: string
-            required: false
-            hint: >-
-              Elle sera PUBLIQUE sur la page contact, donc visible des robots à
-              spam : prenez une adresse dédiée à la boutique plutôt que votre
-              adresse personnelle. Sans elle, aucune cliente ne peut vous
-              joindre.
-
-          - label: Votre compte Instagram
-            name: instagram
-            widget: string
-            required: false
-            hint: 'Pour un lien depuis le site. Exemple : didine991. Laissez vide si vous préférez pas.'
-
-          - label: Les parfums rangés par famille — mon rangement tient ?
-            name: relectureParfums
-            widget: text
-            required: false
-            hint: >-
-              Allez voir la page « Les parfums ». J'ai rangé vos onze parfums
-              en six familles et décrit chaque odeur, mais je ne les ai jamais
-              sentis. Dites-moi ce qui est faux.
-
-          - label: Depuis quand faites-vous du savon ?
-            name: depuisQuand
-            widget: string
-            required: false
-            hint: Pour la page qui parle de vous. Une année suffit.
-
-          - label: Qu'est-ce qui vous a donné envie de commencer ?
-            name: pourquoi
-            widget: text
-            required: false
-            hint: Deux ou trois phrases, avec vos mots. C'est ce qui distingue une boutique artisanale d'un site de revente.
-
-          - label: Ce que vous préférez fabriquer
-            name: preference
-            widget: text
-            required: false
-            hint: Les savons, les vitrines ? Et pourquoi ?
-
-          - label: Ce qu'on vous demande le plus souvent
-            name: demandeFrequente
-            widget: text
-            required: false
-            hint: Un parfum, un thème de vitrine ? Ça aide à mettre en avant ce qui se vend.
-
-          - label: Autre chose à me dire
+          - label: "Le reste"
             name: divers
-            widget: text
-            required: false
-            hint: >-
-              Tout ce qui ne rentre dans aucune case. Une erreur que vous avez
-              vue sur le site, une idée, une question.
+            widget: object
+            collapsed: true
+            fields:
+              - label: "Les parfums rangés par famille — mon rangement tient-il ?"
+                name: parfums
+                widget: text
+                required: false
+                hint: >-
+                  Allez voir la page « Les parfums ». J'ai rangé vos onze parfums en
+                  six familles et décrit chaque odeur, sans les avoir jamais sentis.
+              - label: "Autre chose à me dire"
+                name: autre
+                widget: text
+                required: false
+                hint: >-
+                  Une erreur que vous avez vue, une idée, une question. Tout ce qui
+                  ne rentre dans aucune case.
 
   - name: produits
     label: Produits

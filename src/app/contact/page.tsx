@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { lireThemes } from '@/lib/catalogue';
-import { lireReponses } from '@/lib/reponses';
+import { reponses } from '@/lib/reponses';
 import { Formulaire } from './Formulaire';
 
 // Les thèmes de vitrine viennent de la base : celui que Didine ajoute
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function PageContact() {
   const themes = lireThemes();
-  const { emailContact } = lireReponses();
+  const emailContact = reponses.vous.email;
 
   return (
     <>

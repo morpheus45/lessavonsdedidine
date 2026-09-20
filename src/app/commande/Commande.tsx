@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { formaterPrix } from '@/lib/argent';
 import { lirePanier, viderPanier } from '@/lib/panier-client';
 import {
@@ -152,10 +151,7 @@ export function Commande({
   }, [etat, panier, clientId]);
 
   return (
-    <>
-      <EnTeteBoutique />
-
-      <main id="contenu" className="mx-auto max-w-[760px] px-6 py-20">
+    <main id="contenu" className="mx-auto max-w-[760px] px-6 py-20">
         <h1 className="mb-10 font-serif text-[clamp(38px,6vw,64px)] tracking-[-0.03em]">
           Votre commande
         </h1>
@@ -281,9 +277,6 @@ export function Commande({
             </p>
           </>
         )}
-      </main>
-
-      <PiedBoutique />
-    </>
+    </main>
   );
 }

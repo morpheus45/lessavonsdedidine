@@ -51,3 +51,6 @@ _site/
 
 # Photos produites à la construction depuis contenu/photos/.
 public/photos/
+
+# Relevé produit par « npm run reponses ».
+REPONSES.md

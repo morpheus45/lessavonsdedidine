@@ -6,6 +6,7 @@ import {
   SEUIL_LIVRAISON_OFFERTE_CENTIMES,
 } from '@/lib/catalogue';
 import type { Tarif } from '@/lib/panier-calcul';
+import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { Panier } from './Panier';
 
 export const metadata: Metadata = {
@@ -33,13 +34,17 @@ export default function PagePanier() {
   const nomsDesThemes = Object.fromEntries(lireThemes().map((t) => [t.slug, t.nom]));
 
   return (
-    <Panier
+    <>
+      <EnTeteBoutique />
+      <Panier
       tarifs={tarifs}
       nomsDesThemes={nomsDesThemes}
       reglages={{
         livraisonCentimes: LIVRAISON_CENTIMES,
         seuilLivraisonOfferteCentimes: SEUIL_LIVRAISON_OFFERTE_CENTIMES,
       }}
-    />
+      />
+      <PiedBoutique />
+    </>
   );
 }

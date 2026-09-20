@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { formaterPrix } from '@/lib/argent';
 import { lirePanier, changerQuantite, retirer, surChangement } from '@/lib/panier-client';
 import {
@@ -51,10 +50,7 @@ export function Panier({
   const vide = !panier || panier.lignes.length === 0;
 
   return (
-    <>
-      <EnTeteBoutique />
-
-      <main id="contenu" className="mx-auto max-w-[1000px] px-6 py-20">
+    <main id="contenu" className="mx-auto max-w-[1000px] px-6 py-20">
         <h1 className="mb-12 font-serif text-[clamp(38px,6vw,64px)] tracking-[-0.03em]">
           Votre panier
         </h1>
@@ -183,9 +179,6 @@ export function Panier({
             </div>
           )
         )}
-      </main>
-
-      <PiedBoutique />
-    </>
+    </main>
   );
 }

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { lireProduits } from '@/lib/catalogue';
+import { reponses } from '@/lib/reponses';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { CarteProduit, type ProduitCarte } from '@/components/CarteProduit';
 import { Photo } from '@/components/Photo';
@@ -13,13 +14,20 @@ import { BlurFade } from '@/components/magic/BlurFade';
 // Site statique : la page est produite à la construction, à partir des
 // fichiers de contenu/. Un changement au CMS déclenche une reconstruction.
 
+/**
+ * Le bandeau défilant.
+ *
+ * Il ne porte QUE des faits venus de Didine : sa base, ses arômes, ses
+ * colorants. Le seuil de livraison offerte en a été retiré — c'était un
+ * chiffre que j'avais inventé, et il tournait en boucle en haut de la page
+ * d'accueil. Il n'y revient que si elle le donne.
+ */
 const ARGUMENTS = [
   'Beurre de karité bio',
   'Sans SLS',
   'Miel et arômes naturels',
   'Colorants naturels',
-  'Fait main en petites séries',
-  'Livraison offerte dès 39 €',
+  'Fait main',
 ];
 
 const PREUVES = [
@@ -72,6 +80,9 @@ const ETAPES: EtapeAtelier[] = [
 ];
 
 export default function Accueil() {
+  const seuil = reponses.livraison.seuilOffert;
+  const bandeau = seuil ? [...ARGUMENTS, `Livraison offerte dès ${seuil}`] : ARGUMENTS;
+
   const GAMME: ProduitCarte[] = lireProduits().map((p) => ({
     slug: p.slug,
     rang: p.rang,
@@ -89,7 +100,7 @@ export default function Accueil() {
           procédé qui défile. */}
       <div className="bg-foret">
         <Marquee duree="48s" className="py-2.5">
-          {ARGUMENTS.map((a) => (
+          {bandeau.map((a) => (
             <ElementMarquee key={a}>{a}</ElementMarquee>
           ))}
         </Marquee>

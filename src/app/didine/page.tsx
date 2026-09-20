@@ -4,7 +4,7 @@ import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { BlurFade } from '@/components/magic/BlurFade';
 import { Photo } from '@/components/Photo';
 import { PARFUMS } from '@/lib/catalogue';
-import { lireReponses, phraseDelaiVitrine } from '@/lib/reponses';
+import { reponses, phraseDelaiVitrine } from '@/lib/reponses';
 
 export const metadata: Metadata = {
   title: 'Didine',
@@ -75,7 +75,7 @@ const VITRINES = [
 ] as const;
 
 export default function PageDidine() {
-  const r = lireReponses();
+  const r = reponses.vous;
   const delai = phraseDelaiVitrine();
 
   return (
@@ -242,9 +242,9 @@ export default function PageDidine() {
         {/* ── Ce qui manque : la rencontre ────────────────────────── */}
         <section className="mx-auto max-w-[1240px] px-6 pb-24">
           <BlurFade>
-            {r.demandeFrequente ? (
+            {r.demande ? (
               <div className="space-y-10">
-                {r.demandeFrequente && <Reponse titre="Ce qu’on lui demande" texte={r.demandeFrequente} />}
+                {r.demande && <Reponse titre="Ce qu’on lui demande" texte={r.demande} />}
               </div>
             ) : (
               <AComplete

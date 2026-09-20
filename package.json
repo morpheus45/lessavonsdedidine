@@ -8,7 +8,8 @@
     "build": "node scripts/preparer-photos.mjs && next build",
     "start": "next start",
     "photos": "node scripts/preparer-photos.mjs",
-    "reponses": "node scripts/lire-reponses.mjs"
+    "reponses": "node scripts/lire-reponses.mjs",
+    "questionnaire": "node scripts/generer-questionnaire.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

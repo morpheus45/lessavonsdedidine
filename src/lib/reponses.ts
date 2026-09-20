@@ -10,81 +10,87 @@ import { join } from 'node:path';
  * et ce projet a déjà publié des affirmations fausses faute d'avoir demandé.
  *
  * Le site s'affiche correctement avec tous les champs vides : là où une
- * réponse manque, on n'écrit rien plutôt qu'un texte d'attente qu'un visiteur
- * prendrait pour un fait.
+ * réponse manque, on n'écrit RIEN plutôt qu'un texte d'attente qu'un visiteur
+ * prendrait pour un fait. C'est la règle, et elle n'a pas d'exception.
+ *
+ * Les questions sont décrites dans `scripts/_questions.mjs`, qui produit le
+ * formulaire. Ajouter une question ici sans l'y ajouter ne sert à rien.
  */
-export type Reponses = {
-  inci: string;
-  fraisPort: string;
-  seuilPortOffert: string;
-  modeLivraison: string;
-  delaiVitrine: string;
-  taillesVitrines: string;
-  themesSurMesure: string;
-  emailContact: string;
-  instagram: string;
-  relectureParfums: string;
-  depuisQuand: string;
-  pourquoi: string;
-  preference: string;
-  demandeFrequente: string;
-  divers: string;
-};
+type Brut = Record<string, Record<string, unknown> | undefined>;
 
-const VIDE: Reponses = {
-  inci: '',
-  fraisPort: '',
-  seuilPortOffert: '',
-  modeLivraison: '',
-  delaiVitrine: '',
-  taillesVitrines: '',
-  themesSurMesure: '',
-  emailContact: '',
-  instagram: '',
-  relectureParfums: '',
-  depuisQuand: '',
-  pourquoi: '',
-  preference: '',
-  demandeFrequente: '',
-  divers: '',
-};
+let cache: Brut | null = null;
 
-let cache: Reponses | null = null;
-
-export function lireReponses(): Reponses {
+function charger(): Brut {
   if (cache) return cache;
-
   const chemin = join(process.cwd(), 'contenu', 'reponses.md');
-  if (!existsSync(chemin)) {
-    cache = VIDE;
-    return cache;
-  }
-
-  const donnees = matter(readFileSync(chemin, 'utf8')).data as Record<string, unknown>;
-  const lire = (cle: keyof Reponses) => {
-    const valeur = donnees[cle];
-    return typeof valeur === 'string' ? valeur.trim() : '';
-  };
-
-  cache = {
-    inci: lire('inci'),
-    fraisPort: lire('fraisPort'),
-    seuilPortOffert: lire('seuilPortOffert'),
-    modeLivraison: lire('modeLivraison'),
-    delaiVitrine: lire('delaiVitrine'),
-    taillesVitrines: lire('taillesVitrines'),
-    themesSurMesure: lire('themesSurMesure'),
-    emailContact: lire('emailContact'),
-    instagram: lire('instagram'),
-    relectureParfums: lire('relectureParfums'),
-    depuisQuand: lire('depuisQuand'),
-    pourquoi: lire('pourquoi'),
-    preference: lire('preference'),
-    demandeFrequente: lire('demandeFrequente'),
-    divers: lire('divers'),
-  };
+  cache = existsSync(chemin)
+    ? (matter(readFileSync(chemin, 'utf8')).data as Brut)
+    : {};
   return cache;
 }
+
+/** Une réponse, ou la chaîne vide. Jamais de valeur de remplacement. */
+function lire(section: string, question: string): string {
+  const valeur = charger()[section]?.[question];
+  return typeof valeur === 'string' ? valeur.trim() : '';
+}
+
+export const reponses = {
+  livraison: {
+    get frais() {
+      return lire('livraison', 'frais');
+    },
+    get seuilOffert() {
+      return lire('livraison', 'seuilOffert');
+    },
+    get delaiExpedition() {
+      return lire('livraison', 'delaiExpedition');
+    },
+    get mode() {
+      return lire('livraison', 'mode');
+    },
+  },
+  produits: {
+    get inci() {
+      return lire('produits', 'inci');
+    },
+    get poids() {
+      return lire('produits', 'poids');
+    },
+    get conservation() {
+      return lire('produits', 'conservation');
+    },
+    get delaiVitrine() {
+      return lire('produits', 'delaiVitrine');
+    },
+    get tailles() {
+      return lire('produits', 'tailles');
+    },
+    get surMesure() {
+      return lire('produits', 'surMesure');
+    },
+  },
+  vous: {
+    get depuisQuand() {
+      return lire('vous', 'depuisQuand');
+    },
+    get pourquoi() {
+      return lire('vous', 'pourquoi');
+    },
+    get preference() {
+      return lire('vous', 'preference');
+    },
+    get demande() {
+      return lire('vous', 'demande');
+    },
+    get email() {
+      return lire('vous', 'email');
+    },
+    get instagram() {
+      return lire('vous', 'instagram');
+    },
+  },
+};
 
 /**
  * Délai de fabrication d'une vitrine, en toutes lettres.
@@ -94,6 +100,17 @@ export function lireReponses(): Reponses {
  * cliente qui attend plus longtemps que promis est une cliente perdue.
  */
 export function phraseDelaiVitrine(): string {
-  const delai = lireReponses().delaiVitrine;
+  const delai = reponses.produits.delaiVitrine;
   return delai ? `Comptez ${delai} de fabrication avant expédition.` : '';
+}
+
+/**
+ * Délai d'expédition d'un savon.
+ *
+ * Le site a longtemps affiché « expédié sous 48 h » sur toutes ses pages.
+ * C'était inventé. Sans réponse, on ne promet rien.
+ */
+export function phraseDelaiExpedition(): string {
+  const delai = reponses.livraison.delaiExpedition;
+  return delai ? `Expédié sous ${delai}.` : '';
 }
