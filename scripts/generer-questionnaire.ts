@@ -1,5 +1,5 @@
 import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'node:fs';
-import { SECTIONS } from './_questions.mjs';
+import { SECTIONS } from '../src/donnees/questions.ts';
 
 /**
  * Produit le formulaire de Didine à partir de la liste des questions.

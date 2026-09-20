@@ -1,6 +1,6 @@
 import { execSync } from 'node:child_process';
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { SECTIONS } from './_questions.mjs';
+import { SECTIONS } from '../src/donnees/questions.ts';
 
 /**
  * Relève les réponses de Didine et en fait un fichier consultable.

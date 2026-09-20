@@ -1,11 +1,28 @@
 /**
  * Les questions posées à Didine, en un seul endroit.
  *
- * Source unique : le formulaire de sa gestion (public/admin/config.yml) et le
- * relevé que je consulte (npm run reponses) sont produits d'ici. Deux listes
- * qui divergent, c'est une question qu'on croit posée et qui ne l'est pas.
+ * Trois choses en sortent : la page publique /questions/, le formulaire de sa
+ * gestion, et le relevé que je consulte. Deux listes qui divergent, c'est une
+ * question qu'on croit posée et qui ne l'est pas.
  */
-export const SECTIONS = [
+export type Question = {
+  cle: string;
+  label: string;
+  aide: string;
+  /** Champ multiligne, pour une réponse qui demande des phrases. */
+  long?: boolean;
+  /** Sans cette réponse, le site affirme du faux ou reste incommandable. */
+  bloque?: boolean;
+};
+
+export type Section = {
+  cle: string;
+  titre: string;
+  intro: string;
+  questions: Question[];
+};
+
+export const SECTIONS: Section[] = [
   {
     cle: 'livraison',
     titre: 'La livraison',
