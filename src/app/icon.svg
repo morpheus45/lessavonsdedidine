@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Les Savons de Didine">
+  <!-- Reprise du sceau du site, réduite à ce qui survit à 16 px : le disque,
+       un filet doré, et le monogramme. Les festons et la guilloché du grand
+       sceau deviennent de la bouillie à cette taille. -->
+  <circle cx="256" cy="256" r="256" fill="#0f3a2c"/>
+  <circle cx="256" cy="256" r="228" fill="none" stroke="#c8a455" stroke-width="10"/>
+  <g fill="none" stroke="#f2f0eb" stroke-width="34" stroke-linecap="butt">
+    <path d="M 201 152 L 201 360"/>
+    <path d="M 201 152 A 104 104 0 0 1 201 360"/>
+  </g>
+</svg>

@@ -121,7 +121,12 @@
   }
 }
 
-@layer utilities {
+/* `components` et non `utilities` : dans la même couche que les utilitaires
+   de Tailwind, et déclarée après eux, cette classe gagnait à spécificité
+   égale — un `text-foret-3` posé à côté n'avait alors aucun effet, et le
+   surtitre restait taupe sur fond vert foncé, à 2,24:1. Rangée ici, elle
+   donne la couleur par défaut et se laisse remplacer. */
+@layer components {
   .eyebrow {
     font-family: var(--font-mono);
     font-size: 12px;
