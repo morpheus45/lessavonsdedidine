@@ -22,25 +22,45 @@ peut :
 Chaque modification enregistrée devient un commit dans le dépôt, et le site se
 republie tout seul en une minute environ.
 
-### Sa connexion, à faire une fois
+### Sa connexion — le jeton, à fabriquer par vous
 
-Elle a besoin d'un jeton d'accès GitHub. Ce n'est pas compliqué mais ça ne
-s'invente pas :
+Didine n'a **pas de compte GitHub à créer**. Vous fabriquez un jeton sur votre
+propre compte et vous le lui transmettez ; elle le colle une fois dans le CMS.
 
-1. Elle se crée un compte sur github.com, et vous l'ajoutez au dépôt en
-   **Settings → Collaborators** (accès *Write*).
-2. Elle va sur **github.com → photo de profil → Settings → Developer settings
-   → Personal access tokens → Fine-grained tokens → Generate new token**.
-3. *Repository access* : **Only select repositories** → `lessavonsdedidine`.
-4. *Permissions → Repository permissions → Contents* : **Read and write**.
-5. Elle génère, copie le jeton, et le colle dans le CMS au premier écran
-   (« Sign in with Token »).
+> Pourquoi pas un compte à son nom : un collaborateur sur un dépôt appartenant
+> à un autre compte personnel **ne peut pas** utiliser de jeton *fine-grained*
+> — GitHub ne lui propose tout simplement pas le dépôt dans la liste. Il lui
+> faudrait un jeton *classique*, qui donne accès à bien plus que ce dépôt.
+> Passer par votre jeton, étroitement limité, est plus sûr que l'inverse.
 
-Le jeton reste dans son navigateur. À refaire seulement s'il expire ou si elle
-change d'ordinateur. **Donnez-lui une date d'expiration longue** — sinon le
-CMS cessera de fonctionner un matin sans explication.
+1. **github.com** → votre photo → **Settings** → tout en bas à gauche,
+   **Developer settings**.
+2. **Personal access tokens → Fine-grained tokens → Generate new token**.
+3. **Token name** : `catalogue-didine`.
+4. **Expiration** : **1 an**. Pas « No expiration » — un jeton immortel qui
+   fuit ne s'arrête jamais. Notez la date dans votre agenda : le jour venu, le
+   CMS cessera de fonctionner sans explication.
+5. **Repository access** : **Only select repositories** → `lessavonsdedidine`.
+6. **Permissions → Repository permissions → Contents** : **Read and write**.
+   **Rien d'autre.** Pas Actions, pas Administration, pas Secrets. Ce jeton ne
+   doit pouvoir que modifier des fichiers de contenu.
+7. **Generate token**, copiez la chaîne (elle commence par `github_pat_`).
+   Elle ne sera plus jamais affichée.
 
----
+Transmettez-la-lui par un canal où elle ne traînera pas : un message que vous
+effacez ensuite, ou un gestionnaire de mots de passe. **Ne la mettez jamais
+dans le dépôt** — et ne me l'envoyez pas non plus, je n'en ai pas besoin et je
+ne manipule pas d'identifiants.
+
+### Si le jeton fuit, ou si Didine arrête
+
+**Settings → Developer settings → Fine-grained tokens** → `catalogue-didine` →
+**Revoke**. C'est immédiat. Vous en refabriquez un et vous le lui donnez.
+
+Ce qu'un jeton volé permettrait, au pire : modifier le contenu de la boutique,
+qui se republierait. Rien de plus — pas de suppression du dépôt, pas d'accès à
+vos autres projets, pas de secrets. Et l'historique GitHub garde tout, donc
+tout est réversible.
 
 ## Le paiement
 

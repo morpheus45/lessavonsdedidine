@@ -9,31 +9,24 @@ site : il n'y a que vous qui devez y aller.
 
 ## Se connecter, la première fois
 
-Il faut un « jeton » GitHub. C'est un mot de passe long qu'on fabrique une
-fois. À faire une seule fois par ordinateur.
+Cédric vous donne un **jeton** : une longue suite de lettres et de chiffres
+qui commence par `github_pat_`. C'est votre clé d'entrée.
 
-1. Allez sur **github.com**, connectez-vous.
-2. Cliquez votre photo en haut à droite → **Settings**.
-3. Tout en bas de la colonne de gauche → **Developer settings**.
-4. **Personal access tokens** → **Fine-grained tokens** → bouton
-   **Generate new token**.
-5. **Token name** : écrivez `boutique`.
-6. **Expiration** : choisissez la durée la plus longue proposée. *C'est
-   important : le jour où le jeton expire, cette page cesse de fonctionner
-   sans explication.*
-7. **Repository access** : cochez **Only select repositories**, puis
-   choisissez **lessavonsdedidine**.
-8. **Permissions** → **Repository permissions** → cherchez la ligne
-   **Contents** → mettez-la sur **Read and write**.
-9. Bouton vert **Generate token** en bas. **Copiez le texte affiché** — il ne
-   sera plus jamais montré.
-10. Revenez sur la page du catalogue, cliquez
-    **« Sign In with GitHub Using PAT »** (le bouton du bas, pas celui du
-    haut), collez le jeton.
+1. Ouvrez la page du catalogue.
+2. Cliquez le bouton du bas, **« Sign In with GitHub Using PAT »**.
+   *Pas celui du haut* — celui du haut ne fonctionne pas ici.
+3. Collez le jeton dans la case. Validez.
 
-C'est fini. L'ordinateur s'en souvient.
+C'est tout. L'ordinateur s'en souvient, vous n'aurez pas à le refaire.
 
----
+**Gardez ce jeton quelque part**, dans un endroit sûr : vous en aurez besoin
+si vous changez d'ordinateur, ou si vous effacez les données de votre
+navigateur. Ne le mettez pas dans un courriel que vous laissez traîner, et ne
+le collez nulle part ailleurs que sur cette page — il permet de modifier la
+boutique.
+
+Si quelqu'un d'autre le voyait, dites-le à Cédric : il en fabrique un nouveau
+en deux minutes et l'ancien cesse aussitôt de fonctionner.
 
 ## Les boutons sont en anglais
 
@@ -116,8 +109,8 @@ courriel PayPal dès qu'il arrive. **S'il se perd, la commande est perdue.**
 
 ## Si quelque chose ne va pas
 
-**La page du catalogue refuse de se connecter** — le jeton a expiré.
-Refabriquez-en un (voir plus haut).
+**La page du catalogue refuse de se connecter** — le jeton a expiré, ou il a
+été remplacé. Demandez-en un nouveau à Cédric ; ça lui prend deux minutes.
 
 **J'ai enregistré mais le site n'a pas changé** — attendez deux minutes et
 rechargez. Si au bout de cinq minutes rien ne bouge, prévenez Cédric : la
