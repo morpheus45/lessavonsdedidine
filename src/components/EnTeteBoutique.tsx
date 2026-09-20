@@ -141,9 +141,21 @@ export function PiedBoutique() {
       </div>
 
       <div className="border-t border-brume">
-        <p className="mx-auto max-w-[1240px] px-6 py-6 font-mono text-[12px] text-taupe">
-          Les Savons de Didine · Savons parfumés faits main · Vitrines personnalisées
-        </p>
+        <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-4 px-6 py-6">
+          <p className="font-mono text-[12px] text-taupe">
+            Les Savons de Didine · Savons parfumés faits main · Vitrines personnalisées
+          </p>
+          {/* Discret, en pied de page : Didine doit pouvoir retrouver sa
+              gestion sans garder un favori, sans que ça invite les visiteurs.
+              `rel="nofollow"` évite qu'un moteur aille l'indexer. */}
+          <a
+            href="/lessavonsdedidine/admin/"
+            rel="nofollow"
+            className="font-mono text-[12px] text-taupe underline decoration-brume-2 underline-offset-4 hover:text-graphite hover:decoration-taupe"
+          >
+            Gestion du catalogue
+          </a>
+        </div>
       </div>
     </footer>
   );
