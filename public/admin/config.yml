@@ -91,9 +91,9 @@ collections:
                 widget: string
                 required: false
                 hint: >-
-                  EN ATTENTE POUR OUVRIR LA BOUTIQUE. Le site affirme « expédié sous
-                  48 h » sur toutes ses pages. Je l'ai inventé. Exemple : « 3 à 4
-                  jours ».
+                  EN ATTENTE POUR OUVRIR LA BOUTIQUE. Le site affirmait « expédié
+                  sous 48 h » sur toutes ses pages. Je l'ai inventé et je l'ai
+                  retiré. Exemple : « 3 à 4 jours ».
               - label: "Comment livrez-vous ?"
                 name: mode
                 widget: text
@@ -157,39 +157,59 @@ collections:
                 widget: text
                 required: false
                 hint: >-
-                  Le site le répète partout : « faits main en petites séries », « à
-                  la demande ». Je l'ai déduit, pas vérifié.
+                  Le site le répète partout : « faits main », « à la demande ». Je
+                  l'ai déduit, pas vérifié.
 
           - label: "L'allure du site"
             name: visuel
             widget: object
             collapsed: true
             hint: >-
-              Tout ce que vous voyez — couleurs, logo, typographie — vient de
-              moi. Rien n'a été validé par vous, et tout peut changer.
+              Tout ce que vous voyez — couleurs, logo, écriture — vient de moi.
+              Rien n'a été validé par vous, et tout peut changer. Répondez sans
+              vous soucier du travail que ça me demande.
             fields:
-              - label: "Les couleurs vous plaisent-elles ?"
+              - label: "Le site vous ressemble-t-il ?"
+                name: ressemblance
+                widget: text
+                required: false
+                hint: >-
+                  La question qui compte le plus. Vos savons sont colorés et gais —
+                  bubble gum, fleurs, vitrines d'enfant — et le site que j'ai fait
+                  est sobre, vert foncé, presque sérieux. C'est peut-être moi que ça
+                  ressemble, pas vous. Dites-le franchement.
+              - label: "Quand vous imaginez votre boutique, vous la voyez comment ?"
+                name: ambiance
+                widget: text
+                required: false
+                hint: >-
+                  Sobre et élégante ? Colorée et joyeuse ? Naturelle, brute,
+                  campagne ? Chic et précieuse ? Ou tout autre chose. Pas besoin de
+                  vocabulaire de métier, vos mots suffisent.
+              - label: "Les couleurs actuelles"
                 name: couleurs
                 widget: text
                 required: false
                 hint: >-
-                  Vert forêt, crème, rouge grenat, un peu de doré. Dites franchement
-                  si ça ne vous ressemble pas — c'est votre boutique.
+                  Vert forêt, crème, rouge grenat, un peu de doré. Trop sombre ?
+                  Trop sérieux ? Une couleur que vous ne voulez pas voir, une que
+                  vous aimeriez ?
+              - label: "Des boutiques ou des sites dont l'allure vous plaît"
+                name: exemples
+                widget: text
+                required: false
+                hint: >-
+                  Même un seul. Un nom, une adresse, ou juste « la boutique de
+                  savons à côté du marché ». C'est ce qui m'aide le plus : voir ce
+                  qui vous plaît vaut mieux que deviner.
               - label: "Le logo — le rond vert avec le D"
                 name: logo
                 widget: text
                 required: false
                 hint: >-
-                  Je l'ai dessiné faute de mieux. Avez-vous déjà un logo, une
-                  enseigne, quelque chose que vous utilisez sur vos étiquettes ?
-              - label: "Vos étiquettes et vos emballages actuels"
-                name: etiquettes
-                widget: text
-                required: false
-                hint: >-
-                  J'ai vu « FAIT MAIN · AVEC AMOUR » sur vos autocollants et je l'ai
-                  repris. Décrivez ce que vous utilisez — ou déposez-en une photo
-                  dans Produits.
+                  Je l'ai dessiné faute de mieux. Avez-vous déjà un logo, un dessin,
+                  une enseigne ? Même fait à la main, même imparfait : ce sera
+                  toujours plus vous que ce que j'invente.
               - label: "Le nom de la boutique est-il le bon ?"
                 name: nom
                 widget: text
@@ -197,14 +217,149 @@ collections:
                 hint: >-
                   Le site s'appelle « Les Savons de Didine ». Mais vous faites aussi
                   des vitrines, qui ne sont pas des savons. Est-ce le nom que vous
-                  voulez ?
+                  voulez garder ?
               - label: "Ce qui vous gêne quand vous regardez le site"
-                name: aVoir
+                name: gene
                 widget: text
                 required: false
                 hint: >-
-                  Une page, une photo, une phrase. Même « je ne sais pas dire
-                  pourquoi mais ça ne me plaît pas » est une réponse utile.
+                  Une page, une photo, une phrase, une couleur. Même « je ne sais
+                  pas dire pourquoi, mais ça ne me plaît pas » est une réponse utile
+                  — je trouverai quoi.
+
+          - label: "Les photos"
+            name: photos
+            widget: object
+            collapsed: true
+            hint: >-
+              Je n'ai que les neuf photos que vous aviez envoyées. Le site en
+              manque, et ce sont elles qui vendent — bien plus que mes phrases.
+              Envoyez-les par message, telles qu'elles sortent du téléphone :
+              elles sont redressées et allégées automatiquement.
+            fields:
+              - label: "Quelles photos pouvez-vous faire ?"
+                name: aEnvoyer
+                widget: text
+                required: false
+                hint: >-
+                  EN ATTENTE POUR OUVRIR LA BOUTIQUE. Ce qui manque le plus : vos
+                  mains en train de travailler, votre plan de travail, les moules,
+                  une coulée en cours, des savons en train de sécher, une vitrine en
+                  cours de montage, vos emballages. Dites ce que vous pouvez faire,
+                  je vous dirai lesquelles servent le plus.
+              - label: "La vitrine « chambre d'enfant »"
+                name: chambreEnfant
+                widget: string
+                required: false
+                hint: >-
+                  EN ATTENTE POUR OUVRIR LA BOUTIQUE. La seule photo que j'ai porte
+                  deux autocollants ajoutés dans la messagerie : je ne peux pas la
+                  mettre en boutique. C'est le seul thème sans image, il se vend
+                  donc à l'aveugle.
+              - label: "Accepteriez-vous une photo de vous ?"
+                name: vousMeme
+                widget: text
+                required: false
+                hint: >-
+                  Même de dos, même seulement vos mains. Une boutique artisanale
+                  sans visage reste anonyme, et c'est ce qui la distingue d'un site
+                  de revente. Mais c'est votre décision, et « non » est une réponse
+                  complète.
+
+          - label: "Votre façon de travailler"
+            name: activite
+            widget: object
+            collapsed: true
+            hint: >-
+              Ce que je sais vient de quelques messages. Tout le reste, je l'ai
+              deviné — et deviner, sur un site de vente, finit toujours par
+              produire des phrases fausses.
+            fields:
+              - label: "Où fabriquez-vous ?"
+                name: ou
+                widget: text
+                required: false
+                hint: >-
+                  Une pièce chez vous, un atelier, un coin de cuisine ? Sans décrire
+                  ce que vous ne voulez pas montrer : c'est pour raconter juste, pas
+                  pour donner votre adresse.
+              - label: "Combien de savons faites-vous à la fois ?"
+                name: quantite
+                widget: text
+                required: false
+                hint: >-
+                  Une coulée vous donne combien de savons ? Et vous en faites
+                  combien par semaine, à peu près ?
+              - label: "Où achetez-vous votre base et vos moules ?"
+                name: fournisseur
+                widget: text
+                required: false
+                hint: >-
+                  Pas pour le publier — pour ne pas écrire de bêtise sur la
+                  provenance. Si vous préférez ne pas le dire, laissez vide.
+              - label: "Où vendez-vous aujourd’hui ?"
+                name: vendre
+                widget: text
+                required: false
+                hint: >-
+                  Marchés, bouche-à-oreille, Instagram, une boutique ? Ça change ce
+                  que le site doit mettre en avant.
+              - label: "Qui vous achète ?"
+                name: clientes
+                widget: text
+                required: false
+                hint: >-
+                  Des voisines, des collègues, des gens qui offrent ? Des habituées
+                  ou des passages ? Le site s'adresse aujourd'hui à une cliente que
+                  j'ai inventée.
+
+          - label: "Ce que vous voulez vendre"
+            name: ajouts
+            widget: object
+            collapsed: true
+            hint: >-
+              Le site ne propose que deux choses : des savons parfumés et des
+              vitrines. S'il vous en manque, il peut les accueillir.
+            fields:
+              - label: "Des produits à ajouter ?"
+                name: nouveaux
+                widget: text
+                required: false
+                hint: >-
+                  Des savons que vous faites déjà et qui ne sont pas en ligne,
+                  d'autres formats, d'autres tailles. Décrivez-les simplement, avec
+                  un prix si vous l'avez en tête.
+              - label: "Des coffrets ou des assortiments ?"
+                name: coffrets
+                widget: text
+                required: false
+                hint: >-
+                  J'ai vu des coffrets de quatre savons sur vos photos, mais ils ne
+                  sont vendus nulle part sur le site. Voulez-vous en proposer ? À
+                  quel prix, avec quoi dedans ?
+              - label: "Autre chose que des savons ?"
+                name: autresObjets
+                widget: text
+                required: false
+                hint: >-
+                  Bougies, décorations, cadeaux, autre chose que vous fabriquez ou
+                  aimeriez fabriquer. Les vitrines montrent déjà que vous ne faites
+                  pas que du savon.
+              - label: "Des ventes liées à des occasions ?"
+                name: occasions
+                widget: text
+                required: false
+                hint: >-
+                  Noël, fête des mères, naissances, mariages ? Si oui, le site peut
+                  les préparer à l'avance plutôt que dans l'urgence.
+              - label: "Ce que vous ne voulez PAS faire"
+                name: refus
+                widget: text
+                required: false
+                hint: >-
+                  Un thème, un parfum, un type de commande. Aussi utile que le reste
+                  : ça évite de promettre en votre nom quelque chose que vous
+                  refuserez.
 
           - label: "Vous"
             name: vous
@@ -234,14 +389,15 @@ collections:
                 widget: text
                 required: false
                 hint: "Un parfum, un thème ? Ça aide à mettre en avant ce qui se vend."
-              - label: "Votre adresse électronique, celle que les clientes verront"
+              - label: "Votre adresse électronique, pour recevoir les messages"
                 name: email
                 widget: string
                 required: false
                 hint: >-
-                  EN ATTENTE POUR OUVRIR LA BOUTIQUE. Elle sera PUBLIQUE, donc
-                  visible des robots à spam : prenez-en une dédiée à la boutique.
-                  Sans elle, personne ne peut vous joindre.
+                  EN ATTENTE POUR OUVRIR LA BOUTIQUE. Elle ne sera PAS affichée sur
+                  le site : les clientes écrivent par un formulaire, et le message
+                  vous arrive par courriel. Votre adresse reste invisible, donc à
+                  l'abri des robots à spam.
               - label: "Votre compte Instagram"
                 name: instagram
                 widget: string

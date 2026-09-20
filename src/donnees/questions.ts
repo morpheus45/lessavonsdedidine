@@ -4,6 +4,10 @@
  * Trois choses en sortent : la page publique /questions/, le formulaire de sa
  * gestion, et le relevé que je consulte. Deux listes qui divergent, c'est une
  * question qu'on croit posée et qui ne l'est pas.
+ *
+ * Règle d'écriture : chaque question dit POURQUOI elle est posée, et ce que
+ * le site affirme aujourd'hui à sa place. Une question sans contexte reçoit
+ * une réponse en trois mots, qui ne débloque rien.
  */
 export type Question = {
   cle: string;
@@ -43,8 +47,8 @@ export const SECTIONS: Section[] = [
       },
       {
         cle: 'delaiExpedition',
-        label: "Sous combien de temps expédiez-vous un savon ?",
-        aide: "Le site affirme « expédié sous 48 h » sur toutes ses pages. Je l'ai inventé. Exemple : « 3 à 4 jours ».",
+        label: 'Sous combien de temps expédiez-vous un savon ?',
+        aide: "Le site affirmait « expédié sous 48 h » sur toutes ses pages. Je l'ai inventé et je l'ai retiré. Exemple : « 3 à 4 jours ».",
         bloque: true,
       },
       {
@@ -98,7 +102,7 @@ export const SECTIONS: Section[] = [
       {
         cle: 'petitesSeries',
         label: 'Travaillez-vous vraiment à la commande, en petites quantités ?',
-        aide: "Le site le répète partout : « faits main en petites séries », « à la demande ». Je l'ai déduit, pas vérifié.",
+        aide: "Le site le répète partout : « faits main », « à la demande ». Je l'ai déduit, pas vérifié.",
         long: true,
       },
     ],
@@ -107,36 +111,151 @@ export const SECTIONS: Section[] = [
     cle: 'visuel',
     titre: "L'allure du site",
     intro:
-      "Tout ce que vous voyez — couleurs, logo, typographie — vient de moi. Rien n'a été validé par vous, et tout peut changer.",
+      "Tout ce que vous voyez — couleurs, logo, écriture — vient de moi. Rien n'a été validé par vous, et tout peut changer. Répondez sans vous soucier du travail que ça me demande.",
     questions: [
       {
+        cle: 'ressemblance',
+        label: 'Le site vous ressemble-t-il ?',
+        aide: "La question qui compte le plus. Vos savons sont colorés et gais — bubble gum, fleurs, vitrines d'enfant — et le site que j'ai fait est sobre, vert foncé, presque sérieux. C'est peut-être moi que ça ressemble, pas vous. Dites-le franchement.",
+        long: true,
+      },
+      {
+        cle: 'ambiance',
+        label: 'Quand vous imaginez votre boutique, vous la voyez comment ?',
+        aide: "Sobre et élégante ? Colorée et joyeuse ? Naturelle, brute, campagne ? Chic et précieuse ? Ou tout autre chose. Pas besoin de vocabulaire de métier, vos mots suffisent.",
+        long: true,
+      },
+      {
         cle: 'couleurs',
-        label: 'Les couleurs vous plaisent-elles ?',
-        aide: "Vert forêt, crème, rouge grenat, un peu de doré. Dites franchement si ça ne vous ressemble pas — c'est votre boutique.",
+        label: 'Les couleurs actuelles',
+        aide: 'Vert forêt, crème, rouge grenat, un peu de doré. Trop sombre ? Trop sérieux ? Une couleur que vous ne voulez pas voir, une que vous aimeriez ?',
+        long: true,
+      },
+      {
+        cle: 'exemples',
+        label: "Des boutiques ou des sites dont l'allure vous plaît",
+        aide: "Même un seul. Un nom, une adresse, ou juste « la boutique de savons à côté du marché ». C'est ce qui m'aide le plus : voir ce qui vous plaît vaut mieux que deviner.",
         long: true,
       },
       {
         cle: 'logo',
         label: 'Le logo — le rond vert avec le D',
-        aide: "Je l'ai dessiné faute de mieux. Avez-vous déjà un logo, une enseigne, quelque chose que vous utilisez sur vos étiquettes ?",
-        long: true,
-      },
-      {
-        cle: 'etiquettes',
-        label: 'Vos étiquettes et vos emballages actuels',
-        aide: "J'ai vu « FAIT MAIN · AVEC AMOUR » sur vos autocollants et je l'ai repris. Décrivez ce que vous utilisez — ou déposez-en une photo dans Produits.",
+        aide: "Je l'ai dessiné faute de mieux. Avez-vous déjà un logo, un dessin, une enseigne ? Même fait à la main, même imparfait : ce sera toujours plus vous que ce que j'invente.",
         long: true,
       },
       {
         cle: 'nom',
         label: 'Le nom de la boutique est-il le bon ?',
-        aide: "Le site s'appelle « Les Savons de Didine ». Mais vous faites aussi des vitrines, qui ne sont pas des savons. Est-ce le nom que vous voulez ?",
+        aide: "Le site s'appelle « Les Savons de Didine ». Mais vous faites aussi des vitrines, qui ne sont pas des savons. Est-ce le nom que vous voulez garder ?",
         long: true,
       },
       {
-        cle: 'aVoir',
-        label: "Ce qui vous gêne quand vous regardez le site",
-        aide: 'Une page, une photo, une phrase. Même « je ne sais pas dire pourquoi mais ça ne me plaît pas » est une réponse utile.',
+        cle: 'gene',
+        label: 'Ce qui vous gêne quand vous regardez le site',
+        aide: "Une page, une photo, une phrase, une couleur. Même « je ne sais pas dire pourquoi, mais ça ne me plaît pas » est une réponse utile — je trouverai quoi.",
+        long: true,
+      },
+    ],
+  },
+  {
+    cle: 'photos',
+    titre: 'Les photos',
+    intro:
+      "Je n'ai que les neuf photos que vous aviez envoyées. Le site en manque, et ce sont elles qui vendent — bien plus que mes phrases. Envoyez-les par message, telles qu'elles sortent du téléphone : elles sont redressées et allégées automatiquement.",
+    questions: [
+      {
+        cle: 'aEnvoyer',
+        label: 'Quelles photos pouvez-vous faire ?',
+        aide: "Ce qui manque le plus : vos mains en train de travailler, votre plan de travail, les moules, une coulée en cours, des savons en train de sécher, une vitrine en cours de montage, vos emballages. Dites ce que vous pouvez faire, je vous dirai lesquelles servent le plus.",
+        long: true,
+        bloque: true,
+      },
+      {
+        cle: 'chambreEnfant',
+        label: "La vitrine « chambre d'enfant »",
+        aide: "La seule photo que j'ai porte deux autocollants ajoutés dans la messagerie : je ne peux pas la mettre en boutique. C'est le seul thème sans image, il se vend donc à l'aveugle.",
+        bloque: true,
+      },
+      {
+        cle: 'vousMeme',
+        label: 'Accepteriez-vous une photo de vous ?',
+        aide: "Même de dos, même seulement vos mains. Une boutique artisanale sans visage reste anonyme, et c'est ce qui la distingue d'un site de revente. Mais c'est votre décision, et « non » est une réponse complète.",
+        long: true,
+      },
+    ],
+  },
+  {
+    cle: 'activite',
+    titre: 'Votre façon de travailler',
+    intro:
+      "Ce que je sais vient de quelques messages. Tout le reste, je l'ai deviné — et deviner, sur un site de vente, finit toujours par produire des phrases fausses.",
+    questions: [
+      {
+        cle: 'ou',
+        label: 'Où fabriquez-vous ?',
+        aide: "Une pièce chez vous, un atelier, un coin de cuisine ? Sans décrire ce que vous ne voulez pas montrer : c'est pour raconter juste, pas pour donner votre adresse.",
+        long: true,
+      },
+      {
+        cle: 'quantite',
+        label: 'Combien de savons faites-vous à la fois ?',
+        aide: 'Une coulée vous donne combien de savons ? Et vous en faites combien par semaine, à peu près ?',
+        long: true,
+      },
+      {
+        cle: 'fournisseur',
+        label: 'Où achetez-vous votre base et vos moules ?',
+        aide: "Pas pour le publier — pour ne pas écrire de bêtise sur la provenance. Si vous préférez ne pas le dire, laissez vide.",
+        long: true,
+      },
+      {
+        cle: 'vendre',
+        label: 'Où vendez-vous aujourd’hui ?',
+        aide: 'Marchés, bouche-à-oreille, Instagram, une boutique ? Ça change ce que le site doit mettre en avant.',
+        long: true,
+      },
+      {
+        cle: 'clientes',
+        label: 'Qui vous achète ?',
+        aide: "Des voisines, des collègues, des gens qui offrent ? Des habituées ou des passages ? Le site s'adresse aujourd'hui à une cliente que j'ai inventée.",
+        long: true,
+      },
+    ],
+  },
+  {
+    cle: 'ajouts',
+    titre: 'Ce que vous voulez vendre',
+    intro:
+      "Le site ne propose que deux choses : des savons parfumés et des vitrines. S'il vous en manque, il peut les accueillir.",
+    questions: [
+      {
+        cle: 'nouveaux',
+        label: 'Des produits à ajouter ?',
+        aide: "Des savons que vous faites déjà et qui ne sont pas en ligne, d'autres formats, d'autres tailles. Décrivez-les simplement, avec un prix si vous l'avez en tête.",
+        long: true,
+      },
+      {
+        cle: 'coffrets',
+        label: 'Des coffrets ou des assortiments ?',
+        aide: "J'ai vu des coffrets de quatre savons sur vos photos, mais ils ne sont vendus nulle part sur le site. Voulez-vous en proposer ? À quel prix, avec quoi dedans ?",
+        long: true,
+      },
+      {
+        cle: 'autresObjets',
+        label: 'Autre chose que des savons ?',
+        aide: "Bougies, décorations, cadeaux, autre chose que vous fabriquez ou aimeriez fabriquer. Les vitrines montrent déjà que vous ne faites pas que du savon.",
+        long: true,
+      },
+      {
+        cle: 'occasions',
+        label: 'Des ventes liées à des occasions ?',
+        aide: "Noël, fête des mères, naissances, mariages ? Si oui, le site peut les préparer à l'avance plutôt que dans l'urgence.",
+        long: true,
+      },
+      {
+        cle: 'refus',
+        label: 'Ce que vous ne voulez PAS faire',
+        aide: "Un thème, un parfum, un type de commande. Aussi utile que le reste : ça évite de promettre en votre nom quelque chose que vous refuserez.",
         long: true,
       },
     ],
@@ -167,8 +286,8 @@ export const SECTIONS: Section[] = [
       },
       {
         cle: 'email',
-        label: 'Votre adresse électronique, celle que les clientes verront',
-        aide: 'Elle sera PUBLIQUE, donc visible des robots à spam : prenez-en une dédiée à la boutique. Sans elle, personne ne peut vous joindre.',
+        label: 'Votre adresse électronique, pour recevoir les messages',
+        aide: "Elle ne sera PAS affichée sur le site : les clientes écrivent par un formulaire, et le message vous arrive par courriel. Votre adresse reste invisible, donc à l'abri des robots à spam.",
         bloque: true,
       },
       {
@@ -192,7 +311,7 @@ export const SECTIONS: Section[] = [
       {
         cle: 'autre',
         label: 'Autre chose à me dire',
-        aide: "Une erreur que vous avez vue, une idée, une question. Tout ce qui ne rentre dans aucune case.",
+        aide: 'Une erreur que vous avez vue, une idée, une question. Tout ce qui ne rentre dans aucune case.',
         long: true,
       },
     ],

@@ -13,11 +13,29 @@ produits:
   surMesure: ""
   petitesSeries: ""
 visuel:
+  ressemblance: ""
+  ambiance: ""
   couleurs: ""
+  exemples: ""
   logo: ""
-  etiquettes: ""
   nom: ""
-  aVoir: ""
+  gene: ""
+photos:
+  aEnvoyer: ""
+  chambreEnfant: ""
+  vousMeme: ""
+activite:
+  ou: ""
+  quantite: ""
+  fournisseur: ""
+  vendre: ""
+  clientes: ""
+ajouts:
+  nouveaux: ""
+  coffrets: ""
+  autresObjets: ""
+  occasions: ""
+  refus: ""
 vous:
   depuisQuand: ""
   pourquoi: ""

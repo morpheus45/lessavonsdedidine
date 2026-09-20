@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { lireThemes } from '@/lib/catalogue';
-import { reponses } from '@/lib/reponses';
 import { Formulaire } from './Formulaire';
 
 // Les thèmes de vitrine viennent de la base : celui que Didine ajoute
@@ -15,7 +14,6 @@ export const metadata: Metadata = {
 
 export default function PageContact() {
   const themes = lireThemes();
-  const emailContact = reponses.vous.email;
 
   return (
     <>
@@ -37,41 +35,11 @@ export default function PageContact() {
           <div>
             {/* Prévenir AVANT la saisie, pas après : personne ne doit écrire
                 vingt lignes pour découvrir ensuite qu'elles ne partent pas. */}
-            <div className="mb-10 rounded-m border border-attente-bg bg-attente-bg p-5">
-              <p className="mb-1 text-[15px] font-semibold text-attente">
-                L&rsquo;envoi depuis le site n&rsquo;est pas encore en service.
-              </p>
-              <p className="text-[14px] text-attente">
-                Ce formulaire vérifie votre message et vous le rend à copier, avec l&rsquo;adresse
-                de Didine. Rien n&rsquo;est expédié automatiquement pour le moment.
-              </p>
-            </div>
 
-            <Formulaire email={emailContact} />
+            <Formulaire cle={process.env.NEXT_PUBLIC_WEB3FORMS_KEY ?? ''} />
           </div>
 
           <aside className="space-y-10">
-            <section className="rounded-l border border-brume bg-neige p-7">
-              <h2 className="mb-3 font-serif text-[22px]">Écrire directement</h2>
-              <p className="mb-4 text-[14.5px] text-taupe">
-                C&rsquo;est aujourd&rsquo;hui le moyen le plus sûr d&rsquo;être lue.
-              </p>
-              {emailContact ? (
-                <a
-                  href={`mailto:${emailContact}`}
-                  className="block rounded-m border border-brume bg-nuage p-4 text-[16px] font-semibold text-foret underline decoration-brume-2 underline-offset-4 hover:decoration-foret"
-                >
-                  {emailContact}
-                </a>
-              ) : (
-                <div className="rounded-m border border-attente-bg bg-attente-bg p-4">
-                  <p className="text-[15px] text-attente">
-                    L’adresse n’est pas encore renseignée. Didine la pose depuis sa gestion,
-                    écran « À compléter ».
-                  </p>
-                </div>
-              )}
-            </section>
 
             <section className="rounded-l border border-brume bg-neige p-7">
               <h2 className="mb-3 font-serif text-[22px]">Les vitrines, sur mesure</h2>

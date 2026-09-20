@@ -31,6 +31,12 @@ jobs:
       # alors de contacter Didine au lieu d'afficher un bouton mort.
       NEXT_PUBLIC_PAYPAL_CLIENT_ID: ${{ vars.PAYPAL_CLIENT_ID }}
 
+      # Clé Web3Forms du formulaire de contact. Publique elle aussi : elle sert
+      # d'alias vers l'adresse de Didine, qui n'apparaît donc nulle part sur le
+      # site — ni dans le code, ni pour les robots à spam. Absente, le
+      # formulaire dit qu'il n'est pas en service au lieu d'avaler les messages.
+      NEXT_PUBLIC_WEB3FORMS_KEY: ${{ vars.WEB3FORMS_KEY }}
+
     steps:
       - uses: actions/checkout@v5
 
@@ -97,6 +103,10 @@ jobs:
           if [ "$produits" -lt 1 ]; then
             echo "::error::Aucune fiche produit n'a été produite. Le catalogue est vide ou illisible."
             exit 1
+          fi
+
+          if [ -z "$NEXT_PUBLIC_WEB3FORMS_KEY" ]; then
+            echo "::warning::WEB3FORMS_KEY n'est pas défini : le formulaire de contact annoncera qu'il n'est pas en service."
           fi
 
           if [ -z "$NEXT_PUBLIC_PAYPAL_CLIENT_ID" ]; then
