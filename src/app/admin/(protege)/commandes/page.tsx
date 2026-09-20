@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { formaterPrix, formaterDate } from '@/lib/argent';
 import { Statut } from '../Statut';
@@ -50,7 +51,12 @@ export default async function Commandes() {
               <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <p className="mb-1 flex flex-wrap items-center gap-3">
-                    <span className="font-mono text-[15px] font-medium">{c.reference}</span>
+                    <Link
+                      href={`/admin/commandes/${c.id}`}
+                      className="font-mono text-[15px] font-medium underline decoration-brume-2 underline-offset-4 hover:decoration-grenat hover:text-grenat"
+                    >
+                      {c.reference}
+                    </Link>
                     <Statut statut={c.statut} />
                   </p>
                   <p className="text-[13.5px] text-taupe">
