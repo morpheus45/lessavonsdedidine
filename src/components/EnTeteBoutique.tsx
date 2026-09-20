@@ -31,16 +31,20 @@ export function EnTeteBoutique({ actif }: { actif?: string }) {
           </span>
         </Link>
 
-        <nav aria-label="Navigation principale" className="flex gap-6 text-[14.5px]">
+        <nav aria-label="Navigation principale" className="-my-2 flex gap-5 text-[14.5px]">
           {ENTREES.map((e) => (
             <Link
               key={e.href}
               href={e.href}
               aria-current={actif === e.href ? 'page' : undefined}
+              // py-2 porte la zone cliquable à 40 px de haut. Sans lui elle
+              // faisait 23 px, sous le minimum de 24 px exigé — un lien qu'on
+              // rate au doigt est un lien qui n'existe pas sur téléphone.
               className={
-                actif === e.href
+                'flex items-center px-1 py-2 ' +
+                (actif === e.href
                   ? 'font-semibold text-graphite'
-                  : 'text-taupe transition-colors hover:text-graphite'
+                  : 'text-taupe transition-colors hover:text-graphite')
               }
             >
               {e.libelle}
