@@ -1,4 +1,5 @@
 import { prisma } from './prisma';
+import { lireReglagesBoutique } from '@/app/admin/(protege)/reglages/reglages-boutique';
 
 /**
  * Règles commerciales de la boutique.
@@ -9,11 +10,16 @@ import { prisma } from './prisma';
  * le client peut modifier.
  */
 
-export const LIVRAISON_CENTIMES = 490;
-export const SEUIL_LIVRAISON_OFFERTE_CENTIMES = 3900;
-
-export function calculerLivraison(sousTotalCentimes: number): number {
-  return sousTotalCentimes >= SEUIL_LIVRAISON_OFFERTE_CENTIMES ? 0 : LIVRAISON_CENTIMES;
+/**
+ * Les frais de port et le seuil de gratuité ne sont plus écrits ici : Didine
+ * les modifie depuis /admin/reglages, et ils sont relus en base à chaque
+ * calcul. Les valeurs de repli vivent dans DEFAUTS_BOUTIQUE.
+ */
+export async function calculerLivraison(sousTotalCentimes: number): Promise<number> {
+  const reglages = await lireReglagesBoutique();
+  return sousTotalCentimes >= reglages.seuilLivraisonOfferteCentimes
+    ? 0
+    : reglages.livraisonCentimes;
 }
 
 export type LigneDemandee = {
@@ -142,7 +148,7 @@ export async function validerPanier(lignesDemandees: LigneDemandee[]): Promise<P
   }
 
   const sousTotalCentimes = lignes.reduce((s, l) => s + l.totalCentimes, 0);
-  const livraisonCentimes = calculerLivraison(sousTotalCentimes);
+  const livraisonCentimes = await calculerLivraison(sousTotalCentimes);
 
   return {
     lignes,
