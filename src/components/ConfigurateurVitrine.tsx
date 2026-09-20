@@ -30,9 +30,12 @@ export type ThemeChoix = {
 export function ConfigurateurVitrine({
   formules,
   themes,
+  delai,
 }: {
   formules: FormuleVitrine[];
   themes: ThemeChoix[];
+  /** Délai de fabrication annoncé. Vide tant que Didine ne l'a pas donné. */
+  delai?: string;
 }) {
   const [formuleId, setFormuleId] = useState(formules[0]?.id ?? '');
   const [themeSlug, setThemeSlug] = useState('');
@@ -202,8 +205,7 @@ export function ConfigurateurVitrine({
       </p>
 
       <p className="mt-6 text-[13px] text-taupe">
-        Chaque vitrine est montée à la commande. Comptez environ une semaine de fabrication
-        avant expédition.
+        Chaque vitrine est montée à la commande.{delai ? ` ${delai}` : ''}
       </p>
     </div>
   );

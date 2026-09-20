@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { lireProduits, produitParSlug, lireThemes } from '@/lib/catalogue';
+import { phraseDelaiVitrine } from '@/lib/reponses';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { Galerie } from '@/components/Galerie';
 import { AjoutPanier } from '@/components/AjoutPanier';
@@ -29,6 +30,7 @@ export default async function FicheProduit({ params }: { params: Promise<{ slug:
   if (!produit) notFound();
 
   const themes = produit.personnalisable ? lireThemes() : [];
+  const delai = phraseDelaiVitrine();
   const premiere = produit.formules[0]!;
   const moinsCher = Math.min(...produit.formules.map((f) => f.prixCentimes));
 
@@ -63,6 +65,7 @@ export default async function FicheProduit({ params }: { params: Promise<{ slug:
                 nom: f.nom,
                 prixCentimes: f.prixCentimes,
               }))}
+              delai={delai}
               themes={themes.map((t) => ({
                 slug: t.slug,
                 nom: t.nom,
@@ -106,7 +109,7 @@ export default async function FicheProduit({ params }: { params: Promise<{ slug:
               </summary>
               <div className="pb-5 text-[14px] leading-relaxed text-taupe">
                 {produit.type === 'vitrine'
-                  ? "Chaque vitrine est montée à la commande : cadre peint, fond choisi, objets disposés un par un, et le prénom en lettres collées sur le dessus. Comptez environ une semaine avant expédition."
+                  ? `Chaque vitrine est montée à la commande : cadre peint, fond choisi, objets disposés un par un, et le prénom en lettres collées sur le dessus.${delai ? ` ${delai}` : ''}`
                   : "Rangez le pain hors de l’eau entre deux usages, sur un porte-savon qui draine. À utiliser de préférence dans les 12 mois après ouverture."}
               </div>
             </details>

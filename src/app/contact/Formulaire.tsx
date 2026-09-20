@@ -31,7 +31,7 @@ const INITIAL: EtatContact = {};
 const ETIQUETTE = 'mb-2 block font-mono text-[12px] uppercase tracking-[0.16em] text-taupe';
 const CHAMP = 'w-full rounded-s border border-brume-2 bg-neige px-3.5 text-[15px]';
 
-export function Formulaire() {
+export function Formulaire({ email }: { email: string }) {
   const [etat, action, enCours] = useActionState(preparerMessage, INITIAL);
 
   // React remet à zéro les champs non contrôlés dès que l'action se termine.
@@ -159,7 +159,9 @@ export function Formulaire() {
 
       {/* La clé remet à zéro le retour de la copie quand le texte change :
           « Message copié » ne doit pas survivre au message qu'il désignait. */}
-      {etat.verifie && saisie && <NonBranche key={saisie.message} message={saisie} />}
+      {etat.verifie && saisie && (
+        <NonBranche key={saisie.message} message={saisie} email={email} />
+      )}
     </div>
   );
 }
@@ -168,7 +170,7 @@ export function Formulaire() {
  * Ce qu'on affiche à la place d'un faux accusé d'envoi : l'aveu, le moyen
  * de contact direct, et le texte rendu pour qu'il ne soit pas perdu.
  */
-function NonBranche({ message }: { message: Saisie }) {
+function NonBranche({ message, email }: { message: Saisie; email: string }) {
   const [copie, setCopie] = useState<string | null>(null);
 
   const texteComplet = `Sujet : ${message.sujet}\nDe : ${message.nom} (${message.email})\n\n${message.message}`;
@@ -200,14 +202,28 @@ function NonBranche({ message }: { message: Saisie }) {
         et envoyez-le directement à Didine.
       </p>
 
-      <div className="mb-6 rounded-m border border-attente-bg bg-attente-bg p-5">
-        <p className="mb-1 font-mono text-[12px] uppercase tracking-[0.16em] text-attente">
-          Écrire à
-        </p>
-        <p className="text-[17px] font-semibold text-attente">
-          adresse électronique de Didine — à compléter
-        </p>
-      </div>
+      {email ? (
+        <div className="mb-6 rounded-m border border-brume bg-neige p-5">
+          <p className="mb-1 font-mono text-[12px] uppercase tracking-[0.16em] text-taupe">
+            Écrire à
+          </p>
+          <a
+            href={`mailto:${email}`}
+            className="text-[17px] font-semibold text-foret underline decoration-brume-2 underline-offset-4 hover:decoration-foret"
+          >
+            {email}
+          </a>
+        </div>
+      ) : (
+        <div className="mb-6 rounded-m border border-attente-bg bg-attente-bg p-5">
+          <p className="mb-1 font-mono text-[12px] uppercase tracking-[0.16em] text-attente">
+            Écrire à
+          </p>
+          <p className="text-[17px] font-semibold text-attente">
+            Adresse à venir — Didine ne l’a pas encore renseignée.
+          </p>
+        </div>
+      )}
 
       <div className="rounded-m border border-brume bg-nuage p-5">
         <p className="mb-3 font-mono text-[12px] uppercase tracking-[0.16em] text-taupe">

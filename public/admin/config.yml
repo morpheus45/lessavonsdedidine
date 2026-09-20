@@ -42,6 +42,132 @@ logo_url: https://morpheus45.github.io/lessavonsdedidine/icone-192.png
 locale: fr
 
 collections:
+  # ── Ce qui bloque l'ouverture de la boutique ───────────────────────
+  # Une fiche unique, en tête de liste, où Didine répond aux questions
+  # qu'elle seule peut trancher. Chaque champ vide ici est une chose que
+  # personne d'autre ne peut inventer sans mentir.
+  - name: reponses
+    label: À compléter
+    files:
+      - name: reponses
+        label: Questions en attente
+        file: contenu/reponses.md
+        description: >-
+          Répondez à votre rythme, champ par champ. Ce que vous écrivez ici
+          part directement sur le site. Laissez vide ce dont vous n'êtes pas
+          sûre — mieux vaut un blanc qu'une information fausse.
+        fields:
+          - label: La liste INCI de votre base de savon
+            name: inci
+            widget: text
+            required: false
+            hint: >-
+              LE PLUS URGENT. Recopiez mot à mot la liste de l'étiquette de
+              votre fournisseur, dans le même ordre. La loi impose d'afficher
+              la composition d'un cosmétique, et la fiche contient aujourd'hui
+              un texte d'attente qui ne tiendrait pas devant un contrôle.
+
+          - label: Combien de temps pour monter une vitrine ?
+            name: delaiVitrine
+            widget: string
+            required: false
+            hint: 'J’ai écrit « environ une semaine » sans le savoir. Exemple de réponse : « 4 à 5 jours ».'
+
+          - label: Ce que contient chaque taille de vitrine
+            name: taillesVitrines
+            widget: text
+            required: false
+            hint: >-
+              J’ai inventé « quelques objets », « scène complète », « scène
+              détaillée », et je n’ai aucune dimension. Dites ce qui distingue
+              vraiment la petite, la moyenne et la grande — et leurs tailles
+              si vous les connaissez.
+
+          - label: Votre adresse électronique, celle que les clientes verront
+            name: emailContact
+            widget: string
+            required: false
+            hint: >-
+              Elle sera PUBLIQUE sur la page contact, donc visible des robots à
+              spam. Prenez une adresse dédiée à la boutique plutôt que votre
+              adresse personnelle. Sans elle, aucune cliente ne peut vous
+              joindre.
+
+          - label: Les parfums, rangés par famille — mon rangement tient ?
+            name: relectureParfums
+            widget: text
+            required: false
+            hint: >-
+              Allez voir la page « Les parfums » du site. J’ai rangé vos onze
+              parfums en six familles et décrit chaque odeur, mais je ne les ai
+              jamais sentis. Dites-moi ce qui est faux.
+
+          - label: Depuis quand faites-vous du savon ?
+            name: depuisQuand
+            widget: string
+            required: false
+            hint: Pour la page qui parle de vous. Une année suffit.
+
+          - label: Qu’est-ce qui vous a donné envie de commencer ?
+            name: pourquoi
+            widget: text
+            required: false
+            hint: Deux ou trois phrases, avec vos mots. C’est ce qui distingue une boutique artisanale d’un site de revente.
+
+          - label: Ce que vous préférez fabriquer
+            name: preference
+            widget: text
+            required: false
+            hint: Les savons, les vitrines ? Et pourquoi ?
+
+          - label: Ce qu’on vous demande le plus souvent
+            name: demandeFrequente
+            widget: text
+            required: false
+            hint: Un parfum, un thème de vitrine ? Ça aide à mettre en avant ce qui se vend.
+
+          # ── Mentions légales ──────────────────────────────────────
+          # Obligatoires pour vendre en ligne. Sans elles le site est en
+          # infraction, même s'il fonctionne parfaitement.
+          - label: Votre nom et prénom exacts
+            name: identite
+            widget: string
+            required: false
+            hint: OBLIGATOIRE POUR VENDRE. Tels qu’ils figurent sur votre déclaration d’activité.
+
+          - label: Votre adresse postale professionnelle
+            name: adressePro
+            widget: text
+            required: false
+            hint: OBLIGATOIRE POUR VENDRE. Elle apparaîtra dans les mentions légales.
+
+          - label: Votre numéro SIRET
+            name: siret
+            widget: string
+            required: false
+            hint: OBLIGATOIRE POUR VENDRE. Quatorze chiffres, sur votre avis de situation INSEE.
+
+          - label: Votre assurance professionnelle
+            name: assurance
+            widget: string
+            required: false
+            hint: 'Nom de l’assureur et numéro de contrat. Un cosmétique engage votre responsabilité.'
+
+          - label: Votre médiateur de la consommation
+            name: mediateur
+            widget: string
+            required: false
+            hint: >-
+              OBLIGATION LÉGALE pour un commerce en ligne : vous devez adhérer
+              à un médiateur et afficher ses coordonnées. Si ce n’est pas fait,
+              écrivez « pas encore » — j’expliquerai la démarche à Cédric.
+
+          - label: Autre chose à me dire
+            name: divers
+            widget: text
+            required: false
+            hint: Tout ce qui ne rentre dans aucune case au-dessus.
+
   - name: produits
     label: Produits
     label_singular: Produit

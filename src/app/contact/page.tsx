@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { lireThemes } from '@/lib/catalogue';
+import { lireReponses } from '@/lib/reponses';
 import { Formulaire } from './Formulaire';
 
 // Les thèmes de vitrine viennent de la base : celui que Didine ajoute
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 
 export default function PageContact() {
   const themes = lireThemes();
+  const { emailContact } = lireReponses();
 
   return (
     <>
@@ -45,7 +47,7 @@ export default function PageContact() {
               </p>
             </div>
 
-            <Formulaire />
+            <Formulaire email={emailContact} />
           </div>
 
           <aside className="space-y-10">
@@ -54,14 +56,21 @@ export default function PageContact() {
               <p className="mb-4 text-[14.5px] text-taupe">
                 C&rsquo;est aujourd&rsquo;hui le moyen le plus sûr d&rsquo;être lue.
               </p>
-              <div className="rounded-m border border-attente-bg bg-attente-bg p-4">
-                <p className="mb-1 font-mono text-[12px] uppercase tracking-[0.16em] text-attente">
-                  À compléter
-                </p>
-                <p className="text-[16px] font-semibold text-attente">
-                  adresse électronique de Didine — à compléter
-                </p>
-              </div>
+              {emailContact ? (
+                <a
+                  href={`mailto:${emailContact}`}
+                  className="block rounded-m border border-brume bg-nuage p-4 text-[16px] font-semibold text-foret underline decoration-brume-2 underline-offset-4 hover:decoration-foret"
+                >
+                  {emailContact}
+                </a>
+              ) : (
+                <div className="rounded-m border border-attente-bg bg-attente-bg p-4">
+                  <p className="text-[15px] text-attente">
+                    L’adresse n’est pas encore renseignée. Didine la pose depuis sa gestion,
+                    écran « À compléter ».
+                  </p>
+                </div>
+              )}
             </section>
 
             <section className="rounded-l border border-brume bg-neige p-7">

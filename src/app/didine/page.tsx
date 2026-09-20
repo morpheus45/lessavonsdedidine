@@ -4,6 +4,7 @@ import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { BlurFade } from '@/components/magic/BlurFade';
 import { Photo } from '@/components/Photo';
 import { PARFUMS } from '@/lib/catalogue';
+import { lireReponses, phraseDelaiVitrine } from '@/lib/reponses';
 
 export const metadata: Metadata = {
   title: 'Didine',
@@ -74,6 +75,9 @@ const VITRINES = [
 ] as const;
 
 export default function PageDidine() {
+  const r = lireReponses();
+  const delai = phraseDelaiVitrine();
+
   return (
     <>
       <EnTeteBoutique actif="/didine" />
@@ -114,12 +118,19 @@ export default function PageDidine() {
         {/* ── Ce qui manque : sa parole ───────────────────────────── */}
         <section className="mx-auto max-w-[1240px] px-6 pb-8">
           <BlurFade>
-            <AComplete
-              questions={[
+            {r.depuisQuand || r.pourquoi ? (
+              <div className="space-y-10">
+                {r.depuisQuand && <Reponse titre="Depuis quand" texte={r.depuisQuand} />}
+                {r.pourquoi && <Reponse titre="Ce qui a commencé" texte={r.pourquoi} />}
+              </div>
+            ) : (
+              <AComplete
+                questions={[
                 'Depuis quand est-ce que vous faites des savons ?',
                 'Qu’est-ce qui vous a donné l’envie de commencer ?',
               ]}
-            />
+              />
+            )}
           </BlurFade>
         </section>
 
@@ -170,8 +181,7 @@ export default function PageDidine() {
                   assemblé à l&rsquo;avance.
                 </p>
                 <p className="text-[16px] text-foret-3">
-                  Chaque vitrine part d&rsquo;un cadre vide. Comptez environ une semaine de
-                  fabrication.
+                  Chaque vitrine part d&rsquo;un cadre vide.{delai && ` ${delai}`}
                 </p>
               </BlurFade>
             </div>
@@ -181,12 +191,18 @@ export default function PageDidine() {
         {/* ── Ce qui manque : ses préférences ─────────────────────── */}
         <section className="mx-auto max-w-[1240px] px-6 py-24">
           <BlurFade>
-            <AComplete
-              questions={[
+            {r.preference ? (
+              <div className="space-y-10">
+                {r.preference && <Reponse titre="Ce qu’elle préfère faire" texte={r.preference} />}
+              </div>
+            ) : (
+              <AComplete
+                questions={[
                 'Entre un savon et une vitrine, qu’est-ce que vous préférez fabriquer ?',
                 'Y a-t-il un parfum que vous coulez plus souvent que les autres ?',
               ]}
-            />
+              />
+            )}
           </BlurFade>
         </section>
 
@@ -226,12 +242,18 @@ export default function PageDidine() {
         {/* ── Ce qui manque : la rencontre ────────────────────────── */}
         <section className="mx-auto max-w-[1240px] px-6 pb-24">
           <BlurFade>
-            <AComplete
-              questions={[
+            {r.demandeFrequente ? (
+              <div className="space-y-10">
+                {r.demandeFrequente && <Reponse titre="Ce qu’on lui demande" texte={r.demandeFrequente} />}
+              </div>
+            ) : (
+              <AComplete
+                questions={[
                 'Où est-ce qu’on peut vous rencontrer en vrai ?',
                 'Qu’est-ce qu’on vous demande le plus souvent ?',
               ]}
-            />
+              />
+            )}
           </BlurFade>
         </section>
 
@@ -280,6 +302,17 @@ export default function PageDidine() {
  * Elle est volontairement grande et centrale : cachée dans un commentaire de
  * code, elle ne serait jamais remplie. Là, elle se voit depuis le canapé.
  */
+function Reponse({ titre, texte }: { titre: string; texte: string }) {
+  return (
+    <div className="max-w-[720px]">
+      <p className="mb-3 font-mono text-[12px] uppercase tracking-[0.2em] text-grenat">{titre}</p>
+      <p className="whitespace-pre-line font-serif text-[clamp(20px,2.6vw,26px)] leading-[1.45] tracking-[-0.01em]">
+        {texte}
+      </p>
+    </div>
+  );
+}
+
 function AComplete({ questions }: { questions: readonly string[] }) {
   // Largeur bornée : un encadré de 1240 px pour deux questions courtes
   // laisserait un demi-mètre de blanc mort à sa droite.

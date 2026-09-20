@@ -5,6 +5,7 @@ import { FriseAtelier, type EtapeAtelier } from '@/components/ScenesAnimees';
 import { BlurFade } from '@/components/magic/BlurFade';
 import { Photo } from '@/components/Photo';
 import { PARFUMS, lireThemes } from '@/lib/catalogue';
+import { phraseDelaiVitrine } from '@/lib/reponses';
 
 export const metadata: Metadata = {
   title: "L'atelier",
@@ -41,6 +42,7 @@ const ETAPES: EtapeAtelier[] = [
 
 export default function Atelier() {
   const themes = lireThemes();
+  const delai = phraseDelaiVitrine();
 
   return (
     <>
@@ -128,8 +130,8 @@ export default function Atelier() {
               <p className="mb-10 max-w-[58ch] text-[16px] text-taupe">
                 Le cadre est peint, le fond choisi, les petits objets disposés un par un, et le
                 prénom collé en lettres sur le dessus. Rien n&rsquo;est assemblé à
-                l&rsquo;avance&nbsp;: chaque vitrine part d&rsquo;un cadre vide. Comptez environ
-                une semaine de fabrication.
+                l&rsquo;avance&nbsp;: chaque vitrine part d&rsquo;un cadre vide.
+                  {delai && ` ${delai}`}
               </p>
 
               <ul className="grid gap-5 sm:grid-cols-2">
