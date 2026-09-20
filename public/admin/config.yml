@@ -46,6 +46,10 @@ collections:
   # Une fiche unique, en tête de liste, où Didine répond aux questions
   # qu'elle seule peut trancher. Chaque champ vide ici est une chose que
   # personne d'autre ne peut inventer sans mentir.
+  # ── Ce qu'il manque pour finir le site ─────────────────────────────
+  # Uniquement des questions dont la réponse change quelque chose sur une
+  # page. Rien d'administratif : l'immatriculation et les mentions légales
+  # attendront que l'activité soit déclarée.
   - name: reponses
     label: À compléter
     files:
@@ -53,35 +57,72 @@ collections:
         label: Questions en attente
         file: contenu/reponses.md
         description: >-
-          Répondez à votre rythme, champ par champ. Ce que vous écrivez ici
-          part directement sur le site. Laissez vide ce dont vous n'êtes pas
-          sûre — mieux vaut un blanc qu'une information fausse.
+          Répondez à votre rythme, champ par champ — rien n'est à valider en
+          bloc. Laissez vide ce dont vous n'êtes pas sûre : un blanc vaut
+          mieux qu'une information fausse. Ce que vous écrivez part
+          directement sur le site.
         fields:
           - label: La liste INCI de votre base de savon
             name: inci
             widget: text
             required: false
             hint: >-
-              LE PLUS URGENT. Recopiez mot à mot la liste de l'étiquette de
-              votre fournisseur, dans le même ordre. La loi impose d'afficher
-              la composition d'un cosmétique, et la fiche contient aujourd'hui
-              un texte d'attente qui ne tiendrait pas devant un contrôle.
+              Recopiez mot à mot la liste de l'étiquette de votre fournisseur,
+              dans le même ordre. La fiche des savons contient aujourd'hui un
+              texte d'attente à la place.
+
+          - label: Combien facturez-vous la livraison ?
+            name: fraisPort
+            widget: string
+            required: false
+            hint: >-
+              J'ai écrit 4,90 € sans vous le demander — c'est un chiffre que
+              j'ai inventé, et il s'affiche aujourd'hui dans tous les paniers.
+              Dites-moi le vrai. Exemple : « 5,50 » ou « 0 » si vous l'offrez
+              toujours.
+
+          - label: À partir de quel montant la livraison est-elle offerte ?
+            name: seuilPortOffert
+            widget: string
+            required: false
+            hint: >-
+              Inventé aussi : le site annonce « offerte dès 39 € ». Exemple :
+              « 50 », ou « jamais » si vous la facturez toujours.
+
+          - label: Comment livrez-vous ?
+            name: modeLivraison
+            widget: text
+            required: false
+            hint: >-
+              La Poste, un point relais, en main propre, les trois ? Et
+              livrez-vous partout en France, ou seulement autour de chez vous ?
 
           - label: Combien de temps pour monter une vitrine ?
             name: delaiVitrine
             widget: string
             required: false
-            hint: 'J’ai écrit « environ une semaine » sans le savoir. Exemple de réponse : « 4 à 5 jours ».'
+            hint: >-
+              J'avais écrit « environ une semaine » sans le savoir. Je l'ai
+              retiré du site en attendant votre réponse : aucun délai n'est
+              annoncé pour l'instant. Exemple : « 4 à 5 jours ».
 
-          - label: Ce que contient chaque taille de vitrine
+          - label: Ce qui distingue la petite, la moyenne et la grande vitrine
             name: taillesVitrines
             widget: text
             required: false
             hint: >-
-              J’ai inventé « quelques objets », « scène complète », « scène
-              détaillée », et je n’ai aucune dimension. Dites ce qui distingue
-              vraiment la petite, la moyenne et la grande — et leurs tailles
-              si vous les connaissez.
+              J'ai inventé « quelques objets », « scène complète » et « scène
+              détaillée », et je n'ai aucune dimension. Dites ce qui change
+              vraiment entre les trois, et leurs tailles si vous les savez.
+
+          - label: Acceptez-vous les thèmes sur mesure ?
+            name: themesSurMesure
+            widget: text
+            required: false
+            hint: >-
+              Le site affirme aujourd'hui qu'un thème absent de la liste peut
+              être demandé. Est-ce vrai ? Y a-t-il des thèmes que vous ne
+              savez pas faire, ou que vous ne voulez pas faire ?
 
           - label: Votre adresse électronique, celle que les clientes verront
             name: emailContact
@@ -89,18 +130,24 @@ collections:
             required: false
             hint: >-
               Elle sera PUBLIQUE sur la page contact, donc visible des robots à
-              spam. Prenez une adresse dédiée à la boutique plutôt que votre
+              spam : prenez une adresse dédiée à la boutique plutôt que votre
               adresse personnelle. Sans elle, aucune cliente ne peut vous
               joindre.
 
-          - label: Les parfums, rangés par famille — mon rangement tient ?
+          - label: Votre compte Instagram
+            name: instagram
+            widget: string
+            required: false
+            hint: 'Pour un lien depuis le site. Exemple : didine991. Laissez vide si vous préférez pas.'
+
+          - label: Les parfums rangés par famille — mon rangement tient ?
             name: relectureParfums
             widget: text
             required: false
             hint: >-
-              Allez voir la page « Les parfums » du site. J’ai rangé vos onze
-              parfums en six familles et décrit chaque odeur, mais je ne les ai
-              jamais sentis. Dites-moi ce qui est faux.
+              Allez voir la page « Les parfums ». J'ai rangé vos onze parfums
+              en six familles et décrit chaque odeur, mais je ne les ai jamais
+              sentis. Dites-moi ce qui est faux.
 
           - label: Depuis quand faites-vous du savon ?
             name: depuisQuand
@@ -108,11 +155,11 @@ collections:
             required: false
             hint: Pour la page qui parle de vous. Une année suffit.
 
-          - label: Qu’est-ce qui vous a donné envie de commencer ?
+          - label: Qu'est-ce qui vous a donné envie de commencer ?
             name: pourquoi
             widget: text
             required: false
-            hint: Deux ou trois phrases, avec vos mots. C’est ce qui distingue une boutique artisanale d’un site de revente.
+            hint: Deux ou trois phrases, avec vos mots. C'est ce qui distingue une boutique artisanale d'un site de revente.
 
           - label: Ce que vous préférez fabriquer
             name: preference
@@ -120,53 +167,19 @@ collections:
             required: false
             hint: Les savons, les vitrines ? Et pourquoi ?
 
-          - label: Ce qu’on vous demande le plus souvent
+          - label: Ce qu'on vous demande le plus souvent
             name: demandeFrequente
             widget: text
             required: false
             hint: Un parfum, un thème de vitrine ? Ça aide à mettre en avant ce qui se vend.
 
-          # ── Mentions légales ──────────────────────────────────────
-          # Obligatoires pour vendre en ligne. Sans elles le site est en
-          # infraction, même s'il fonctionne parfaitement.
-          - label: Votre nom et prénom exacts
-            name: identite
-            widget: string
-            required: false
-            hint: OBLIGATOIRE POUR VENDRE. Tels qu’ils figurent sur votre déclaration d’activité.
-
-          - label: Votre adresse postale professionnelle
-            name: adressePro
-            widget: text
-            required: false
-            hint: OBLIGATOIRE POUR VENDRE. Elle apparaîtra dans les mentions légales.
-
-          - label: Votre numéro SIRET
-            name: siret
-            widget: string
-            required: false
-            hint: OBLIGATOIRE POUR VENDRE. Quatorze chiffres, sur votre avis de situation INSEE.
-
-          - label: Votre assurance professionnelle
-            name: assurance
-            widget: string
-            required: false
-            hint: 'Nom de l’assureur et numéro de contrat. Un cosmétique engage votre responsabilité.'
-
-          - label: Votre médiateur de la consommation
-            name: mediateur
-            widget: string
-            required: false
-            hint: >-
-              OBLIGATION LÉGALE pour un commerce en ligne : vous devez adhérer
-              à un médiateur et afficher ses coordonnées. Si ce n’est pas fait,
-              écrivez « pas encore » — j’expliquerai la démarche à Cédric.
-
           - label: Autre chose à me dire
             name: divers
             widget: text
             required: false
-            hint: Tout ce qui ne rentre dans aucune case au-dessus.
+            hint: >-
+              Tout ce qui ne rentre dans aucune case. Une erreur que vous avez
+              vue sur le site, une idée, une question.
 
   - name: produits
     label: Produits

@@ -15,37 +15,37 @@ import { join } from 'node:path';
  */
 export type Reponses = {
   inci: string;
+  fraisPort: string;
+  seuilPortOffert: string;
+  modeLivraison: string;
   delaiVitrine: string;
   taillesVitrines: string;
+  themesSurMesure: string;
   emailContact: string;
+  instagram: string;
   relectureParfums: string;
   depuisQuand: string;
   pourquoi: string;
   preference: string;
   demandeFrequente: string;
-  identite: string;
-  adressePro: string;
-  siret: string;
-  assurance: string;
-  mediateur: string;
   divers: string;
 };
 
 const VIDE: Reponses = {
   inci: '',
+  fraisPort: '',
+  seuilPortOffert: '',
+  modeLivraison: '',
   delaiVitrine: '',
   taillesVitrines: '',
+  themesSurMesure: '',
   emailContact: '',
+  instagram: '',
   relectureParfums: '',
   depuisQuand: '',
   pourquoi: '',
   preference: '',
   demandeFrequente: '',
-  identite: '',
-  adressePro: '',
-  siret: '',
-  assurance: '',
-  mediateur: '',
   divers: '',
 };
 
@@ -68,19 +68,19 @@ export function lireReponses(): Reponses {
 
   cache = {
     inci: lire('inci'),
+    fraisPort: lire('fraisPort'),
+    seuilPortOffert: lire('seuilPortOffert'),
+    modeLivraison: lire('modeLivraison'),
     delaiVitrine: lire('delaiVitrine'),
     taillesVitrines: lire('taillesVitrines'),
+    themesSurMesure: lire('themesSurMesure'),
     emailContact: lire('emailContact'),
+    instagram: lire('instagram'),
     relectureParfums: lire('relectureParfums'),
     depuisQuand: lire('depuisQuand'),
     pourquoi: lire('pourquoi'),
     preference: lire('preference'),
     demandeFrequente: lire('demandeFrequente'),
-    identite: lire('identite'),
-    adressePro: lire('adressePro'),
-    siret: lire('siret'),
-    assurance: lire('assurance'),
-    mediateur: lire('mediateur'),
     divers: lire('divers'),
   };
   return cache;
