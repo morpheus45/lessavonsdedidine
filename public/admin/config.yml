@@ -13,6 +13,16 @@ backend:
   name: github
   repo: morpheus45/lessavonsdedidine
   branch: main
+  # Un seul bouton de connexion, celui qui fonctionne.
+  #
+  # Par défaut le CMS propose d'abord « Sign In with GitHub », en bleu et bien
+  # en évidence — mais ce chemin passe par OAuth, qui exige un service
+  # intermédiaire qu'on n'a pas : il répond « Authentication aborted ». Le
+  # bouton qui marche était le petit gris en dessous.
+  #
+  # Un écran de connexion dont le bouton principal échoue toujours n'est pas
+  # une interface, c'est un piège. On ne garde que le jeton.
+  auth_methods: [token]
 
 # Les photos vivent hors de public/ : ce sont les ORIGINAUX, qui ne doivent
 # pas être publiés tels quels. `public_folder` est l'adresse qu'aura la
