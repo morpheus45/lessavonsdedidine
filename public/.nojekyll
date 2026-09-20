@@ -1,0 +1,6 @@
+Ce fichier vide est indispensable.
+
+GitHub Pages passe par Jekyll, qui ignore tout dossier dont le nom commence
+par un tiret bas. Next.js range justement ses feuilles de style et son
+JavaScript dans /_next/. Sans ce fichier, le site est publié sans styles et
+sans interaction — et rien dans l'interface de GitHub ne le signale.

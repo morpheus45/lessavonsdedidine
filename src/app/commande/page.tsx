@@ -1,30 +1,45 @@
 import type { Metadata } from 'next';
-import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
-import { clientIdPublicPaypal } from '@/lib/paiements';
+import {
+  lireProduits,
+  lireThemes,
+  LIVRAISON_CENTIMES,
+  SEUIL_LIVRAISON_OFFERTE_CENTIMES,
+} from '@/lib/catalogue';
+import type { Tarif } from '@/lib/panier-calcul';
 import { Commande } from './Commande';
-
-export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Commander',
   robots: { index: false },
 };
 
-export default async function PageCommande() {
-  // Lu côté serveur : la clé secrète reste en base, seul l'identifiant
-  // public descend jusqu'au navigateur.
-  const clientId = await clientIdPublicPaypal();
+/**
+ * Page de commande.
+ *
+ * L'identifiant PayPal est PUBLIC — il figure dans l'adresse du script chargé
+ * par la page, il n'y a rien à cacher. La clé secrète, elle, ne peut pas être
+ * utilisée ici : sur un site statique il n'existe aucun endroit pour la
+ * garder. C'est pourquoi l'encaissement n'est pas vérifié côté boutique.
+ */
+export default function PageCommande() {
+  const tarifs: Tarif[] = lireProduits().flatMap((p) =>
+    p.formules.map((f) => ({
+      id: f.id,
+      slug: p.slug,
+      libelle: `${p.nom} — ${f.nom}`,
+      prixCentimes: f.prixCentimes,
+    })),
+  );
 
   return (
-    <>
-      <EnTeteBoutique />
-      <main id="contenu" className="mx-auto max-w-[1000px] px-6 py-20">
-        <h1 className="mb-12 font-serif text-[clamp(38px,6vw,64px)] tracking-[-0.03em]">
-          Votre commande
-        </h1>
-        <Commande clientId={clientId} />
-      </main>
-      <PiedBoutique />
-    </>
+    <Commande
+      tarifs={tarifs}
+      nomsDesThemes={Object.fromEntries(lireThemes().map((t) => [t.slug, t.nom]))}
+      reglages={{
+        livraisonCentimes: LIVRAISON_CENTIMES,
+        seuilLivraisonOfferteCentimes: SEUIL_LIVRAISON_OFFERTE_CENTIMES,
+      }}
+      clientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? ''}
+    />
   );
 }

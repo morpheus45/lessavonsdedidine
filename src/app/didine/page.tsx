@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { BlurFade } from '@/components/magic/BlurFade';
 import { Photo } from '@/components/Photo';
-import { PARFUMS } from '@/lib/catalogue-serveur';
+import { PARFUMS } from '@/lib/catalogue';
 
 export const metadata: Metadata = {
   title: 'Didine',

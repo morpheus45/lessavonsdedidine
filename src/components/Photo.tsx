@@ -13,7 +13,14 @@ export type PhotoAffichable = {
  * construction pour les photos livrées avec le code, soit à la réception
  * pour celles que Didine dépose depuis le backoffice. Une balise <img> avec
  * un `srcset` fait le même travail sans code client.
+ *
+ * Le site vit sous /lessavonsdedidine/ sur GitHub Pages. `basePath` préfixe
+ * next/link et next/image, mais PAS une balise <img> qui pointe vers public/ :
+ * il faut le poser à la main, sinon toutes les photos tombent en 404 une fois
+ * publiées — et seulement une fois publiées.
  */
+const BASE = process.env.NEXT_PUBLIC_BASE ?? '';
+
 export type ProprietesPhoto = {
   photo: PhotoAffichable;
   /**
@@ -36,8 +43,8 @@ export function Photo({ photo, tailles = '100vw', prioritaire, className, alt }:
   return (
     /* eslint-disable-next-line @next/next/no-img-element */
     <img
-      src={photo.url}
-      srcSet={`${photo.urlPetite} 600w, ${photo.url} 1200w`}
+      src={`${BASE}${photo.url}`}
+      srcSet={`${BASE}${photo.urlPetite} 600w, ${BASE}${photo.url} 1200w`}
       sizes={tailles}
       width={photo.largeur}
       height={photo.hauteur}

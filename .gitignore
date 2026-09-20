@@ -48,3 +48,6 @@ _site/
 
 # Base Postgres locale de développement (scripts/base-locale.mjs).
 .base-locale/
+
+# Photos produites à la construction depuis contenu/photos/.
+public/photos/

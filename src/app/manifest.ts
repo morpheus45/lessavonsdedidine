@@ -8,6 +8,10 @@ import type { MetadataRoute } from 'next';
  * s'installait pas. C'est aussi la raison pour laquelle il n'y avait aucune
  * icône dans l'onglet.
  */
+// Un export statique doit savoir écrire ce fichier une fois pour toutes :
+// sans cette ligne, Next refuse de le produire.
+export const dynamic = 'force-static';
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Les Savons de Didine',
@@ -15,7 +19,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description:
       'Savons parfumés et vitrines personnalisées, faits main en petites séries.',
     lang: 'fr',
-    start_url: '/',
+    start_url: '/lessavonsdedidine/',
     display: 'standalone',
     // Le fond d'écran de démarrage reprend le quasi-blanc du site : un blanc
     // pur ferait un éclair avant que la page ne s'affiche.
@@ -23,17 +27,17 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: '#0f3a2c',
     orientation: 'portrait-primary',
     icons: [
-      { src: '/icone-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-      { src: '/icone-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: '/lessavonsdedidine/icone-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/lessavonsdedidine/icone-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
       // `maskable` autorise Android à recadrer l'icône dans sa propre forme.
       // Le monogramme est centré et tient dans le cercle intérieur, il
       // survit donc au rognage.
-      { src: '/icone-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      { src: '/lessavonsdedidine/icone-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
     ],
     shortcuts: [
-      { name: 'La gamme', url: '/savons' },
-      { name: 'Les parfums', url: '/parfums' },
-      { name: 'Suivre ma commande', url: '/suivi' },
+      { name: 'La gamme', url: '/lessavonsdedidine/savons/' },
+      { name: 'Les parfums', url: '/lessavonsdedidine/parfums/' },
+      { name: 'Le panier', url: '/lessavonsdedidine/panier/' },
     ],
   };
 }

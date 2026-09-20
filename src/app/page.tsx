@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { lireProduits } from '@/lib/catalogue-serveur';
+import { lireProduits } from '@/lib/catalogue';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { CarteProduit, type ProduitCarte } from '@/components/CarteProduit';
 import { Photo } from '@/components/Photo';
@@ -10,8 +10,8 @@ import { DotPattern } from '@/components/magic/DotPattern';
 import { NumberTicker } from '@/components/magic/NumberTicker';
 import { BlurFade } from '@/components/magic/BlurFade';
 
-// La gamme vient de la base, donc la page se refait à la demande.
-export const dynamic = 'force-dynamic';
+// Site statique : la page est produite à la construction, à partir des
+// fichiers de contenu/. Un changement au CMS déclenche une reconstruction.
 
 const ARGUMENTS = [
   'Beurre de karité bio',
@@ -71,8 +71,8 @@ const ETAPES: EtapeAtelier[] = [
   },
 ];
 
-export default async function Accueil() {
-  const GAMME: ProduitCarte[] = (await lireProduits()).map((p) => ({
+export default function Accueil() {
+  const GAMME: ProduitCarte[] = lireProduits().map((p) => ({
     slug: p.slug,
     rang: p.rang,
     nom: p.nom,

@@ -4,7 +4,7 @@ import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { FriseAtelier, type EtapeAtelier } from '@/components/ScenesAnimees';
 import { BlurFade } from '@/components/magic/BlurFade';
 import { Photo } from '@/components/Photo';
-import { PARFUMS, lireThemes } from '@/lib/catalogue-serveur';
+import { PARFUMS, lireThemes } from '@/lib/catalogue';
 
 export const metadata: Metadata = {
   title: "L'atelier",
@@ -39,10 +39,8 @@ const ETAPES: EtapeAtelier[] = [
   },
 ];
 
-export const dynamic = 'force-dynamic';
-
-export default async function Atelier() {
-  const themes = await lireThemes();
+export default function Atelier() {
+  const themes = lireThemes();
 
   return (
     <>

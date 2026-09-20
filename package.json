@@ -4,17 +4,14 @@
   "private": true,
   "description": "Boutique en ligne et backoffice de la savonnerie Les Savons de Didine",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "npx serve out",
-    "db:reset": "prisma migrate reset --force && tsx prisma/seed.ts",
-    "db:seed": "tsx prisma/seed.ts",
-    "db:locale": "node scripts/base-locale.mjs"
+    "dev": "node scripts/preparer-photos.mjs && next dev",
+    "build": "node scripts/preparer-photos.mjs && next build",
+    "start": "next start",
+    "photos": "node scripts/preparer-photos.mjs"
   },
   "dependencies": {
-    "@netlify/blobs": "^11.1.0",
-    "@prisma/client": "^6.1.0",
     "clsx": "^2.1.1",
+    "gray-matter": "^4.0.3",
     "motion": "^13.2.0",
     "next": "^15.1.0",
     "react": "^19.0.0",
@@ -22,19 +19,13 @@
     "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
-    "@netlify/plugin-nextjs": "^5.15.13",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "embedded-postgres": "^18.4.0-beta.17",
-    "prisma": "^6.1.0",
     "sharp": "^0.35.4",
     "tailwindcss": "^4.0.0",
     "tsx": "^4.19.0",
     "typescript": "^5.7.0"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
   }
 }

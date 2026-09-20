@@ -1,21 +1,19 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
-import { lireThemes } from '@/lib/catalogue-serveur';
+import { lireThemes } from '@/lib/catalogue';
 import { Formulaire } from './Formulaire';
 
 // Les thèmes de vitrine viennent de la base : celui que Didine ajoute
 // aujourd'hui doit apparaître ici sans redéploiement.
-export const dynamic = 'force-dynamic';
-
 export const metadata: Metadata = {
   title: 'Contact',
   description:
     'Écrire à Didine : une commande en cours, un thème de vitrine sur mesure, une question sur les savons.',
 };
 
-export default async function PageContact() {
-  const themes = await lireThemes();
+export default function PageContact() {
+  const themes = lireThemes();
 
   return (
     <>

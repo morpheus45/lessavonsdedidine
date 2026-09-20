@@ -2,138 +2,139 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { formaterPrix } from '@/lib/argent';
-import { lirePanier, viderPanier, type ArticlePanier } from '@/lib/panier-client';
+import { lirePanier, viderPanier } from '@/lib/panier-client';
+import {
+  calculerPanier,
+  articlesIncomplets,
+  type PanierCalcule,
+  type Tarif,
+  type Reglages,
+} from '@/lib/panier-calcul';
 
 /**
- * Passage de commande.
+ * Paiement PayPal, entièrement dans le navigateur.
  *
- * L'ordre des opérations est celui qui protège l'acheteuse comme la boutique :
+ * ⚠️  Aucune commande n'est enregistrée nulle part. Le site est statique : il
+ * n'y a ni base de données, ni serveur pour recevoir la commande. Tout ce que
+ * Didine reçoit, c'est le courriel de PayPal — et c'est de ce courriel seul
+ * qu'elle tirera le détail de fabrication.
  *
- *   1. la commande est enregistrée chez nous, avec ses montants recalculés
- *      en base — rien n'est accepté depuis le navigateur ;
- *   2. PayPal est ouvert sur ces montants-là ;
- *   3. l'encaissement est déclenché et vérifié côté serveur.
+ * D'où la `description` construite plus bas : elle porte le prénom et le
+ * thème de chaque vitrine, parce que c'est la seule information qui lui
+ * parviendra. Si elle perd ce courriel, la commande est perdue.
  *
- * Si l'acheteuse ferme la fenêtre entre 1 et 3, la commande reste « en
- * attente de paiement » dans le backoffice. Elle n'est pas perdue.
+ * ⚠️  Le montant vient du navigateur. Un acheteur qui modifie le JavaScript
+ * de la page peut payer ce qu'il veut. La parade est humaine : Didine compare
+ * le montant encaissé au contenu de la commande AVANT d'expédier.
  */
-type Etape = 'coordonnees' | 'paiement' | 'payee';
+type Etat = 'chargement' | 'vide' | 'incomplet' | 'pret' | 'paye' | 'erreur';
 
-type Totaux = { sousTotalCentimes: number; livraisonCentimes: number; totalCentimes: number };
-
-type PaypalBoutons = {
+type BoutonsPaypal = {
   Buttons: (options: unknown) => { render: (cible: HTMLElement) => void };
 };
 
-export function Commande({ clientId }: { clientId: string | null }) {
-  const [articles, setArticles] = useState<ArticlePanier[]>([]);
-  const [totaux, setTotaux] = useState<Totaux | null>(null);
-  const [etape, setEtape] = useState<Etape>('coordonnees');
-  const [reference, setReference] = useState<string | null>(null);
+/** PayPal refuse une description au-delà de 127 caractères. */
+const DESCRIPTION_MAX = 127;
+
+export function Commande({
+  tarifs,
+  nomsDesThemes,
+  reglages,
+  clientId,
+}: {
+  tarifs: Tarif[];
+  nomsDesThemes: Record<string, string>;
+  reglages: Reglages;
+  clientId: string;
+}) {
+  const [panier, setPanier] = useState<PanierCalcule | null>(null);
+  const [incomplets, setIncomplets] = useState<string[]>([]);
+  const [etat, setEtat] = useState<Etat>('chargement');
   const [erreur, setErreur] = useState<string | null>(null);
-  const [envoi, setEnvoi] = useState(false);
-  const cibleBoutons = useRef<HTMLDivElement>(null);
-  const boutonsRendus = useRef(false);
+  const cible = useRef<HTMLDivElement>(null);
+  const rendu = useRef(false);
 
-  // Totaux affichés : ceux du serveur, pas ceux du navigateur.
   useEffect(() => {
-    const liste = lirePanier();
-    setArticles(liste);
-    if (liste.length === 0) return;
-
-    void fetch('/api/panier', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        lignes: liste.map((a) => ({
-          varianteId: a.varianteId,
-          quantite: a.quantite,
-          prenom: a.prenom,
-          themeSlug: a.themeSlug,
-        })),
-      }),
-    })
-      .then((r) => r.json())
-      .then((c) => setTotaux(c))
-      .catch(() => setErreur('Impossible de joindre la boutique.'));
-  }, []);
-
-  async function enregistrerCommande(donnees: FormData) {
-    setErreur(null);
-    setEnvoi(true);
-    try {
-      const reponse = await fetch('/api/commandes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          lignes: articles.map((a) => ({
-            varianteId: a.varianteId,
-            quantite: a.quantite,
-            prenom: a.prenom,
-            themeSlug: a.themeSlug,
-          })),
-          email: donnees.get('email'),
-          nom: donnees.get('nom'),
-          adresse: donnees.get('adresse'),
-          codePostal: donnees.get('codePostal'),
-          ville: donnees.get('ville'),
-          pays: 'FR',
-          telephone: donnees.get('telephone') || null,
-        }),
-      });
-      const corps = await reponse.json();
-      if (!reponse.ok) {
-        setErreur(corps.erreur ?? 'La commande n’a pas pu être enregistrée.');
-        return;
-      }
-      setReference(corps.reference);
-      setEtape('paiement');
-    } catch {
-      setErreur('Impossible de joindre la boutique.');
-    } finally {
-      setEnvoi(false);
+    const articles = lirePanier();
+    if (articles.length === 0) {
+      setEtat('vide');
+      return;
     }
-  }
 
-  // Boutons PayPal : chargés seulement une fois la commande enregistrée.
+    const manquants = articlesIncomplets(articles, tarifs);
+    const calcule = calculerPanier(articles, tarifs, reglages, nomsDesThemes);
+    setPanier(calcule);
+    setIncomplets(manquants);
+
+    // Une vitrine sans prénom ni thème n'est pas fabricable : on refuse le
+    // paiement plutôt que d'encaisser une commande impossible à honorer.
+    setEtat(manquants.length > 0 ? 'incomplet' : calcule.lignes.length === 0 ? 'vide' : 'pret');
+  }, [tarifs, reglages, nomsDesThemes]);
+
   useEffect(() => {
-    if (etape !== 'paiement' || !clientId || !reference || boutonsRendus.current) return;
+    if (etat !== 'pret' || !panier || !clientId || rendu.current) return;
 
     const monter = () => {
-      const paypal = (window as unknown as { paypal?: PaypalBoutons }).paypal;
-      if (!paypal || !cibleBoutons.current) return;
-      boutonsRendus.current = true;
+      const paypal = (window as unknown as { paypal?: BoutonsPaypal }).paypal;
+      if (!paypal || !cible.current) return;
+      rendu.current = true;
+
+      // Le bon de fabrication, condensé : c'est tout ce que Didine recevra.
+      const description = panier.lignes
+        .map((l) => `${l.quantite}x ${l.libelle}${l.detailPersonnalisation ? ` (${l.detailPersonnalisation})` : ''}`)
+        .join(' ; ')
+        .slice(0, DESCRIPTION_MAX);
 
       paypal
         .Buttons({
-          createOrder: async () => {
-            const r = await fetch('/api/paiement/creer', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ reference }),
-            });
-            const c = await r.json();
-            if (!r.ok) throw new Error(c.erreur ?? 'Paiement indisponible.');
-            return c.orderId;
-          },
-          onApprove: async (donnees: { orderID: string }) => {
-            const r = await fetch('/api/paiement/capturer', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ orderId: donnees.orderID }),
-            });
-            const c = await r.json();
-            if (!r.ok) {
-              setErreur(c.erreur ?? 'L’encaissement a échoué.');
-              return;
-            }
+          createOrder: (_donnees: unknown, actions: {
+            order: { create: (o: unknown) => Promise<string> };
+          }) =>
+            actions.order.create({
+              intent: 'CAPTURE',
+              purchase_units: [
+                {
+                  description,
+                  amount: {
+                    currency_code: 'EUR',
+                    value: (panier.totalCentimes / 100).toFixed(2),
+                    breakdown: {
+                      item_total: {
+                        currency_code: 'EUR',
+                        value: (panier.sousTotalCentimes / 100).toFixed(2),
+                      },
+                      shipping: {
+                        currency_code: 'EUR',
+                        value: (panier.livraisonCentimes / 100).toFixed(2),
+                      },
+                    },
+                  },
+                  items: panier.lignes.map((l) => ({
+                    name: l.libelle.slice(0, 127),
+                    quantity: String(l.quantite),
+                    unit_amount: {
+                      currency_code: 'EUR',
+                      value: (l.prixUnitaireCentimes / 100).toFixed(2),
+                    },
+                  })),
+                },
+              ],
+            }),
+          onApprove: async (_donnees: unknown, actions: {
+            order: { capture: () => Promise<unknown> };
+          }) => {
+            await actions.order.capture();
             viderPanier();
-            setEtape('payee');
+            setEtat('paye');
           },
-          onError: () => setErreur('Le paiement n’a pas abouti. Rien n’a été débité.'),
+          onError: () => {
+            setErreur("Le paiement n'a pas abouti. Rien n'a été débité. Vous pouvez réessayer, ou contacter Didine.");
+            setEtat('erreur');
+          },
         })
-        .render(cibleBoutons.current);
+        .render(cible.current);
     };
 
     if ((window as unknown as { paypal?: unknown }).paypal) {
@@ -143,199 +144,146 @@ export function Commande({ clientId }: { clientId: string | null }) {
     const script = document.createElement('script');
     script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(clientId)}&currency=EUR&locale=fr_FR`;
     script.onload = monter;
-    script.onerror = () => setErreur('PayPal n’a pas pu être chargé.');
+    script.onerror = () => {
+      setErreur("PayPal n'a pas pu être chargé. Vérifiez votre connexion, ou contactez Didine.");
+      setEtat('erreur');
+    };
     document.body.appendChild(script);
-  }, [etape, clientId, reference]);
-
-  if (etape === 'payee') {
-    return (
-      <div className="rounded-l border border-foret bg-neige p-10">
-        <h2 className="mb-3 font-serif text-[32px] text-foret">Merci !</h2>
-        <p className="mb-2 text-[16px]">
-          Votre commande <strong className="font-mono">{reference}</strong> est payée.
-        </p>
-        <p className="mb-8 text-[15px] text-taupe">
-          PayPal vous envoie un reçu par courriel. Didine reçoit votre commande avec le détail de
-          fabrication et vous écrit dès qu&rsquo;elle part.
-        </p>
-        <Link
-          href="/savons"
-          className="inline-block rounded-s bg-grenat px-7 py-3.5 text-[15px] font-semibold text-nuage"
-        >
-          Retour à la boutique
-        </Link>
-      </div>
-    );
-  }
-
-  if (articles.length === 0) {
-    return (
-      <div className="rounded-l border border-brume bg-neige p-10">
-        <p className="mb-6 text-[17px] text-taupe">Votre panier est vide.</p>
-        <Link
-          href="/savons"
-          className="inline-block rounded-s bg-grenat px-7 py-3.5 text-[15px] font-semibold text-nuage"
-        >
-          Voir la gamme
-        </Link>
-      </div>
-    );
-  }
-
-  const etiquette = 'mb-2 block font-mono text-[11.5px] uppercase tracking-[0.16em] text-taupe';
-  const champ =
-    'w-full min-h-[48px] rounded-s border border-brume-2 bg-neige px-3.5 text-[15px]';
+  }, [etat, panier, clientId]);
 
   return (
-    <div className="grid gap-14 lg:grid-cols-[1fr_340px]">
-      <div>
-        {etape === 'coordonnees' ? (
-          <form action={enregistrerCommande}>
-            <h2 className="mb-6 font-serif text-[26px]">Livraison</h2>
+    <>
+      <EnTeteBoutique />
 
-            <div className="mb-5 grid gap-5 sm:grid-cols-2">
-              <div className="sm:col-span-2">
-                <label htmlFor="nom" className={etiquette}>
-                  Nom et prénom
-                </label>
-                <input id="nom" name="nom" required autoComplete="name" className={champ} />
-              </div>
-              <div className="sm:col-span-2">
-                <label htmlFor="email" className={etiquette}>
-                  Adresse électronique
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  autoComplete="email"
-                  aria-describedby="aide-email"
-                  className={champ}
-                />
-                <p id="aide-email" className="mt-1.5 text-[12.5px] text-taupe">
-                  Pour le suivi de votre commande, rien d&rsquo;autre.
-                </p>
-              </div>
-              <div className="sm:col-span-2">
-                <label htmlFor="adresse" className={etiquette}>
-                  Adresse
-                </label>
-                <input
-                  id="adresse"
-                  name="adresse"
-                  required
-                  autoComplete="street-address"
-                  className={champ}
-                />
-              </div>
-              <div>
-                <label htmlFor="codePostal" className={etiquette}>
-                  Code postal
-                </label>
-                <input
-                  id="codePostal"
-                  name="codePostal"
-                  required
-                  inputMode="numeric"
-                  autoComplete="postal-code"
-                  className={champ}
-                />
-              </div>
-              <div>
-                <label htmlFor="ville" className={etiquette}>
-                  Ville
-                </label>
-                <input
-                  id="ville"
-                  name="ville"
-                  required
-                  autoComplete="address-level2"
-                  className={champ}
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <label htmlFor="telephone" className={etiquette}>
-                  Téléphone (facultatif)
-                </label>
-                <input
-                  id="telephone"
-                  name="telephone"
-                  type="tel"
-                  autoComplete="tel"
-                  className={champ}
-                />
-              </div>
-            </div>
+      <main id="contenu" className="mx-auto max-w-[760px] px-6 py-20">
+        <h1 className="mb-10 font-serif text-[clamp(38px,6vw,64px)] tracking-[-0.03em]">
+          Votre commande
+        </h1>
 
-            <button
-              type="submit"
-              disabled={envoi}
-              className="min-h-[52px] w-full cursor-pointer rounded-s bg-grenat px-6 text-[15px] font-semibold text-nuage transition-opacity hover:opacity-90 disabled:opacity-60"
+        {etat === 'chargement' && (
+          <p aria-live="polite" className="text-taupe">
+            Chargement…
+          </p>
+        )}
+
+        {etat === 'vide' && (
+          <div className="rounded-l border border-brume bg-neige p-10">
+            <p className="mb-6 text-[17px] text-taupe">Votre panier est vide.</p>
+            <Link
+              href="/savons"
+              className="inline-block rounded-s bg-grenat px-7 py-3.5 text-[15px] font-semibold text-nuage"
             >
-              {envoi ? 'Enregistrement…' : 'Continuer vers le paiement'}
-            </button>
-          </form>
-        ) : (
-          <div>
-            <h2 className="mb-2 font-serif text-[26px]">Paiement</h2>
-            <p className="mb-6 text-[14.5px] text-taupe">
-              Commande <strong className="font-mono">{reference}</strong> enregistrée. Elle est
-              conservée même si vous fermez cette page.
+              Voir la gamme
+            </Link>
+          </div>
+        )}
+
+        {etat === 'incomplet' && (
+          <div role="alert" className="rounded-l border border-attente-bg bg-attente-bg p-8">
+            <p className="mb-2 text-[16px] font-semibold text-attente">
+              Il manque le prénom ou le thème.
             </p>
+            <p className="mb-6 text-[14.5px] text-attente">
+              Une vitrine se fabrique autour d&rsquo;un prénom et d&rsquo;une scène&nbsp;: sans
+              eux, elle n&rsquo;est pas réalisable. À compléter pour&nbsp;:{' '}
+              {incomplets.join(', ')}.
+            </p>
+            <Link
+              href="/savons/vitrine-personnalisee"
+              className="inline-block rounded-s bg-grenat px-7 py-3.5 text-[15px] font-semibold text-nuage"
+            >
+              Compléter ma vitrine
+            </Link>
+          </div>
+        )}
+
+        {etat === 'paye' && (
+          <div className="rounded-l border border-foret bg-neige p-10">
+            <h2 className="mb-3 font-serif text-[32px] text-foret">Merci !</h2>
+            <p className="mb-2 text-[16px]">Votre paiement est enregistré chez PayPal.</p>
+            <p className="mb-8 text-[15px] text-taupe">
+              PayPal vous envoie un reçu par courriel, et prévient Didine avec le détail de votre
+              commande. Elle vous écrit dès qu&rsquo;elle prépare votre colis. Gardez ce reçu, il
+              vous servira de preuve d&rsquo;achat.
+            </p>
+            <Link
+              href="/savons"
+              className="inline-block rounded-s bg-grenat px-7 py-3.5 text-[15px] font-semibold text-nuage"
+            >
+              Retour à la boutique
+            </Link>
+          </div>
+        )}
+
+        {(etat === 'pret' || etat === 'erreur') && panier && (
+          <>
+            <ul className="mb-6 border-y border-brume">
+              {panier.lignes.map((l) => (
+                <li key={l.id} className="flex flex-wrap justify-between gap-3 border-b border-brume py-3.5 last:border-0">
+                  <span className="text-[15px]">
+                    {l.quantite} × {l.libelle}
+                    {l.detailPersonnalisation && (
+                      <span className="ml-2 font-mono text-[12.5px] text-grenat">
+                        {l.detailPersonnalisation}
+                      </span>
+                    )}
+                  </span>
+                  <span className="font-mono text-[15px] tabulaire">
+                    {formaterPrix(l.totalCentimes)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <dl className="mb-8 space-y-2 text-[15px]">
+              <div className="flex justify-between">
+                <dt>Sous-total</dt>
+                <dd className="font-mono tabulaire">{formaterPrix(panier.sousTotalCentimes)}</dd>
+              </div>
+              <div className="flex justify-between">
+                <dt>Livraison</dt>
+                <dd className="font-mono tabulaire">
+                  {panier.livraisonCentimes === 0 ? (
+                    <span className="font-semibold text-foret">Offerte</span>
+                  ) : (
+                    formaterPrix(panier.livraisonCentimes)
+                  )}
+                </dd>
+              </div>
+              <div className="flex justify-between border-t border-brume-2 pt-3 text-[20px] font-bold">
+                <dt>Total</dt>
+                <dd className="font-mono tabulaire">{formaterPrix(panier.totalCentimes)}</dd>
+              </div>
+            </dl>
 
             {clientId ? (
-              <div ref={cibleBoutons} />
+              <>
+                <div ref={cible} />
+                <p className="mt-6 text-[13px] text-taupe">
+                  Votre adresse de livraison est celle enregistrée chez PayPal. Vous la vérifiez
+                  et pouvez la changer avant de valider.
+                </p>
+              </>
             ) : (
               <div className="rounded-m border border-attente-bg bg-attente-bg p-6">
                 <p className="mb-2 text-[15px] font-semibold text-attente">
                   Le paiement en ligne n&rsquo;est pas encore activé.
                 </p>
                 <p className="text-[14px] text-attente">
-                  Votre commande est bien enregistrée sous la référence{' '}
-                  <strong className="font-mono">{reference}</strong>. Contactez Didine pour
-                  convenir du règlement — elle a tout le détail de votre commande.
+                  Notez votre sélection et contactez Didine pour convenir du règlement — elle
+                  prépare votre commande à la main de toute façon.
                 </p>
               </div>
             )}
-          </div>
-        )}
 
-        <p aria-live="polite" className="mt-4 min-h-[24px] text-[14px]">
-          {erreur && <span className="text-alerte">{erreur}</span>}
-        </p>
-      </div>
-
-      <aside className="h-fit rounded-l border border-brume bg-neige p-7">
-        <h2 className="mb-6 font-serif text-[24px]">Votre commande</h2>
-        {totaux ? (
-          <dl className="space-y-3 text-[14.5px]">
-            <div className="flex justify-between">
-              <dt>Sous-total</dt>
-              <dd className="font-mono tabulaire">{formaterPrix(totaux.sousTotalCentimes)}</dd>
-            </div>
-            <div className="flex justify-between">
-              <dt>Livraison</dt>
-              <dd className="font-mono tabulaire">
-                {totaux.livraisonCentimes === 0 ? (
-                  <span className="font-semibold text-foret">Offerte</span>
-                ) : (
-                  formaterPrix(totaux.livraisonCentimes)
-                )}
-              </dd>
-            </div>
-            <div className="flex justify-between border-t border-brume-2 pt-4 text-[19px] font-bold">
-              <dt>Total</dt>
-              <dd className="font-mono tabulaire">{formaterPrix(totaux.totalCentimes)}</dd>
-            </div>
-          </dl>
-        ) : (
-          <p className="text-taupe">Calcul…</p>
+            <p aria-live="polite" className="mt-4 min-h-[24px] text-[14px]">
+              {erreur && <span className="text-alerte">{erreur}</span>}
+            </p>
+          </>
         )}
-        <p className="mt-5 text-[13px] text-taupe">
-          Montants calculés par la boutique, pas par votre navigateur.
-        </p>
-      </aside>
-    </div>
+      </main>
+
+      <PiedBoutique />
+    </>
   );
 }

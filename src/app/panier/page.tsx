@@ -1,236 +1,45 @@
-'use client';
-
-import { useCallback, useEffect, useState } from 'react';
-import Link from 'next/link';
-import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
-import { formaterPrix } from '@/lib/argent';
+import type { Metadata } from 'next';
 import {
-  lirePanier,
-  changerQuantite,
-  retirer,
-  ligneId,
-  surChangement,
-  type ArticlePanier,
-} from '@/lib/panier-client';
+  lireProduits,
+  lireThemes,
+  LIVRAISON_CENTIMES,
+  SEUIL_LIVRAISON_OFFERTE_CENTIMES,
+} from '@/lib/catalogue';
+import type { Tarif } from '@/lib/panier-calcul';
+import { Panier } from './Panier';
+
+export const metadata: Metadata = {
+  title: 'Votre panier',
+  robots: { index: false },
+};
 
 /**
  * Le panier.
  *
- * Les articles sont retenus dans le navigateur, mais les MONTANTS viennent du
- * serveur : le navigateur n'envoie que des identifiants et des quantités, et
- * `/api/panier` relit les prix en base. Tant que le site était statique, ce
- * calcul se faisait ici même, et un acheteur qui modifiait le JavaScript de
- * la page pouvait payer le montant de son choix. Ce n'est plus le cas.
+ * Les tarifs sont figés ici, à la construction, et passés au navigateur. Sur
+ * un site statique il n'y a rien pour les relire ensuite — voir
+ * l'avertissement en tête de `src/lib/panier-calcul.ts`.
  */
-type LigneValidee = {
-  varianteId: string;
-  libelle: string;
-  prixUnitaireCentimes: number;
-  quantite: number;
-  totalCentimes: number;
-  prenom: string | null;
-  themeNom: string | null;
-};
-
-type PanierValide = {
-  lignes: LigneValidee[];
-  sousTotalCentimes: number;
-  livraisonCentimes: number;
-  totalCentimes: number;
-};
-
-type Etat = 'chargement' | 'pret' | 'erreur';
-
 export default function PagePanier() {
-  const [articles, setArticles] = useState<ArticlePanier[]>([]);
-  const [panier, setPanier] = useState<PanierValide | null>(null);
-  const [etat, setEtat] = useState<Etat>('chargement');
-  const [message, setMessage] = useState<string | null>(null);
+  const tarifs: Tarif[] = lireProduits().flatMap((p) =>
+    p.formules.map((f) => ({
+      id: f.id,
+      slug: p.slug,
+      libelle: `${p.nom} — ${f.nom}`,
+      prixCentimes: f.prixCentimes,
+    })),
+  );
 
-  const rafraichir = useCallback(async () => {
-    const liste = lirePanier();
-    setArticles(liste);
-
-    if (liste.length === 0) {
-      setPanier({ lignes: [], sousTotalCentimes: 0, livraisonCentimes: 0, totalCentimes: 0 });
-      setEtat('pret');
-      return;
-    }
-
-    try {
-      const reponse = await fetch('/api/panier', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          lignes: liste.map((a) => ({
-            varianteId: a.varianteId,
-            quantite: a.quantite,
-            prenom: a.prenom,
-            themeSlug: a.themeSlug,
-          })),
-        }),
-      });
-      const corps = await reponse.json();
-      if (!reponse.ok) {
-        setMessage(corps.erreur ?? 'Le panier n’a pas pu être vérifié.');
-        setEtat('erreur');
-        return;
-      }
-      setPanier(corps);
-      setMessage(null);
-      setEtat('pret');
-    } catch {
-      setMessage('Impossible de joindre la boutique. Vérifiez votre connexion.');
-      setEtat('erreur');
-    }
-  }, []);
-
-  useEffect(() => {
-    void rafraichir();
-    return surChangement(() => void rafraichir());
-  }, [rafraichir]);
-
-  const vide = panier !== null && panier.lignes.length === 0;
+  const nomsDesThemes = Object.fromEntries(lireThemes().map((t) => [t.slug, t.nom]));
 
   return (
-    <>
-      <EnTeteBoutique />
-
-      <main id="contenu" className="mx-auto max-w-[1000px] px-6 py-20">
-        <h1 className="mb-12 font-serif text-[clamp(38px,6vw,64px)] tracking-[-0.03em]">
-          Votre panier
-        </h1>
-
-        {message && (
-          <p
-            role="alert"
-            className="mb-8 rounded-s border border-alerte px-5 py-4 text-[14.5px] text-alerte"
-          >
-            {message}
-          </p>
-        )}
-
-        {etat === 'chargement' ? (
-          <p aria-live="polite" className="text-taupe">
-            Chargement…
-          </p>
-        ) : vide ? (
-          <div className="rounded-l border border-brume bg-neige p-10">
-            <p className="mb-6 text-[17px] text-taupe">Votre panier est vide.</p>
-            <Link
-              href="/savons"
-              className="inline-block rounded-s bg-grenat px-7 py-3.5 text-[15px] font-semibold text-nuage"
-            >
-              Voir la gamme
-            </Link>
-          </div>
-        ) : (
-          panier && (
-            <div className="grid gap-16 lg:grid-cols-[1fr_360px]">
-              <ul className="border-t border-brume">
-                {panier.lignes.map((l, index) => {
-                  const article = articles[index];
-                  const id = article ? ligneId(article) : l.varianteId;
-                  const detail = [l.prenom && `« ${l.prenom} »`, l.themeNom]
-                    .filter(Boolean)
-                    .join(' · ');
-
-                  return (
-                    <li
-                      key={`${l.varianteId}-${index}`}
-                      className="grid grid-cols-[1fr_auto] items-center gap-6 border-b border-brume py-6"
-                    >
-                      <div>
-                        <p className="mb-1 text-[15.5px] font-semibold">{l.libelle}</p>
-                        {detail && (
-                          <p className="mb-1 font-mono text-[12.5px] text-grenat">{detail}</p>
-                        )}
-                        <p className="font-mono text-[12.5px] text-taupe tabulaire">
-                          {formaterPrix(l.prixUnitaireCentimes)} l&rsquo;unité
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => retirer(id)}
-                          className="mt-2 cursor-pointer border-b border-brume-2 text-[13px] text-taupe hover:border-alerte hover:text-alerte"
-                        >
-                          Retirer
-                        </button>
-                      </div>
-
-                      <div className="flex items-center gap-5">
-                        <div className="flex items-center rounded-s border border-brume-2 bg-neige">
-                          <button
-                            type="button"
-                            onClick={() => changerQuantite(id, l.quantite - 1)}
-                            aria-label={`Diminuer la quantité de ${l.libelle}`}
-                            className="min-h-[44px] cursor-pointer px-3.5 text-[17px] hover:text-grenat"
-                          >
-                            −
-                          </button>
-                          <span className="min-w-[44px] border-x border-brume text-center font-mono leading-[44px] tabulaire">
-                            {l.quantite}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => changerQuantite(id, l.quantite + 1)}
-                            aria-label={`Augmenter la quantité de ${l.libelle}`}
-                            className="min-h-[44px] cursor-pointer px-3.5 text-[17px] hover:text-grenat"
-                          >
-                            +
-                          </button>
-                        </div>
-                        <p className="min-w-[90px] text-right font-mono text-[16px] tabulaire">
-                          {formaterPrix(l.totalCentimes)}
-                        </p>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-
-              <aside className="h-fit rounded-l border border-brume bg-neige p-7">
-                <h2 className="mb-6 font-serif text-[26px]">Récapitulatif</h2>
-
-                <dl className="space-y-3 text-[14.5px]">
-                  <div className="flex justify-between">
-                    <dt>Sous-total</dt>
-                    <dd className="font-mono tabulaire">
-                      {formaterPrix(panier.sousTotalCentimes)}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between">
-                    <dt>Livraison</dt>
-                    <dd className="font-mono tabulaire">
-                      {panier.livraisonCentimes === 0 ? (
-                        <span className="font-semibold text-foret">Offerte</span>
-                      ) : (
-                        formaterPrix(panier.livraisonCentimes)
-                      )}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between border-t border-brume-2 pt-4 text-[19px] font-bold">
-                    <dt>Total</dt>
-                    <dd className="font-mono tabulaire">{formaterPrix(panier.totalCentimes)}</dd>
-                  </div>
-                </dl>
-
-                <p className="my-5 text-[13px] text-taupe">
-                  Montants vérifiés par la boutique.
-                </p>
-
-                <Link
-                  href="/commande"
-                  className="block cursor-pointer rounded-s bg-grenat py-3.5 text-center text-[15px] font-semibold text-nuage transition-opacity hover:opacity-90"
-                >
-                  Commander
-                </Link>
-              </aside>
-            </div>
-          )
-        )}
-      </main>
-
-      <PiedBoutique />
-    </>
+    <Panier
+      tarifs={tarifs}
+      nomsDesThemes={nomsDesThemes}
+      reglages={{
+        livraisonCentimes: LIVRAISON_CENTIMES,
+        seuilLivraisonOfferteCentimes: SEUIL_LIVRAISON_OFFERTE_CENTIMES,
+      }}
+    />
   );
 }

@@ -1,15 +1,16 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { lireProduit, lireThemes } from '@/lib/catalogue-serveur';
+import { lireProduits, produitParSlug, lireThemes } from '@/lib/catalogue';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { Galerie } from '@/components/Galerie';
 import { AjoutPanier } from '@/components/AjoutPanier';
 import { ConfigurateurVitrine } from '@/components/ConfigurateurVitrine';
 import { formaterPrix } from '@/lib/argent';
 
-// Le catalogue est modifiable depuis le backoffice : la fiche est donc
-// reconstruite à la demande, pas figée à la construction.
-export const dynamic = 'force-dynamic';
+/** Site statique : une page HTML est produite par produit à la construction. */
+export function generateStaticParams() {
+  return lireProduits().map((p) => ({ slug: p.slug }));
+}
 
 export async function generateMetadata({
   params,
@@ -17,17 +18,17 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const produit = await lireProduit(slug);
+  const produit = produitParSlug(slug);
   if (!produit) return { title: 'Article introuvable' };
   return { title: produit.nom, description: produit.accroche };
 }
 
 export default async function FicheProduit({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const produit = await lireProduit(slug);
+  const produit = produitParSlug(slug);
   if (!produit) notFound();
 
-  const themes = produit.personnalisable ? await lireThemes() : [];
+  const themes = produit.personnalisable ? lireThemes() : [];
   const premiere = produit.formules[0]!;
   const moinsCher = Math.min(...produit.formules.map((f) => f.prixCentimes));
 

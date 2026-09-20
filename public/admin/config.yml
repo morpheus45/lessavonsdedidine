@@ -1,0 +1,184 @@
+# Gestion du catalogue — ce que Didine voit sur /admin/.
+#
+# Chaque modification faite ici devient un commit dans le dépôt GitHub, et la
+# publication se refait toute seule. Il n'y a ni serveur ni base de données :
+# le contenu EST le dépôt.
+#
+# Les photos déposées ici partent dans contenu/photos/ telles qu'elles sortent
+# du téléphone. Elles sont redressées, réduites en 1200 et 600 px et converties
+# en WebP à la construction, par scripts/preparer-photos.mjs. Didine n'a rien
+# à préparer.
+
+backend:
+  name: github
+  repo: morpheus45/lessavonsdedidine
+  branch: main
+
+# Les photos vivent hors de public/ : ce sont les ORIGINAUX, qui ne doivent
+# pas être publiés tels quels. `public_folder` est l'adresse qu'aura la
+# version réduite une fois le site construit.
+media_folder: contenu/photos
+public_folder: /photos
+
+# Le site est reconstruit à chaque commit : on prévient plutôt que de laisser
+# Didine recharger la page en se demandant pourquoi rien ne bouge.
+site_url: https://morpheus45.github.io/lessavonsdedidine/
+display_url: https://morpheus45.github.io/lessavonsdedidine/
+logo_url: https://morpheus45.github.io/lessavonsdedidine/icone-192.png
+
+locale: fr
+
+collections:
+  - name: produits
+    label: Produits
+    label_singular: Produit
+    folder: contenu/produits
+    create: true
+    slug: '{{slug}}'
+    identifier_field: nom
+    summary: '{{nom}} — {{accroche}}'
+    sortable_fields: [rang, nom]
+    fields:
+      - label: Nom
+        name: nom
+        widget: string
+        hint: Le nom affiché en boutique. Il sert aussi à fabriquer l’adresse de la page.
+
+      - label: Type
+        name: type
+        widget: select
+        default: savon
+        options:
+          - { label: Savon ou coffret de savons, value: savon }
+          - { label: Vitrine personnalisée, value: vitrine }
+        hint: Une vitrine demande un prénom et un thème à la cliente avant d’être commandable.
+
+      - label: En vente
+        name: actif
+        widget: boolean
+        default: false
+        hint: Décoché, le produit n’apparaît nulle part sur la boutique. Laissez-le décoché tant qu’il n’est pas prêt.
+
+      - label: Ordre d’affichage
+        name: rang
+        widget: number
+        value_type: int
+        default: 10
+        min: 1
+        hint: Le plus petit nombre passe en premier.
+
+      - label: Accroche
+        name: accroche
+        widget: string
+        hint: 'La phrase sous le nom. Exemple : « 11 parfums au choix, coulés à la main ».'
+
+      - label: Descriptif
+        name: description
+        widget: text
+        hint: Ce qu’on lit sur la fiche. Dites ce que c’est et comment c’est fait, sans rien promettre que le savon ne fait pas.
+
+      - label: Composition (INCI)
+        name: inci
+        widget: text
+        required: false
+        hint: >-
+          Obligatoire pour un savon : la réglementation cosmétique impose
+          d’afficher la composition. Recopiez la liste de l’étiquette du
+          fournisseur, dans le même ordre. À laisser vide pour une vitrine,
+          qui est un objet de décoration.
+
+      - label: Formats et prix
+        name: formules
+        widget: list
+        label_singular: Format
+        summary: '{{fields.nom}} — {{fields.prixCentimes}} centimes'
+        hint: Le prix le plus bas s’affiche en boutique comme « à partir de ».
+        fields:
+          - label: Nom du format
+            name: nom
+            widget: string
+            hint: 'Exemple : « Lot de 5 — 4 achetés, 1 offert », « Grande ».'
+          - label: Prix en centimes
+            name: prixCentimes
+            widget: number
+            value_type: int
+            min: 1
+            hint: 'En CENTIMES, sans virgule : 20 € s’écrit 2000. C’est volontaire — un prix à virgule finit toujours par se tromper d’un centime.'
+          - label: Nombre d’unités
+            name: unites
+            widget: number
+            value_type: int
+            default: 1
+            min: 1
+            hint: 5 pour un lot de 5 savons, 1 pour une vitrine.
+          - label: Poids net en grammes
+            name: poidsGrammes
+            widget: number
+            value_type: int
+            default: 0
+            required: false
+            hint: Pour l’étiquetage réglementaire d’un savon. 0 pour une vitrine.
+
+      - label: Photos
+        name: photos
+        widget: list
+        label_singular: Photo
+        summary: '{{fields.alt}}'
+        hint: La première photo est celle qui s’affiche partout ailleurs sur le site.
+        fields:
+          - label: Fichier
+            name: fichier
+            widget: image
+            hint: Envoyez la photo telle quelle, depuis votre téléphone. Elle est redressée et réduite automatiquement.
+          - label: Description de la photo
+            name: alt
+            widget: string
+            hint: >-
+              Dites ce qu’on voit, en une phrase. C’est lu à voix haute aux
+              personnes aveugles, et c’est ce que Google lit pour référencer
+              la photo. Obligatoire.
+
+  - name: themes
+    label: Thèmes de vitrines
+    label_singular: Thème
+    folder: contenu/themes
+    create: true
+    slug: '{{slug}}'
+    identifier_field: nom
+    summary: '{{nom}}'
+    sortable_fields: [ordre, nom]
+    fields:
+      - label: Nom
+        name: nom
+        widget: string
+        hint: 'Exemple : Safari, Chevaux, Salon.'
+      - label: Proposé aux clientes
+        name: actif
+        widget: boolean
+        default: true
+      - label: Ordre d’affichage
+        name: ordre
+        widget: number
+        value_type: int
+        default: 10
+        min: 0
+      - label: Ce qu’on voit dans la scène
+        name: description
+        widget: text
+        hint: Une phrase sous le nom. C’est ce qui aide la cliente à choisir.
+      - label: Photos
+        name: photos
+        widget: list
+        label_singular: Photo
+        summary: '{{fields.alt}}'
+        hint: >-
+          Une cliente choisit son thème sur la photo. Un thème sans photo se
+          vend à l’aveugle.
+        fields:
+          - label: Fichier
+            name: fichier
+            widget: image
+          - label: Description de la photo
+            name: alt
+            widget: string
+            hint: Dites ce qu’on voit. Obligatoire.

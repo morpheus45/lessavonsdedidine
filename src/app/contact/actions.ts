@@ -1,4 +1,3 @@
-'use server';
 
 /**
  * Formulaire de contact — L'ENVOI N'EST PAS BRANCHÉ. Ce qui reste à faire :
@@ -61,10 +60,10 @@ const LONGUEURS = {
   messageMax: 4000,
 } as const;
 
-export async function preparerMessage(
+export function preparerMessage(
   _precedent: EtatContact,
   donnees: FormData,
-): Promise<EtatContact> {
+): EtatContact {
   const texte = (cle: string) => String(donnees.get(cle) ?? '').trim();
 
   const saisie: Saisie = {
