@@ -26,7 +26,11 @@ site_url: https://morpheus45.github.io/lessavonsdedidine/
 display_url: https://morpheus45.github.io/lessavonsdedidine/
 logo_url: https://morpheus45.github.io/lessavonsdedidine/icone-192.png
 
-locale: fr
+# Pas de « locale: fr » : l'interface de Sveltia CMS n'existe qu'en anglais et
+# en japonais. Les boutons de la coquille (Save, Publish, New…) resteront donc
+# en anglais. Tout ce qui décrit le catalogue — intitulés des champs, aides,
+# messages — est écrit en français ci-dessous, et c'est le gros du texte que
+# Didine a sous les yeux. Voir AIDE-DIDINE.md pour la correspondance.
 
 collections:
   - name: produits
