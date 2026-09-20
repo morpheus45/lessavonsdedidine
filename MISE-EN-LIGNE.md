@@ -12,20 +12,38 @@ conditions d'utilisation.
 
 ---
 
-## 1. La base de données — Neon
+## 1. La base de données — Supabase
 
-<https://neon.com> → créer un compte → **New project**, région *Europe (Frankfurt)*.
+<https://supabase.com> → créer un compte → **New project**, région *Europe
+(Frankfurt)*. Choisir un mot de passe de base de données et le garder.
 
-L'offre gratuite est permanente, autorise l'usage commercial, et ne demande
-pas de carte bancaire. La base s'endort après 5 minutes sans activité et se
-réveille en quelques centaines de millisecondes — le visiteur ne le voit pas.
+L'offre gratuite autorise l'usage commercial et ne demande pas de carte
+bancaire.
 
-Copier la chaîne de connexion proposée (elle commence par `postgresql://`).
-C'est **le seul élément à récupérer ici**.
+Dans **Project Settings → Database → Connection string**, prendre l'entrée
+**Transaction pooler** (port 6543) et y remettre le mot de passe à la place
+de `[YOUR-PASSWORD]`. C'est **le seul élément à récupérer ici**.
 
-> Netlify propose aussi sa propre base en un clic, ce qui éviterait ce compte.
-> Son stockage gratuit s'est arrêté le 1er juillet 2026 : elle consomme
-> désormais des crédits. Neon en direct reste gratuit.
+> Pourquoi le *pooler* et pas la connexion directe : sur Netlify, chaque
+> requête réveille une petite fonction isolée qui ouvre sa propre connexion.
+> Sans regroupement, Postgres atteint sa limite de connexions et refuse du
+> monde un jour d'affluence — exactement le jour où il ne faut pas.
+
+### ⚠️ La mise en pause au bout de 7 jours
+
+Un projet gratuit se met en pause après **7 jours sans la moindre requête**,
+et il faut alors le réveiller à la main depuis leur tableau de bord. Pendant
+ce temps la boutique est inaccessible.
+
+La parade est déjà dans le dépôt : `.github/workflows/reveil-supabase.yml`
+demande une page de la boutique chaque lundi. Pour l'activer, ajouter dans
+**Settings → Secrets and variables → Actions → Variables** du dépôt GitHub :
+
+| Nom | Valeur |
+|---|---|
+| `ADRESSE_BOUTIQUE` | l'adresse Netlify du site, sans barre oblique finale |
+
+Sans cette variable la tâche ne fait rien et le signale.
 
 ## 2. L'hébergement — Netlify
 
@@ -44,7 +62,7 @@ Dans **Project configuration → Environment variables**, ajouter :
 
 | Nom | Valeur |
 |---|---|
-| `DATABASE_URL` | la chaîne copiée chez Neon |
+| `DATABASE_URL` | la chaîne copiée chez Supabase (pooler, port 6543) |
 | `SESSION_SECRET` | une longue phrase au hasard, ≥ 32 caractères |
 | `CHIFFREMENT_CLE` | une autre, ≥ 32 caractères |
 
@@ -61,7 +79,20 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"
 **Ces trois valeurs ne doivent jamais entrer dans le dépôt.** Le workflow de
 vérification échoue si `.env` s'y retrouve.
 
-## 3. Le premier remplissage
+## 3. Développer sans rien installer
+
+Une base Postgres locale est fournie, sans compte ni droits administrateur :
+
+```bash
+npm run db:locale     # démarre Postgres sur le port 55432 (à laisser ouvert)
+npm run db:reset      # crée les tables et remplit le catalogue
+npm run dev           # la boutique sur http://localhost:3000
+```
+
+Les binaires se téléchargent à la première exécution. Les données vivent dans
+`.base-locale/`, qui n'est pas versionné.
+
+## 4. Le premier remplissage
 
 Une fois le premier déploiement passé, depuis le poste :
 
@@ -70,11 +101,23 @@ npx prisma migrate deploy
 npm run db:seed
 ```
 
-avec `DATABASE_URL` pointant sur la base Neon. Cela crée les tables, les deux
+avec `DATABASE_URL` pointant sur la base Supabase. Cela crée les tables, les deux
 produits actuels avec leurs photos, les quatre thèmes, et **le compte
 administrateur** — dont le mot de passe s'affiche à la fin. À changer.
 
-## 4. Brancher PayPal
+### Et les photos ?
+
+Supabase propose aussi un stockage de fichiers, mais les photos déposées
+depuis le backoffice n'y vont pas : elles utilisent le stockage intégré de
+Netlify, qui ne demande **aucune clé et aucune configuration**. Une pièce de
+moins à régler, et une de moins à laisser fuiter.
+
+En développement local, elles vont simplement dans `.photos-locales/`.
+Le code ne connaît que trois fonctions — `ecrire`, `lire`, `supprimer`
+(`src/lib/stockage.ts`) — donc changer d'hébergeur de fichiers un jour ne
+touchera qu'un seul fichier.
+
+## 5. Brancher PayPal
 
 <https://developer.paypal.com> → se connecter avec le compte **professionnel**
 de Didine → **Apps & Credentials** → *Create App*.
@@ -86,7 +129,7 @@ secret est chiffré en base, pour que Didine puisse le changer seule.
 Commencer en **Sandbox** pour faire un achat de bout en bout, puis basculer en
 **Production**.
 
-## 5. Éteindre l'ancienne adresse
+## 6. Éteindre l'ancienne adresse
 
 L'ancien site GitHub Pages reste en ligne tant qu'on ne l'éteint pas, et il
 servirait une version périmée de la boutique — avec un panier qui ne mène
