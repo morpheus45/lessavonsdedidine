@@ -45,3 +45,6 @@ npm-debug.log*
 # Export statique de l'ancienne version GitHub Pages.
 out/
 _site/
+
+# Base Postgres locale de développement (scripts/base-locale.mjs).
+.base-locale/

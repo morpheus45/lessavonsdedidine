@@ -11,7 +11,10 @@ import { JetonPanier } from './JetonPanier';
  */
 const ENTREES = [
   { href: '/savons', libelle: 'Les savons' },
+  { href: '/parfums', libelle: 'Les parfums' },
   { href: '/atelier', libelle: "L'atelier" },
+  { href: '/didine', libelle: 'Didine' },
+  { href: '/contact', libelle: 'Contact' },
 ] as const;
 
 export function EnTeteBoutique({ actif }: { actif?: string }) {
@@ -77,6 +80,16 @@ export function PiedBoutique() {
                 Panier
               </Link>
             </li>
+            <li>
+              <Link href="/parfums" className="text-taupe hover:text-graphite">
+                Les parfums
+              </Link>
+            </li>
+            <li>
+              <Link href="/suivi" className="text-taupe hover:text-graphite">
+                Suivre ma commande
+              </Link>
+            </li>
           </ul>
         </nav>
 
@@ -86,6 +99,16 @@ export function PiedBoutique() {
             <li>
               <Link href="/atelier" className="text-taupe hover:text-graphite">
                 L&rsquo;atelier
+              </Link>
+            </li>
+            <li>
+              <Link href="/didine" className="text-taupe hover:text-graphite">
+                Didine
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" className="text-taupe hover:text-graphite">
+                Contact
               </Link>
             </li>
             <li>

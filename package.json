@@ -7,8 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "npx serve out",
-    "db:reset": "prisma db push --force-reset && npm run db:seed",
-    "pages": "node scripts/build-pages.mjs"
+    "db:reset": "prisma migrate reset --force && tsx prisma/seed.ts",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:locale": "node scripts/base-locale.mjs"
   },
   "dependencies": {
     "@netlify/blobs": "^11.1.0",
@@ -26,10 +27,14 @@
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "embedded-postgres": "^18.4.0-beta.17",
     "prisma": "^6.1.0",
     "sharp": "^0.35.4",
     "tailwindcss": "^4.0.0",
     "tsx": "^4.19.0",
     "typescript": "^5.7.0"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

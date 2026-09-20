@@ -1,21 +1,27 @@
 'use client';
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { motion, useInView, useReducedMotion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { cn } from '@/lib/utils';
 
 /**
  * Révélation au défilement — adaptée de Magic UI.
  *
- * Deux écarts volontaires par rapport à l'implémentation d'origine :
+ * Trois écarts volontaires par rapport à l'implémentation d'origine :
  *
- *   1. Le composant part d'un état VISIBLE. La version d'origine pose
+ *   1. Le HTML servi est déjà lisible. La version d'origine pose
  *      `opacity: 0` dès le rendu serveur : sans JavaScript, ou pendant
- *      l'hydratation, la page est blanche. Ici l'animation ne s'arme
- *      qu'après montage côté client — le HTML servi est lisible tel quel.
+ *      l'hydratation, la page est blanche.
  *
- *   2. `prefers-reduced-motion` court-circuite tout : on rend l'état final
- *      immédiatement, sans transition.
+ *   2. Un bloc DÉJÀ À L'ÉCRAN au chargement n'est jamais animé. Le cacher
+ *      pour le faire réapparaître produirait un clignotement — et surtout,
+ *      si l'observateur manquait son entrée, le bloc resterait invisible
+ *      pour toujours. C'est exactement ce qui arrivait : un bloc rendu
+ *      au-dessus de la zone visible restait à `opacity: 0` indéfiniment.
+ *      Seul ce qui est sous la ligne de flottaison s'anime, et le cacher
+ *      ne se voit donc pas.
+ *
+ *   3. `prefers-reduced-motion` court-circuite tout.
  *
  * Le décalage vertical reste faible (12 px) pour que ça se lise comme un
  * fondu et non comme un glissement.
@@ -38,24 +44,36 @@ export function BlurFade({
   uneFois?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const visible = useInView(ref, { once: uneFois, margin: '-60px' });
   const mouvementReduit = useReducedMotion();
+  const [anime, setAnime] = useState(false);
 
-  // Tant que le composant n'est pas monté côté client, on ne masque rien.
-  const [monte, setMonte] = useState(false);
-  useEffect(() => setMonte(true), []);
+  useEffect(() => {
+    if (mouvementReduit) return;
+    const element = ref.current;
+    if (!element) return;
 
-  if (!monte || mouvementReduit) {
-    return <div className={className}>{children}</div>;
+    const rect = element.getBoundingClientRect();
+    const dansLaVue = rect.top < window.innerHeight && rect.bottom > 0;
+    if (dansLaVue) return;
+
+    setAnime(true);
+  }, [mouvementReduit]);
+
+  if (!anime) {
+    return (
+      <div ref={ref} className={className}>
+        {children}
+      </div>
+    );
   }
 
   return (
     <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: decalage, filter: `blur(${flou})` }}
-      animate={visible ? { opacity: 1, y: 0, filter: 'blur(0px)' } : undefined}
-      transition={{ duration: duree, delay: delai, ease: [0.22, 1, 0.36, 1] }}
       className={cn(className)}
+      initial={{ opacity: 0, y: decalage, filter: `blur(${flou})` }}
+      whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+      viewport={{ once: uneFois, margin: '-60px' }}
+      transition={{ duration: duree, delay: delai, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
     </motion.div>
