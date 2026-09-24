@@ -1,58 +1,45 @@
 import type { Metadata } from 'next';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
-import { SECTIONS } from '@/donnees/questions';
+import { QUESTIONS, DEPART } from '@/donnees/questions';
 import { Questionnaire } from './Questionnaire';
 
 export const metadata: Metadata = {
-  title: 'Questions pour Didine',
-  // Cette page n'a rien à faire dans un moteur de recherche : elle ne
-  // s'adresse qu'à une personne.
+  title: 'Quelques questions',
+  // Cette page ne s'adresse qu'à une personne : rien à faire dans un moteur.
   robots: { index: false, follow: false },
 };
 
 /**
- * Le questionnaire, en accès libre.
+ * La conversation avec Didine, en accès libre.
  *
- * Pas de connexion, pas de compte, pas de jeton : elle ouvre le lien et elle
- * répond. Ses réponses ne partent nulle part tant qu'elle ne clique pas — il
- * n'y a d'ailleurs aucun serveur pour les recevoir.
- *
- * L'écran de gestion sait écrire dans le dépôt, lui, mais au prix d'une
- * identification GitHub. Demander ça pour répondre à des questions n'avait
- * aucun sens.
+ * Pas de compte, pas de jeton : elle ouvre le lien et elle répond. Une
+ * question à la fois, et sa réponse décide de la suivante — dire non aux
+ * vitrines lui épargne les quatre questions qui suivaient.
  */
 export default function PageQuestions() {
-  const total = SECTIONS.reduce((n, s) => n + s.questions.length, 0);
-  const bloquantes = SECTIONS.reduce((n, s) => n + s.questions.filter((q) => q.bloque).length, 0);
+  const bloquantes = QUESTIONS.filter((q) => q.bloque).length;
 
   return (
     <>
       <EnTeteBoutique />
 
-      <main id="contenu" className="mx-auto max-w-[780px] px-6 py-16">
+      <main id="contenu" className="mx-auto max-w-[720px] px-6 py-16">
         <p className="eyebrow mb-5">Pour Didine</p>
-        <h1 className="mb-6 max-w-[18ch] font-serif text-[clamp(36px,6vw,60px)] leading-[1] tracking-[-0.035em]">
-          Ce que j&rsquo;ai inventé et qu&rsquo;il faut corriger
+        <h1 className="mb-6 max-w-[16ch] font-serif text-[clamp(34px,6vw,56px)] leading-[1.02] tracking-[-0.035em]">
+          Quelques questions, une par une
         </h1>
-        <p className="mb-4 max-w-[62ch] text-[17px] text-taupe">
-          Pour construire la boutique, j&rsquo;ai dû écrire des choses que personne ne
-          m&rsquo;avait dites — des délais, des tarifs de livraison, des descriptions. Elles
-          sont sur le site en ce moment, et elles engagent votre parole.
+        <p className="mb-4 max-w-[58ch] text-[16.5px] text-taupe">
+          Merci pour tes réponses — j&rsquo;ai tout appliqué. Le site est passé à l&rsquo;or et
+          au noir, il porte ton nom, et tes dix-huit parfums ont remplacé les onze que
+          j&rsquo;avais inventés.
         </p>
-        <p className="mb-4 max-w-[62ch] text-[17px] text-taupe">
-          Voici {total} questions. {bloquantes} d&rsquo;entre elles empêchent d&rsquo;ouvrir la
-          boutique tant qu&rsquo;elles restent sans réponse&nbsp;: elles sont marquées.
-        </p>
-        <p className="mb-12 max-w-[62ch] text-[17px] text-taupe">
-          Répondez à votre rythme, dans l&rsquo;ordre que vous voulez. Vos réponses sont
-          gardées dans ce navigateur, vous pouvez fermer la page et revenir.{' '}
-          <strong className="text-graphite">
-            Laissez vide ce dont vous n&rsquo;êtes pas sûre
-          </strong>{' '}
-          — un blanc vaut mieux qu&rsquo;une information fausse sur un site de vente.
+        <p className="mb-10 max-w-[58ch] text-[16.5px] text-taupe">
+          Il me reste ça. Tu réponds à ton rythme, et ta réponse décide de la suivante —
+          il n&rsquo;y en aura pas autant que la dernière fois. {bloquantes} d&rsquo;entre
+          elles empêchent d&rsquo;ouvrir la boutique&nbsp;: elles sont signalées.
         </p>
 
-        <Questionnaire sections={SECTIONS} />
+        <Questionnaire questions={QUESTIONS} depart={[...DEPART]} />
       </main>
 
       <PiedBoutique />

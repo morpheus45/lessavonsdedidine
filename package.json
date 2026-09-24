@@ -7,9 +7,7 @@
     "dev": "node scripts/preparer-photos.mjs && next dev",
     "build": "node scripts/preparer-photos.mjs && next build",
     "start": "next start",
-    "photos": "node scripts/preparer-photos.mjs",
-    "reponses": "tsx scripts/lire-reponses.ts",
-    "questionnaire": "tsx scripts/generer-questionnaire.ts"
+    "photos": "node scripts/preparer-photos.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

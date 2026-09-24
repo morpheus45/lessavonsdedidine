@@ -1,40 +1,46 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import type { Section } from '@/donnees/questions';
+import type { Question } from '@/donnees/questions';
 
 /**
- * Le questionnaire, sans connexion.
+ * La conversation avec Didine.
  *
- * Didine ouvre un lien, répond, clique. Rien n'est envoyé nulle part
- * automatiquement : ses réponses restent dans son navigateur jusqu'à ce
- * qu'elle décide de les copier.
+ * Une question à la fois, et la réponse décide de la suivante : dire non aux
+ * vitrines évite les quatre questions qui suivaient. Une liste de vingt-cinq
+ * champs se referme sans être remplie ; une question qui tient sur une ligne
+ * reçoit une réponse.
  *
- * Pourquoi pas d'enregistrement en ligne : le site est statique, servi par
- * GitHub Pages. Il n'y a aucun serveur pour recevoir un formulaire. L'écran
- * de gestion, lui, sait écrire — mais seulement en s'identifiant auprès de
- * GitHub, ce qui n'a aucun sens pour répondre à des questions.
+ * Tout reste dans son navigateur jusqu'à ce qu'elle clique. Il n'y a de toute
+ * façon aucun serveur pour recevoir un formulaire : le site est statique.
  */
-const MEMOIRE = 'questions-didine';
+const MEMOIRE = 'conversation-didine';
 
-export function Questionnaire({ sections }: { sections: Section[] }) {
-  const [reponses, setReponses] = useState<Record<string, string>>({});
+type Etat = { reponses: Record<string, string>; file: string[]; position: number };
+
+export function Questionnaire({
+  questions,
+  depart,
+}: {
+  questions: Question[];
+  depart: string[];
+}) {
+  const parCle = new Map(questions.map((q) => [q.cle, q]));
+
+  const [etat, setEtat] = useState<Etat>({ reponses: {}, file: [...depart], position: 0 });
   const [charge, setCharge] = useState(false);
+  const [brouillon, setBrouillon] = useState('');
   const [copie, setCopie] = useState<string | null>(null);
   const zoneTexte = useRef<HTMLTextAreaElement>(null);
+  const champ = useRef<HTMLTextAreaElement | HTMLInputElement>(null);
 
-  const questions = sections.flatMap((s) => s.questions.map((q) => ({ ...q, section: s })));
-  const remplies = questions.filter((q) => (reponses[`${q.section.cle}.${q.cle}`] ?? '').trim());
-
-  // Ses réponses sont retenues dans son navigateur : fermer l'onglet par
-  // mégarde après vingt minutes de saisie ne doit pas tout perdre.
   useEffect(() => {
     try {
       const garde = localStorage.getItem(MEMOIRE);
-      if (garde) setReponses(JSON.parse(garde) as Record<string, string>);
+      if (garde) setEtat(JSON.parse(garde) as Etat);
     } catch {
-      // Navigation privée, ou stockage refusé : on repart d'un formulaire
-      // vide plutôt que de bloquer.
+      // Navigation privée ou stockage refusé : on repart de zéro plutôt que
+      // de bloquer.
     }
     setCharge(true);
   }, []);
@@ -42,30 +48,59 @@ export function Questionnaire({ sections }: { sections: Section[] }) {
   useEffect(() => {
     if (!charge) return;
     try {
-      localStorage.setItem(MEMOIRE, JSON.stringify(reponses));
+      localStorage.setItem(MEMOIRE, JSON.stringify(etat));
     } catch {
-      // Sans importance : elle perdra la sauvegarde, pas sa saisie en cours.
+      // Sans importance : elle perdra la reprise, pas sa saisie en cours.
     }
-  }, [reponses, charge]);
+  }, [etat, charge]);
 
-  function ecrire(cle: string, valeur: string) {
-    setReponses((precedent) => ({ ...precedent, [cle]: valeur }));
+  const courante = parCle.get(etat.file[etat.position] ?? '');
+  const fini = charge && !courante;
+
+  /** Enregistre une réponse et déplie ce qu'elle ouvre. */
+  function repondre(valeur: string, suites: string[] = []) {
+    if (!courante) return;
+
+    setEtat((p) => {
+      const file = [...p.file];
+      // Les suites s'insèrent JUSTE APRÈS la question courante : la
+      // conversation reste locale au sujet au lieu de renvoyer la réponse
+      // à la fin, où elle aurait perdu son contexte.
+      const aInserer = [...(courante.suite ?? []), ...suites].filter(
+        (c) => !file.includes(c) && parCle.has(c),
+      );
+      file.splice(p.position + 1, 0, ...aInserer);
+
+      return {
+        reponses: { ...p.reponses, [courante.cle]: valeur },
+        file,
+        position: p.position + 1,
+      };
+    });
+    setBrouillon('');
   }
 
-  /** Les réponses mises au propre, prêtes à être collées n'importe où. */
+  function revenir() {
+    setEtat((p) => ({ ...p, position: Math.max(0, p.position - 1) }));
+    setBrouillon('');
+  }
+
+  function recommencer() {
+    setEtat({ reponses: {}, file: [...depart], position: 0 });
+    setBrouillon('');
+    setCopie(null);
+  }
+
+  /** Les réponses mises au propre, prêtes à coller dans un message. */
   function texteComplet(): string {
-    const lignes: string[] = ['RÉPONSES DE DIDINE', ''];
-    for (const section of sections) {
-      const faites = section.questions.filter((q) =>
-        (reponses[`${section.cle}.${q.cle}`] ?? '').trim(),
-      );
-      if (faites.length === 0) continue;
-      lignes.push(`— ${section.titre.toUpperCase()} —`, '');
-      for (const q of faites) {
-        lignes.push(q.label, reponses[`${section.cle}.${q.cle}`]!.trim(), '');
-      }
+    const lignes = ['RÉPONSES DE DIDINE', ''];
+    for (const cle of etat.file) {
+      const q = parCle.get(cle);
+      const r = etat.reponses[cle];
+      if (!q || !r) continue;
+      const lu = q.type === 'choix' ? (q.choix?.find((c) => c.valeur === r)?.libelle ?? r) : r;
+      lignes.push(q.texte, `→ ${lu}`, '');
     }
-    lignes.push(`(${remplies.length} réponses sur ${questions.length})`);
     return lignes.join('\n');
   }
 
@@ -73,116 +108,205 @@ export function Questionnaire({ sections }: { sections: Section[] }) {
     const texte = texteComplet();
     try {
       await navigator.clipboard.writeText(texte);
-      setCopie('Vos réponses sont copiées. Collez-les dans un message à Cédric.');
+      setCopie('C’est copié. Colle-le dans un message à Cédric.');
     } catch {
-      // Le presse-papiers est refusé hors connexion sécurisée, et sur
-      // certains navigateurs de téléphone. On montre le texte : elle le
-      // sélectionne à la main, ce qui marche partout.
+      // Presse-papiers refusé — fréquent sur les navigateurs de téléphone.
+      // On affiche le texte sélectionné : ça marche partout.
       if (zoneTexte.current) {
         zoneTexte.current.value = texte;
         zoneTexte.current.hidden = false;
         zoneTexte.current.select();
       }
-      setCopie('Copie automatique refusée — le texte est sélectionné ci-dessous, copiez-le.');
+      setCopie('La copie automatique a été refusée — le texte est sélectionné ci-dessous.');
     }
   }
 
-  const etiquette = 'mb-2 block text-[15.5px] font-semibold';
-  const champ =
-    'w-full rounded-s border border-brume-2 bg-neige px-3.5 py-3 text-[15px] focus:border-encre focus:outline-none';
+  const repondues = etat.file.filter((c) => etat.reponses[c]).length;
+  const CHAMP =
+    'w-full rounded-s border border-brume-2 bg-neige px-4 py-3 text-[16px] focus:border-encre focus:outline-none';
+
+  if (!charge) {
+    return <p className="text-taupe">Chargement…</p>;
+  }
 
   return (
     <>
-      <p
-        aria-live="polite"
-        className="sticky top-0 z-10 -mx-6 mb-10 border-b border-brume bg-nuage px-6 py-3 font-mono text-[13px] text-taupe"
-      >
-        {remplies.length} réponse{remplies.length > 1 ? 's' : ''} sur {questions.length}
-        {remplies.length > 0 && ' · enregistrées dans ce navigateur'}
-      </p>
+      {/* ── Ce qui est déjà répondu ───────────────────────────────── */}
+      {repondues > 0 && (
+        <ol className="mb-10 space-y-3 border-l-2 border-brume pl-5">
+          {etat.file.slice(0, etat.position).map((cle) => {
+            const q = parCle.get(cle);
+            const r = etat.reponses[cle];
+            if (!q || !r) return null;
+            const lu = q.type === 'choix' ? (q.choix?.find((c) => c.valeur === r)?.libelle ?? r) : r;
+            return (
+              <li key={cle}>
+                <p className="text-[13.5px] text-taupe">{q.texte}</p>
+                <p className="text-[15.5px] font-medium">
+                  {q.type === 'photo' && lu === 'oui' ? 'Je t’envoie ça' : lu}
+                </p>
+              </li>
+            );
+          })}
+        </ol>
+      )}
 
-      {sections.map((section) => (
-        <section key={section.cle} className="mb-14">
-          <h2 className="mb-2 font-serif text-[clamp(26px,3.6vw,36px)] tracking-[-0.025em]">
-            {section.titre}
+      {/* ── La question du moment ─────────────────────────────────── */}
+      {courante && (
+        <div aria-live="polite">
+          <p className="mb-2 font-mono text-[12px] uppercase tracking-[0.18em] text-taupe">
+            Question {etat.position + 1}
+            {courante.bloque && (
+              <span className="ml-3 rounded-s bg-attente-bg px-2 py-0.5 text-[11px] text-attente">
+                celle-ci bloque la boutique
+              </span>
+            )}
+          </p>
+
+          <h2 className="mb-3 max-w-[24ch] font-serif text-[clamp(26px,4.2vw,40px)] leading-[1.12] tracking-[-0.025em]">
+            {courante.texte}
           </h2>
-          {section.intro && (
-            <p className="mb-8 max-w-[62ch] text-[15px] text-taupe">{section.intro}</p>
+
+          {courante.aide && (
+            <p id="aide" className="mb-7 max-w-[58ch] text-[15px] leading-relaxed text-taupe">
+              {courante.aide}
+            </p>
           )}
 
-          <div className="space-y-8">
-            {section.questions.map((q) => {
-              const cle = `${section.cle}.${q.cle}`;
-              const id = `q-${cle.replace('.', '-')}`;
-              return (
-                <div key={q.cle}>
-                  <label htmlFor={id} className={etiquette}>
-                    {q.label}
-                    {q.bloque && (
-                      <span className="ml-2 rounded-s bg-attente-bg px-2 py-0.5 font-mono text-[11px] uppercase tracking-[0.1em] text-attente">
-                        bloquant
-                      </span>
-                    )}
-                  </label>
-                  <p id={`${id}-aide`} className="mb-2 max-w-[62ch] text-[13.5px] text-taupe">
-                    {q.aide}
-                  </p>
-                  {q.long ? (
-                    <textarea
-                      id={id}
-                      rows={3}
-                      aria-describedby={`${id}-aide`}
-                      value={reponses[cle] ?? ''}
-                      onChange={(e) => ecrire(cle, e.target.value)}
-                      className={champ}
-                    />
-                  ) : (
-                    <input
-                      id={id}
-                      type="text"
-                      aria-describedby={`${id}-aide`}
-                      value={reponses[cle] ?? ''}
-                      onChange={(e) => ecrire(cle, e.target.value)}
-                      className={`${champ} min-h-[48px]`}
-                    />
-                  )}
-                </div>
-              );
-            })}
+          {courante.type === 'choix' && (
+            <div className="flex flex-wrap gap-3">
+              {courante.choix?.map((c) => (
+                <button
+                  key={c.valeur}
+                  type="button"
+                  onClick={() => repondre(c.valeur, c.suite)}
+                  className="min-h-[52px] cursor-pointer rounded-s border border-encre bg-neige px-6 text-[15.5px] font-medium transition-colors hover:bg-encre hover:text-nuage"
+                >
+                  {c.libelle}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {courante.type === 'photo' && (
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => repondre('oui')}
+                className="min-h-[52px] cursor-pointer rounded-s bg-encre px-6 text-[15.5px] font-semibold text-nuage transition-opacity hover:opacity-90"
+              >
+                D’accord, je t’envoie ça
+              </button>
+              <button
+                type="button"
+                onClick={() => repondre('non')}
+                className="min-h-[52px] cursor-pointer rounded-s border border-brume-2 px-6 text-[15.5px] text-taupe transition-colors hover:border-taupe"
+              >
+                Je ne peux pas
+              </button>
+            </div>
+          )}
+
+          {(courante.type === 'court' || courante.type === 'long') && (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                repondre(brouillon.trim());
+              }}
+            >
+              {courante.type === 'long' ? (
+                <textarea
+                  ref={champ as React.RefObject<HTMLTextAreaElement>}
+                  rows={4}
+                  value={brouillon}
+                  onChange={(e) => setBrouillon(e.target.value)}
+                  aria-label={courante.texte}
+                  aria-describedby={courante.aide ? 'aide' : undefined}
+                  className={CHAMP}
+                />
+              ) : (
+                <input
+                  ref={champ as React.RefObject<HTMLInputElement>}
+                  type="text"
+                  value={brouillon}
+                  onChange={(e) => setBrouillon(e.target.value)}
+                  aria-label={courante.texte}
+                  aria-describedby={courante.aide ? 'aide' : undefined}
+                  className={`${CHAMP} min-h-[52px]`}
+                />
+              )}
+
+              <div className="mt-4 flex flex-wrap items-center gap-4">
+                <button
+                  type="submit"
+                  className="min-h-[52px] cursor-pointer rounded-s bg-encre px-7 text-[15.5px] font-semibold text-nuage transition-opacity hover:opacity-90"
+                >
+                  {brouillon.trim() ? 'Suivant' : 'Je ne sais pas, passer'}
+                </button>
+                <p className="text-[13px] text-taupe">
+                  Laisse vide si tu n’es pas sûre — un blanc vaut mieux qu’une info fausse.
+                </p>
+              </div>
+            </form>
+          )}
+
+          {etat.position > 0 && (
+            <button
+              type="button"
+              onClick={revenir}
+              className="mt-8 cursor-pointer border-b border-brume-2 text-[13.5px] text-taupe hover:border-taupe hover:text-graphite"
+            >
+              ← Revenir à la question d’avant
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* ── La fin ────────────────────────────────────────────────── */}
+      {fini && (
+        <div className="rounded-l border border-encre bg-neige p-8">
+          <h2 className="mb-3 font-serif text-[30px]">
+            {repondues > 0 ? 'Voilà, c’est tout !' : 'Tu n’as rien répondu'}
+          </h2>
+          <p className="mb-7 max-w-[54ch] text-[15.5px] text-taupe">
+            {repondues > 0
+              ? 'Clique pour recopier tes réponses, puis colle-les dans un message à Cédric — SMS, WhatsApp, comme tu veux. N’oublie pas les photos si tu as dit oui.'
+              : 'Tu peux revenir quand tu veux, rien n’est perdu.'}
+          </p>
+
+          <div className="flex flex-wrap gap-4">
+            {repondues > 0 && (
+              <button
+                type="button"
+                onClick={copier}
+                className="min-h-[52px] cursor-pointer rounded-s bg-encre px-7 text-[15.5px] font-semibold text-nuage transition-opacity hover:opacity-90"
+              >
+                Copier mes {repondues} réponses
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={recommencer}
+              className="min-h-[52px] cursor-pointer rounded-s border border-brume-2 px-6 text-[15px] text-taupe transition-colors hover:border-taupe"
+            >
+              Tout recommencer
+            </button>
           </div>
-        </section>
-      ))}
 
-      <div className="rounded-l border border-brume bg-neige p-7">
-        <h2 className="mb-2 font-serif text-[24px]">Envoyer vos réponses</h2>
-        <p className="mb-6 max-w-[58ch] text-[14.5px] text-taupe">
-          Rien n&rsquo;est parti tant que vous n&rsquo;avez pas cliqué. Le bouton recopie tout
-          ce que vous avez écrit&nbsp;; vous n&rsquo;avez plus qu&rsquo;à le coller dans un
-          message à Cédric — par SMS, WhatsApp ou courriel, comme vous voulez.
-        </p>
+          <p aria-live="polite" className="mt-4 min-h-[22px] text-[14px] text-encre">
+            {copie}
+          </p>
 
-        <button
-          type="button"
-          onClick={copier}
-          disabled={remplies.length === 0}
-          className="min-h-[52px] cursor-pointer rounded-s bg-onyx px-7 text-[15px] font-semibold text-nuage transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45"
-        >
-          Copier mes {remplies.length} réponse{remplies.length > 1 ? 's' : ''}
-        </button>
-
-        <p aria-live="polite" className="mt-3 min-h-[22px] text-[14px] text-encre">
-          {copie}
-        </p>
-
-        <textarea
-          ref={zoneTexte}
-          hidden
-          readOnly
-          rows={10}
-          aria-label="Vos réponses, à copier"
-          className={`${champ} mt-3 font-mono text-[13px]`}
-        />
-      </div>
+          <textarea
+            ref={zoneTexte}
+            hidden
+            readOnly
+            rows={12}
+            aria-label="Tes réponses, à copier"
+            className={`${CHAMP} mt-3 font-mono text-[13px]`}
+          />
+        </div>
+      )}
     </>
   );
 }
