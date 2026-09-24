@@ -90,10 +90,10 @@ export default async function FicheProduit({ params }: { params: Promise<{ slug:
               <details open className="border-b border-brume">
                 <summary className="flex cursor-pointer items-center justify-between py-5 text-[15.5px] font-semibold">
                   Composition
-                  <span aria-hidden className="font-mono text-[18px] text-grenat">+</span>
+                  <span aria-hidden className="font-mono text-[18px] text-onyx">+</span>
                 </summary>
                 <div className="pb-5 text-[14px] leading-relaxed text-taupe">
-                  <p className="font-mono text-[12.5px] text-foret">{produit.inci}</p>
+                  <p className="font-mono text-[12.5px] text-encre">{produit.inci}</p>
                   <p className="mt-3">
                     La liste complète figure sur le sachet, comme l&rsquo;exige la
                     réglementation cosmétique.
@@ -105,7 +105,7 @@ export default async function FicheProduit({ params }: { params: Promise<{ slug:
             <details className="border-b border-brume">
               <summary className="flex cursor-pointer items-center justify-between py-5 text-[15.5px] font-semibold">
                 {produit.type === 'vitrine' ? 'Fabrication' : 'Utilisation et conservation'}
-                <span aria-hidden className="font-mono text-[18px] text-grenat">+</span>
+                <span aria-hidden className="font-mono text-[18px] text-onyx">+</span>
               </summary>
               <div className="pb-5 text-[14px] leading-relaxed text-taupe">
                 {produit.type === 'vitrine'
@@ -117,7 +117,7 @@ export default async function FicheProduit({ params }: { params: Promise<{ slug:
             <details className="border-b border-brume">
               <summary className="flex cursor-pointer items-center justify-between py-5 text-[15.5px] font-semibold">
                 Livraison et retours
-                <span aria-hidden className="font-mono text-[18px] text-grenat">+</span>
+                <span aria-hidden className="font-mono text-[18px] text-onyx">+</span>
               </summary>
               <div className="pb-5 text-[14px] leading-relaxed text-taupe">
                 Livraison offerte dès 39 €.{' '}

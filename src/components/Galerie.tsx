@@ -38,7 +38,7 @@ export function Galerie({ photos, nom }: { photos: PhotoAffichable[]; nom: strin
                   onClick={() => setChoisie(i)}
                   aria-pressed={active}
                   className={`block w-full cursor-pointer overflow-hidden rounded-s border-2 transition-colors ${
-                    active ? 'border-foret' : 'border-transparent hover:border-brume-2'
+                    active ? 'border-encre' : 'border-transparent hover:border-brume-2'
                   }`}
                 >
                   <Photo

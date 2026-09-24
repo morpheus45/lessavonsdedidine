@@ -1,45 +1,53 @@
 @import 'tailwindcss';
 
 /*
- * Palette validée sur l'ébauche du 13 septembre 2026.
+ * Palette demandée par Didine le 24 septembre 2026, à la lettre.
  *
- * Les contrastes ont été mesurés, pas estimés. Le chiffre en commentaire est
- * le ratio réel sur le fond concerné. Deux pièges à ne jamais réintroduire :
+ *   « Une je veux pas vert. Une j'adore or et noir. »
+ *   « Je veux or noir et rose pâle. »   « Chic et précieuse. »
  *
- *   - Un terracotta clair (#C4643C) ne tient que 3,8:1 : il ne peut pas
- *     porter de texte sous 24 px. C'est le grenat qui porte les actions.
- *   - Un olive clair (#6B7043) est trop pâle pour recevoir du texte clair.
- *     C'est le vert forêt sombre qui sert de fond aux bandes.
+ * Le vert forêt de la version précédente était mon choix, pas le sien : il a
+ * entièrement disparu.
+ *
+ * Les contrastes sont MESURÉS, pas estimés. Le chiffre en commentaire est le
+ * ratio réel sur le fond concerné.
+ *
+ * ⚠️  UN PIÈGE À NE JAMAIS OUBLIER : l'or ne tient que 1,9:1 sur le fond
+ *     clair. Il ne peut JAMAIS porter de texte sur fond clair — ni un titre,
+ *     ni un prix, ni une étiquette. Sur fond clair il ne sert qu'à tracer un
+ *     filet ou un aplat. Pour du texte doré lisible, il faut le fond encre.
+ *     C'est --color-or-texte qui porte l'or lisible sur clair.
  */
 @theme {
-  --color-nuage: #f2f0eb; /* fond général — Pantone Cloud Dancer 2026 */
-  --color-neige: #fbfaf8; /* surfaces levées */
-  --color-brume: #e6e3dc; /* filets */
-  --color-brume-2: #d3cfc6;
+  --color-nuage: #faf3f4; /* fond général — crème rosé */
+  --color-neige: #fffcfc; /* surfaces levées */
+  --color-brume: #f0dfe3; /* filets */
+  --color-brume-2: #dcc3c9;
 
-  --color-foret: #0f3a2c; /* 11,1:1 sur nuage */
-  --color-foret-2: #17503c;
-  --color-foret-3: #a8c0a0; /* 6,5:1 sur forêt */
-  --color-or: #c8a455; /* 6,7:1 sur forêt — séparateurs du bandeau */
+  --color-encre: #12100f; /* noir chaud — bandes, boutons, 17,3:1 sur nuage */
+  --color-encre-2: #241f1e;
+  --color-rose: #e8bfc7; /* 11,5:1 sur encre — texte clair sur bande noire */
+  --color-rose-clair: #f3dbe0; /* 14,5:1 sur encre */
 
-  --color-grenat: #8a2b28; /* 7,5:1 sur nuage — actions, prix, accents */
-  --color-grenat-2: #dda39d; /* 5,9:1 sur forêt */
+  --color-or: #d4af37; /* 9,0:1 SUR ENCRE. 1,9:1 sur nuage — jamais de texte */
+  --color-or-texte: #7d6412; /* 5,3:1 sur nuage — l'or lisible sur fond clair */
 
-  --color-graphite: #2a2a28; /* 12,6:1 — texte courant */
-  --color-taupe: #6e665c; /* 5,0:1 — texte atténué */
-  --color-taupe-f: #5c554c; /* 5,7:1 sur brume */
+  --color-onyx: #1c1917; /* 16,0:1 — actions, prix */
+  --color-graphite: #1f1b1c; /* 15,6:1 — texte courant */
+  --color-taupe: #6b5c5f; /* 5,8:1 — texte atténué */
+  --color-taupe-f: #5a4d50; /* 7,4:1 sur brume */
 
-  --color-savon: #e4dfd2; /* le savon dessiné */
-  --color-savon-t: #c4bca9;
-  --color-savon-e: #5f5949; /* 5,2:1 sur savon */
+  --color-savon: #f3dbe0; /* le savon dessiné */
+  --color-savon-t: #dcc3c9;
+  --color-savon-e: #5a4d50;
 
   /* Sémantique du backoffice */
   --color-ok: #2f6b45;
   --color-ok-bg: #deeadf;
   --color-attente: #6f4f0a;
-  --color-attente-bg: #f3e9cd;
-  --color-alerte: #8a2b28;
-  --color-alerte-bg: #f3dedc;
+  --color-attente-bg: #f6ecd2;
+  --color-alerte: #9b2226;
+  --color-alerte-bg: #f7dfe0;
   --color-route: #2a4e6e;
   --color-route-bg: #dde5ec;
 
@@ -110,7 +118,7 @@
   /* Sans état de focus visible, le site devient inutilisable au clavier —
      et c'est une régression qui passe inaperçue en test à la souris. */
   :focus-visible {
-    outline: 2px solid var(--color-grenat);
+    outline: 2px solid var(--color-onyx);
     outline-offset: 4px;
   }
 
@@ -123,7 +131,7 @@
 
 /* `components` et non `utilities` : dans la même couche que les utilitaires
    de Tailwind, et déclarée après eux, cette classe gagnait à spécificité
-   égale — un `text-foret-3` posé à côté n'avait alors aucun effet, et le
+   égale — un `text-rose` posé à côté n'avait alors aucun effet, et le
    surtitre restait taupe sur fond vert foncé, à 2,24:1. Rangée ici, elle
    donne la couleur par défaut et se laisse remplacer. */
 @layer components {
@@ -162,7 +170,7 @@
   .legal p strong { color: var(--color-graphite); }
   .legal ul { margin: 0 0 16px; padding-left: 22px; color: var(--color-taupe); font-size: 15.5px; }
   .legal li { margin-bottom: 8px; }
-  .legal a { color: var(--color-grenat); border-bottom: 1px solid currentColor; }
+  .legal a { color: var(--color-onyx); border-bottom: 1px solid currentColor; }
 
   /* Remarque destinée à Didine, pas au client : visuellement distincte du
      texte contractuel pour qu'on ne la publie pas par inadvertance. */

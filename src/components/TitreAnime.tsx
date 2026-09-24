@@ -62,7 +62,7 @@ export function TitreAnime({
   /** Le titre, lignes séparées par « \n ». */
   texte: string;
   className?: string;
-  /** Partie mise en italique grenat — doit apparaître telle quelle dans `texte`. */
+  /** Partie mise en italique onyx — doit apparaître telle quelle dans `texte`. */
   accent?: string;
   pas?: number;
   delai?: number;
@@ -80,7 +80,7 @@ export function TitreAnime({
         {accent && ligne.includes(accent) ? (
           <>
             {ligne.slice(0, ligne.indexOf(accent))}
-            <em className="italic text-grenat">{accent}</em>
+            <em className="italic text-onyx">{accent}</em>
             {ligne.slice(ligne.indexOf(accent) + accent.length)}
           </>
         ) : (
@@ -117,7 +117,7 @@ export function TitreAnime({
                     ease: [0.22, 1, 0.36, 1],
                   }}
                 >
-                  <span className={cn(estAccent && 'italic text-grenat')}>{mot}</span>
+                  <span className={cn(estAccent && 'italic text-onyx')}>{mot}</span>
                   {' '}
                 </motion.span>
               );

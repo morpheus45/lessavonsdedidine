@@ -6,9 +6,9 @@ import { RoueDesParfums } from '@/components/graphiques/RoueDesParfums';
 import { FAMILLES } from '@/donnees/parfums';
 
 export const metadata: Metadata = {
-  title: 'Les onze parfums',
+  title: 'Les parfums',
   description:
-    'Les onze parfums des savons de Didine, rangés par famille : gourmands, torréfiés, fruités, frais et végétaux. De quoi choisir sans sentir.',
+    'Les parfums des savons de Didine, rangés par famille : fruités, gourmands, floraux, torréfiés, poudrés. De quoi choisir sans sentir.',
 };
 
 export default function Parfums() {
@@ -70,7 +70,7 @@ export default function Parfums() {
                       id={`parfum-${p.slug}`}
                       // La cible d'une ancre doit se détacher, sinon on ne
                       // voit pas où l'on vient d'atterrir.
-                      className="scroll-mt-24 rounded-m border border-brume bg-neige p-5 target:border-foret target:shadow-[0_0_0_3px_var(--color-foret-3)]"
+                      className="scroll-mt-24 rounded-m border border-brume bg-neige p-5 target:border-encre target:shadow-[0_0_0_3px_var(--color-rose)]"
                     >
                       <p className="mb-1.5 text-[16.5px] font-semibold">{p.nom}</p>
                       <p className="text-[14.5px] leading-relaxed text-taupe">{p.odeur}</p>
@@ -87,7 +87,7 @@ export default function Parfums() {
                 Le rangement par famille est de nous, pas de Didine.
               </p>
               <p className="text-[14px] text-attente">
-                Les onze parfums sont bien les siens. Les familles et les descriptions
+                Les parfums sont bien les siens. Les familles et les descriptions
                 d&rsquo;odeur ci-dessus sont une aide au choix, écrite de l&rsquo;extérieur et
                 qu&rsquo;elle doit relire — c&rsquo;est elle qui sent ses savons.
               </p>
@@ -98,7 +98,7 @@ export default function Parfums() {
             <div className="mt-14 flex flex-wrap items-center gap-6">
               <Link
                 href="/savons/savons-parfumes"
-                className="cursor-pointer rounded-s bg-grenat px-8 py-4 text-[15px] font-semibold text-nuage transition-opacity hover:opacity-90"
+                className="cursor-pointer rounded-s bg-onyx px-8 py-4 text-[15px] font-semibold text-nuage transition-opacity hover:opacity-90"
               >
                 Choisir mes savons
               </Link>

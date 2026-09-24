@@ -31,7 +31,7 @@ export function CarteProduit({
         href={`/savons/${produit.slug}`}
         // Le cadre porte le recadrage : les photos vont du portrait au paysage,
         // et une grille dont chaque case a sa propre hauteur se lit mal.
-        className="block overflow-hidden rounded-m border border-brume bg-neige transition-colors duration-200 hover:border-foret"
+        className="block overflow-hidden rounded-m border border-brume bg-neige transition-colors duration-200 hover:border-encre"
       >
         {produit.photo ? (
           <Photo
@@ -46,11 +46,11 @@ export function CarteProduit({
       </Link>
 
       <div className="pt-5">
-        <p className="mb-2 font-mono text-[12px] uppercase tracking-[0.18em] text-grenat">
+        <p className="mb-2 font-mono text-[12px] uppercase tracking-[0.18em] text-onyx">
           {numero}
         </p>
         <h3 className="mb-2 font-serif text-[clamp(24px,3vw,32px)] tracking-[-0.025em]">
-          <Link href={`/savons/${produit.slug}`} className="hover:text-grenat">
+          <Link href={`/savons/${produit.slug}`} className="hover:text-onyx">
             {produit.nom}
           </Link>
         </h3>

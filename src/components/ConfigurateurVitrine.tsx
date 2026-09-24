@@ -96,7 +96,7 @@ export function ConfigurateurVitrine({
               onClick={() => setFormuleId(f.id)}
               className={`min-h-[48px] cursor-pointer rounded-s border px-5 py-3 text-[14px] transition-colors ${
                 actif
-                  ? 'border-foret bg-foret font-semibold text-nuage'
+                  ? 'border-encre bg-encre font-semibold text-nuage'
                   : 'border-brume-2 bg-neige text-graphite hover:border-taupe'
               }`}
             >
@@ -121,7 +121,7 @@ export function ConfigurateurVitrine({
               aria-checked={actif}
               onClick={() => setThemeSlug(t.slug)}
               className={`cursor-pointer overflow-hidden rounded-m border text-left transition-colors ${
-                actif ? 'border-foret bg-neige' : 'border-brume-2 bg-neige hover:border-taupe'
+                actif ? 'border-encre bg-neige' : 'border-brume-2 bg-neige hover:border-taupe'
               }`}
             >
               {t.photo && (
@@ -136,7 +136,7 @@ export function ConfigurateurVitrine({
               )}
               <span className="block p-4">
                 <span
-                  className={`mb-1 block text-[15px] font-semibold ${actif ? 'text-foret' : 'text-graphite'}`}
+                  className={`mb-1 block text-[15px] font-semibold ${actif ? 'text-encre' : 'text-graphite'}`}
                 >
                   {t.nom}
                 </span>
@@ -187,7 +187,7 @@ export function ConfigurateurVitrine({
       <button
         type="button"
         onClick={validerAjout}
-        className="min-h-[52px] w-full cursor-pointer rounded-s bg-grenat px-6 text-[15px] font-semibold text-nuage transition-opacity hover:opacity-90"
+        className="min-h-[52px] w-full cursor-pointer rounded-s bg-onyx px-6 text-[15px] font-semibold text-nuage transition-opacity hover:opacity-90"
       >
         {ajoute ? 'Ajouté au panier' : 'Ajouter au panier'}
       </button>
@@ -195,9 +195,9 @@ export function ConfigurateurVitrine({
       <p aria-live="polite" className="mt-3 min-h-[24px] text-[14px]">
         {erreur && <span className="text-alerte">{erreur}</span>}
         {ajoute && !erreur && (
-          <span className="text-foret">
+          <span className="text-encre">
             Vitrine ajoutée.{' '}
-            <Link href="/panier" className="border-b border-grenat text-grenat">
+            <Link href="/panier" className="border-b border-onyx text-onyx">
               Voir le panier
             </Link>
           </span>

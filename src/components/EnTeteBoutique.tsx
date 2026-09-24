@@ -23,10 +23,10 @@ export function EnTeteBoutique({ actif }: { actif?: string }) {
   return (
     <header className="border-b border-brume">
       <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-4 px-6 py-5">
-        <Link href="/" className="flex items-center gap-3" aria-label="Les Savons de Didine, accueil">
+        <Link href="/" className="flex items-center gap-3" aria-label="Les douceurs&Didine, accueil">
           <Sceau variante="reduit" taille={40} />
           <span className="font-serif text-[23px] leading-none tracking-[-0.02em] text-graphite">
-            Les Savons de Didine
+            Les douceurs&Didine
             <span className="mt-[5px] block font-mono text-[8.5px] tracking-[0.2em] text-taupe">
               FAIT MAIN
             </span>
@@ -167,7 +167,7 @@ export function PiedBoutique() {
       <div className="border-t border-brume">
         <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-4 px-6 py-6">
           <p className="font-mono text-[12px] text-taupe">
-            Les Savons de Didine · Savons parfumés faits main · Vitrines personnalisées
+            Les douceurs&Didine · Savons parfumés faits main · Vitrines personnalisées
           </p>
           {/* Discret, en pied de page : Didine doit pouvoir retrouver sa
               gestion sans garder un favori, sans que ça invite les visiteurs.

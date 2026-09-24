@@ -89,7 +89,7 @@ export function Questionnaire({ sections }: { sections: Section[] }) {
 
   const etiquette = 'mb-2 block text-[15.5px] font-semibold';
   const champ =
-    'w-full rounded-s border border-brume-2 bg-neige px-3.5 py-3 text-[15px] focus:border-foret focus:outline-none';
+    'w-full rounded-s border border-brume-2 bg-neige px-3.5 py-3 text-[15px] focus:border-encre focus:outline-none';
 
   return (
     <>
@@ -165,12 +165,12 @@ export function Questionnaire({ sections }: { sections: Section[] }) {
           type="button"
           onClick={copier}
           disabled={remplies.length === 0}
-          className="min-h-[52px] cursor-pointer rounded-s bg-grenat px-7 text-[15px] font-semibold text-nuage transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45"
+          className="min-h-[52px] cursor-pointer rounded-s bg-onyx px-7 text-[15px] font-semibold text-nuage transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45"
         >
           Copier mes {remplies.length} réponse{remplies.length > 1 ? 's' : ''}
         </button>
 
-        <p aria-live="polite" className="mt-3 min-h-[22px] text-[14px] text-foret">
+        <p aria-live="polite" className="mt-3 min-h-[22px] text-[14px] text-encre">
           {copie}
         </p>
 

@@ -1,11 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Les Savons de Didine">
-  <!-- Reprise du sceau du site, réduite à ce qui survit à 16 px : le disque,
-       un filet doré, et le monogramme. Les festons et la guilloché du grand
-       sceau deviennent de la bouillie à cette taille. -->
-  <circle cx="256" cy="256" r="256" fill="#0f3a2c"/>
-  <circle cx="256" cy="256" r="228" fill="none" stroke="#c8a455" stroke-width="10"/>
-  <g fill="none" stroke="#f2f0eb" stroke-width="34" stroke-linecap="butt">
-    <path d="M 201 152 L 201 360"/>
-    <path d="M 201 152 A 104 104 0 0 1 201 360"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Les douceurs &amp; Didine">
+  <!-- Le logo tel que Didine l'a décrit le 24 septembre 2026 :
+       « Rond or, fond noir, l'écriture en or, avec des savons en rose pâle ».
+       Réduit à ce qui survit à 16 px : le disque, l'anneau doré, le
+       monogramme, et deux savons roses. -->
+  <circle cx="256" cy="256" r="256" fill="#12100f"/>
+  <circle cx="256" cy="256" r="228" fill="none" stroke="#d4af37" stroke-width="12"/>
+  <circle cx="256" cy="256" r="208" fill="none" stroke="#d4af37" stroke-width="3"/>
+
+  <!-- Deux savons en rose pâle, de part et d'autre du monogramme. -->
+  <ellipse cx="150" cy="256" rx="26" ry="34" fill="#f3dbe0" opacity="0.9"/>
+  <ellipse cx="362" cy="256" rx="26" ry="34" fill="#f3dbe0" opacity="0.9"/>
+
+  <g fill="none" stroke="#d4af37" stroke-width="30" stroke-linecap="butt">
+    <path d="M 226 168 L 226 344"/>
+    <path d="M 226 168 A 88 88 0 0 1 226 344"/>
   </g>
 </svg>

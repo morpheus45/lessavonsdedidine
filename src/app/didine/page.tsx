@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { BlurFade } from '@/components/magic/BlurFade';
 import { Photo } from '@/components/Photo';
-import { PARFUMS } from '@/lib/catalogue';
+import { TOUS_LES_PARFUMS } from '@/donnees/parfums';
 import { didine, phraseDelaiVitrine } from '@/lib/reponses';
 
 export const metadata: Metadata = {
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 /*
  * Cette page ne raconte pas une biographie, parce que personne ici ne la
  * connaît. Tout ce qu'elle affirme est déjà écrit ailleurs sur le site et
- * vérifiable : le travail à la commande, les petites quantités, les onze
+ * vérifiable : le travail à la commande, les petites quantités, les dix-huit
  * parfums, les vitrines montées objet par objet.
  *
  * Partout où il faudrait la parole de Didine, la question reste posée à
@@ -89,7 +89,7 @@ export default function PageDidine() {
             <BlurFade>
               <p className="eyebrow mb-6">La personne derrière l&rsquo;atelier</p>
               <h1 className="mb-8 max-w-[16ch] font-serif text-[clamp(42px,7vw,76px)] leading-[0.95] tracking-[-0.035em]">
-                Le nom de la boutique est un <em className="italic text-grenat">prénom</em>
+                Le nom de la boutique est un <em className="italic text-onyx">prénom</em>
               </h1>
               <p className="mb-6 max-w-[54ch] text-[17.5px] text-taupe">
                 C&rsquo;est déjà une information&nbsp;: il n&rsquo;y a pas de chaîne de
@@ -135,16 +135,16 @@ export default function PageDidine() {
         </section>
 
         {/* ── Ce qui sort de l'atelier ────────────────────────────── */}
-        <section className="mt-16 bg-foret text-nuage">
+        <section className="mt-16 bg-encre text-nuage">
           <div className="mx-auto max-w-[1240px] px-6 py-28">
             <BlurFade>
               {/* Sur fond forêt, les libellés ne reprennent pas la classe
                   « eyebrow » : sa couleur taupe est prévue pour le fond clair. */}
-              <p className="mb-6 font-mono text-[12px] uppercase tracking-[0.2em] text-foret-3">
+              <p className="mb-6 font-mono text-[12px] uppercase tracking-[0.2em] text-rose">
                 Deux métiers dans le même atelier
               </p>
               <h2 className="mb-20 max-w-[20ch] font-serif text-[clamp(32px,5vw,52px)] tracking-[-0.035em] text-nuage">
-                Ce qui sort de <em className="italic text-grenat-2">l&rsquo;atelier</em>
+                Ce qui sort de <em className="italic text-rose-clair">l&rsquo;atelier</em>
               </h2>
             </BlurFade>
 
@@ -156,14 +156,14 @@ export default function PageDidine() {
                   className="mb-8 aspect-[4/3] w-full rounded-l object-cover"
                 />
                 <h3 className="mb-4 font-serif text-[30px] text-nuage">Les savons</h3>
-                <p className="mb-4 text-[16px] text-foret-3">
+                <p className="mb-4 text-[16px] text-rose">
                   Une base au beurre de karité biologique, sans SLS, achetée toute faite&nbsp;:
                   c&rsquo;est ce qui garantit une formule stable. Elle est coupée en cubes, fondue
                   doucement au bain-marie, parfumée avec un arôme naturel, colorée, parfois
                   enrichie de miel, puis coulée dans un moule en silicone à motif.
                 </p>
-                <p className="text-[16px] text-foret-3">
-                  Prise en trente à soixante minutes. {PARFUMS.length} parfums au choix, et une
+                <p className="text-[16px] text-rose">
+                  Prise en trente à soixante minutes. {TOUS_LES_PARFUMS.length} parfums au choix, et une
                   série ne porte jamais qu&rsquo;un seul parfum.
                 </p>
               </BlurFade>
@@ -175,12 +175,12 @@ export default function PageDidine() {
                   className="mb-8 aspect-[4/3] w-full rounded-l object-cover"
                 />
                 <h3 className="mb-4 font-serif text-[30px] text-nuage">Les vitrines</h3>
-                <p className="mb-4 text-[16px] text-foret-3">
+                <p className="mb-4 text-[16px] text-rose">
                   Un cadre en bois peint, un fond choisi, une scène en miniature disposée objet
                   par objet, et un prénom collé en lettres sur le dessus. Rien n&rsquo;est
                   assemblé à l&rsquo;avance.
                 </p>
-                <p className="text-[16px] text-foret-3">
+                <p className="text-[16px] text-rose">
                   Chaque vitrine part d&rsquo;un cadre vide.{delai && ` ${delai}`}
                 </p>
               </BlurFade>
@@ -275,7 +275,7 @@ export default function PageDidine() {
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/savons"
-                  className="inline-flex min-h-[52px] cursor-pointer items-center rounded-s bg-grenat px-8 text-[15px] font-semibold text-nuage transition-opacity hover:opacity-90"
+                  className="inline-flex min-h-[52px] cursor-pointer items-center rounded-s bg-onyx px-8 text-[15px] font-semibold text-nuage transition-opacity hover:opacity-90"
                 >
                   Voir la gamme
                 </Link>
@@ -305,7 +305,7 @@ export default function PageDidine() {
 function Reponse({ titre, texte }: { titre: string; texte: string }) {
   return (
     <div className="max-w-[720px]">
-      <p className="mb-3 font-mono text-[12px] uppercase tracking-[0.2em] text-grenat">{titre}</p>
+      <p className="mb-3 font-mono text-[12px] uppercase tracking-[0.2em] text-onyx">{titre}</p>
       <p className="whitespace-pre-line font-serif text-[clamp(20px,2.6vw,26px)] leading-[1.45] tracking-[-0.01em]">
         {texte}
       </p>
@@ -318,10 +318,10 @@ function AComplete({ questions }: { questions: readonly string[] }) {
   // laisserait un demi-mètre de blanc mort à sa droite.
   return (
     <aside className="max-w-[780px] rounded-l border border-brume-2 bg-neige p-8 sm:p-12">
-      {/* Un filet grenat plutôt qu'un bord épais : l'encadré doit sauter aux
+      {/* Un filet onyx plutôt qu'un bord épais : l'encadré doit sauter aux
           yeux sans prendre l'allure d'un message d'erreur. */}
-      <span aria-hidden="true" className="mb-5 block h-[2px] w-14 bg-grenat" />
-      <p className="mb-6 font-mono text-[12px] uppercase tracking-[0.2em] text-grenat">
+      <span aria-hidden="true" className="mb-5 block h-[2px] w-14 bg-onyx" />
+      <p className="mb-6 font-mono text-[12px] uppercase tracking-[0.2em] text-onyx">
         À compléter par Didine
       </p>
       <ul className="space-y-4">

@@ -83,6 +83,8 @@ export type ProprietesSceau = {
   taille?: number;
   /** Couleur de l'encre ; par défaut le vert forêt de la marque. */
   encre?: string;
+  /** Disque de fond. Noir, comme Didine l'a demandé. */
+  fond?: string;
   feuille?: string;
   olive?: string;
   variante?: 'complet' | 'reduit';
@@ -91,8 +93,9 @@ export type ProprietesSceau = {
 
 export function Sceau({
   taille = 240,
-  encre = '#0F3A2C',
-  feuille = '#17503C',
+  encre = '#D4AF37',
+  fond = '#12100F',
+  feuille = '#241F1E',
   olive = '#8A2B28',
   variante = 'complet',
   className,
@@ -109,8 +112,11 @@ export function Sceau({
         height={taille}
         className={className}
         role="img"
-        aria-label="Les Savons de Didine"
+        aria-label="Les douceurs&Didine"
       >
+        {/* Le fond noir du sceau. Sur fond clair, l'or seul ne tiendrait
+          que 1,9:1 : c'est le disque qui le rend lisible. */}
+        <circle cx={C} cy={C} r={112} fill={fond} />
         <circle cx={C} cy={C} r={104} fill="none" stroke={encre} strokeWidth={9} />
         <circle cx={C} cy={C} r={85} fill="none" stroke={encre} strokeWidth={4} />
         <text
@@ -135,7 +141,7 @@ export function Sceau({
       height={taille}
       className={className}
       role="img"
-      aria-label="Les Savons de Didine — fait main avec amour"
+      aria-label="Les douceurs&Didine — fait main avec amour"
     >
       <defs>
         <path id={`${id}-h`} fill="none" d="M 49,120 A 71,71 0 0,1 191,120" />
@@ -143,7 +149,10 @@ export function Sceau({
       </defs>
 
       <path d={feston(112, 36, 10.8)} fill="none" stroke={encre} strokeWidth={1.4} />
-      <circle cx={C} cy={C} r={106} fill="none" stroke={encre} strokeWidth={2.8} />
+      {/* Le fond noir du sceau. Sur fond clair, l'or seul ne tiendrait
+          que 1,9:1 : c'est le disque qui le rend lisible. */}
+        <circle cx={C} cy={C} r={114} fill={fond} />
+        <circle cx={C} cy={C} r={106} fill="none" stroke={encre} strokeWidth={2.8} />
       <circle cx={C} cy={C} r={100} fill="none" stroke={encre} strokeWidth={0.8} />
       {PERLES.map(([x, y], i) => (
         <circle key={i} cx={n2(x)} cy={n2(y)} r={1.7} fill={encre} />
@@ -162,7 +171,7 @@ export function Sceau({
         fontWeight={500}
       >
         <textPath href={`#${id}-h`} startOffset="50%" textAnchor="middle" fill={encre}>
-          LES SAVONS DE DIDINE
+          LES DOUCEURS & DIDINE
         </textPath>
       </text>
       <text

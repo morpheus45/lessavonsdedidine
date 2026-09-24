@@ -211,16 +211,9 @@ export function themeParSlug(slug: string): Theme | undefined {
  * clientes pendant des semaines. Voir src/lib/reponses.ts.
  */
 
-export const PARFUMS = [
-  'Café',
-  'Vanille',
-  'Coco-vanille',
-  'Black Opium',
-  'Olive',
-  'Miel',
-  'Menthe',
-  'Fraise',
-  'Bubble gum',
-  'Caramel',
-  'Citron',
-] as const;
+/*
+ * La liste des parfums a quitté ce fichier : elle vit dans
+ * src/donnees/parfums.ts, rangée par famille, telle que Didine l'a donnée le
+ * 24 septembre 2026. Celle qui était ici venait de ses premières photos et
+ * n'en partageait que quatre avec la vraie.
+ */

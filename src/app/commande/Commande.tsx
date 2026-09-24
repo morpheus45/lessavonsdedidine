@@ -167,7 +167,7 @@ export function Commande({
             <p className="mb-6 text-[17px] text-taupe">Votre panier est vide.</p>
             <Link
               href="/savons"
-              className="inline-block rounded-s bg-grenat px-7 py-3.5 text-[15px] font-semibold text-nuage"
+              className="inline-block rounded-s bg-onyx px-7 py-3.5 text-[15px] font-semibold text-nuage"
             >
               Voir la gamme
             </Link>
@@ -186,7 +186,7 @@ export function Commande({
             </p>
             <Link
               href="/savons/vitrine-personnalisee"
-              className="inline-block rounded-s bg-grenat px-7 py-3.5 text-[15px] font-semibold text-nuage"
+              className="inline-block rounded-s bg-onyx px-7 py-3.5 text-[15px] font-semibold text-nuage"
             >
               Compléter ma vitrine
             </Link>
@@ -194,8 +194,8 @@ export function Commande({
         )}
 
         {etat === 'paye' && (
-          <div className="rounded-l border border-foret bg-neige p-10">
-            <h2 className="mb-3 font-serif text-[32px] text-foret">Merci !</h2>
+          <div className="rounded-l border border-encre bg-neige p-10">
+            <h2 className="mb-3 font-serif text-[32px] text-encre">Merci !</h2>
             <p className="mb-2 text-[16px]">Votre paiement est enregistré chez PayPal.</p>
             <p className="mb-8 text-[15px] text-taupe">
               PayPal vous envoie un reçu par courriel, et prévient Didine avec le détail de votre
@@ -204,7 +204,7 @@ export function Commande({
             </p>
             <Link
               href="/savons"
-              className="inline-block rounded-s bg-grenat px-7 py-3.5 text-[15px] font-semibold text-nuage"
+              className="inline-block rounded-s bg-onyx px-7 py-3.5 text-[15px] font-semibold text-nuage"
             >
               Retour à la boutique
             </Link>
@@ -219,7 +219,7 @@ export function Commande({
                   <span className="text-[15px]">
                     {l.quantite} × {l.libelle}
                     {l.detailPersonnalisation && (
-                      <span className="ml-2 font-mono text-[12.5px] text-grenat">
+                      <span className="ml-2 font-mono text-[12.5px] text-onyx">
                         {l.detailPersonnalisation}
                       </span>
                     )}
@@ -240,7 +240,7 @@ export function Commande({
                 <dt>Livraison</dt>
                 <dd className="font-mono tabulaire">
                   {panier.livraisonCentimes === 0 ? (
-                    <span className="font-semibold text-foret">Offerte</span>
+                    <span className="font-semibold text-encre">Offerte</span>
                   ) : (
                     formaterPrix(panier.livraisonCentimes)
                   )}

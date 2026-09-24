@@ -65,7 +65,7 @@ export function FriseAtelier({ etapes }: { etapes: EtapeAtelier[] }) {
       {/* Rail de fond — présent même sans JavaScript. */}
       <span
         aria-hidden="true"
-        className="absolute left-0 right-0 top-0 hidden h-px bg-foret-2 md:block"
+        className="absolute left-0 right-0 top-0 hidden h-px bg-encre-2 md:block"
       />
       {/* Remplissage — se superpose au rail. */}
       {!mouvementReduit && (
@@ -80,14 +80,14 @@ export function FriseAtelier({ etapes }: { etapes: EtapeAtelier[] }) {
         <li key={e.titre} className="relative pt-8 md:pt-10">
           <span
             aria-hidden="true"
-            className="absolute left-0 top-0 hidden size-2.5 -translate-y-1/2 rounded-full border-2 border-foret bg-or md:block"
+            className="absolute left-0 top-0 hidden size-2.5 -translate-y-1/2 rounded-full border-2 border-encre bg-or md:block"
           />
-          <p className="mb-3 font-mono text-[12px] tracking-[0.18em] text-grenat-2">{e.rang}</p>
+          <p className="mb-3 font-mono text-[12px] tracking-[0.18em] text-rose-clair">{e.rang}</p>
           <h3 className="mb-3 font-serif text-[26px] tracking-[-0.02em] text-nuage">
             <span className="sr-only">Étape {i + 1} : </span>
             {e.titre}
           </h3>
-          <p className="text-[14px] leading-relaxed text-foret-3">{e.texte}</p>
+          <p className="text-[14px] leading-relaxed text-rose">{e.texte}</p>
         </li>
       ))}
     </ol>

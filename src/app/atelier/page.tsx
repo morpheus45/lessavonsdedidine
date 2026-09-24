@@ -4,7 +4,8 @@ import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { FriseAtelier, type EtapeAtelier } from '@/components/ScenesAnimees';
 import { BlurFade } from '@/components/magic/BlurFade';
 import { Photo } from '@/components/Photo';
-import { PARFUMS, lireThemes } from '@/lib/catalogue';
+import { lireThemes } from '@/lib/catalogue';
+import { TOUS_LES_PARFUMS } from '@/donnees/parfums';
 import { phraseDelaiVitrine } from '@/lib/reponses';
 
 export const metadata: Metadata = {
@@ -65,15 +66,15 @@ export default function Atelier() {
         </section>
 
         {/* ── Les savons ──────────────────────────────────────────── */}
-        <section className="bg-foret text-nuage">
+        <section className="bg-encre text-nuage">
           <div className="mx-auto max-w-[1240px] px-6 py-28">
             <BlurFade>
-              <p className="eyebrow mb-6 text-foret-3">Les savons</p>
+              <p className="eyebrow mb-6 text-rose">Les savons</p>
               <h2 className="mb-6 max-w-[20ch] font-serif text-[clamp(32px,5vw,52px)] tracking-[-0.035em] text-nuage">
                 Quatre gestes, et le savon est{' '}
-                <em className="italic text-grenat-2">prêt en une heure</em>
+                <em className="italic text-rose-clair">prêt en une heure</em>
               </h2>
-              <p className="mb-20 max-w-[58ch] text-[16.5px] text-foret-3">
+              <p className="mb-20 max-w-[58ch] text-[16.5px] text-rose">
                 La base est achetée toute faite — c&rsquo;est ce qui permet de garantir une
                 formule stable et sans SLS. Tout le reste, parfum, couleur, moulage, démoulage
                 et emballage, se fait à la main, un par un.
@@ -100,19 +101,19 @@ export default function Atelier() {
         <section className="mx-auto max-w-[1240px] px-6 py-24">
           <BlurFade>
             <h2 className="mb-4 font-serif text-[clamp(28px,4vw,42px)] tracking-[-0.03em]">
-              {PARFUMS.length} parfums
+              {TOUS_LES_PARFUMS.length} parfums
             </h2>
             <p className="mb-8 max-w-[58ch] text-[16px] text-taupe">
               Chaque série est coulée dans un seul parfum. Vous choisissez les vôtres au moment
               de la commande.
             </p>
             <ul className="flex flex-wrap gap-2.5">
-              {PARFUMS.map((p) => (
+              {TOUS_LES_PARFUMS.map((p) => (
                 <li
-                  key={p}
+                  key={p.slug}
                   className="rounded-full border border-brume-2 bg-neige px-4 py-2 text-[14px]"
                 >
-                  {p}
+                  {p.nom}
                 </li>
               ))}
             </ul>
@@ -165,7 +166,7 @@ export default function Atelier() {
 
               <Link
                 href="/savons/vitrine-personnalisee"
-                className="mt-8 inline-block cursor-pointer rounded-s bg-grenat px-8 py-4 text-[15px] font-semibold text-nuage transition-opacity hover:opacity-90"
+                className="mt-8 inline-block cursor-pointer rounded-s bg-onyx px-8 py-4 text-[15px] font-semibold text-nuage transition-opacity hover:opacity-90"
               >
                 Composer une vitrine
               </Link>

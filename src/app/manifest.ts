@@ -14,8 +14,8 @@ export const dynamic = 'force-static';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Les Savons de Didine',
-    short_name: 'Didine',
+    name: 'Les douceurs&Didine',
+    short_name: 'Douceurs&Didine',
     description:
       'Savons parfumés et vitrines personnalisées, faits main en petites séries.',
     lang: 'fr',
@@ -23,8 +23,8 @@ export default function manifest(): MetadataRoute.Manifest {
     display: 'standalone',
     // Le fond d'écran de démarrage reprend le quasi-blanc du site : un blanc
     // pur ferait un éclair avant que la page ne s'affiche.
-    background_color: '#f2f0eb',
-    theme_color: '#0f3a2c',
+    background_color: '#faf3f4',
+    theme_color: '#12100f',
     orientation: 'portrait-primary',
     icons: [
       { src: '/lessavonsdedidine/icone-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },

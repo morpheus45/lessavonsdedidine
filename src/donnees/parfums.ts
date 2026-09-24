@@ -1,17 +1,19 @@
 /**
- * Les onze parfums, rangés par famille olfactive.
+ * Les parfums de Didine, rangés par famille olfactive.
  *
- * Les PARFUMS eux-mêmes viennent de Didine : ce sont ceux qu'elle achète et
- * qu'on voit étiquetés sur ses photos. Le RANGEMENT par famille, lui, est de
- * nous — c'est une aide au choix, pas une classification de parfumeur.
+ * Source : sa réponse du 24 septembre 2026. Elle en a cité dix-huit. La liste
+ * précédente venait de ses toutes premières photos et n'en partageait que
+ * quatre avec celle-ci : sept parfums annoncés en boutique n'étaient pas les
+ * siens, et quatorze des siens manquaient.
  *
- * ⚠️  À FAIRE VALIDER PAR DIDINE : le regroupement et les descriptions
- *     d'odeur ci-dessous. Elle sent ses savons, pas nous.
+ * Trois d'entre eux portent un nom de maison de parfum — Black Opium, Angel,
+ * Dior J'adore. Didine les fabrique AVEC le parfum d'origine, acheté : ce
+ * n'est donc pas une contrefaçon, et ils sont publiés tels qu'elle les nomme.
  *
- * Les descriptions ne disent QUE l'odeur. Aucune ne prétend quoi que ce soit
- * sur la fabrication, la composition ou un quelconque bienfait : un savon
- * n'est pas un médicament, et ce projet a déjà publié par erreur des
- * affirmations fausses sur sa fabrication.
+ * Le RANGEMENT par famille est de nous, pas d'elle, ainsi que les
+ * descriptions d'odeur. Elles ne disent QUE l'odeur : aucune ne prétend quoi
+ * que ce soit sur un bienfait, un soin ou une peau. Un savon n'est pas un
+ * médicament, et ce projet a déjà publié des affirmations fausses.
  */
 
 export type Parfum = {
@@ -24,7 +26,7 @@ export type Parfum = {
 export type Famille = {
   slug: string;
   nom: string;
-  /** Couleur pleine, pour l'anneau extérieur. Texte clair dessus. */
+  /** Couleur pleine, pour l'anneau extérieur. Texte sombre dessus. */
   couleur: string;
   /** Même teinte très éclaircie, pour le pétale. Texte sombre dessus. */
   teinte: string;
@@ -33,65 +35,98 @@ export type Famille = {
 
 export const FAMILLES: Famille[] = [
   {
+    slug: 'fruite',
+    nom: 'Fruité',
+    couleur: '#e8a0ab',
+    teinte: '#fbe9ec',
+    parfums: [
+      { slug: 'fraise', nom: 'Fraise', odeur: 'Fruit mûr et sucré, sans acidité.' },
+      { slug: 'raisin', nom: 'Raisin', odeur: 'Sucré et un peu confit, comme le jus plus que le fruit frais.' },
+      { slug: 'melon', nom: 'Melon', odeur: 'Doux et aqueux, léger. Le plus discret des fruits.' },
+      { slug: 'banane', nom: 'Banane', odeur: 'Ronde et lactée, franchement enfantine.' },
+      { slug: 'kiwi', nom: 'Kiwi', odeur: 'Vert et acidulé, avec une pointe qui réveille.' },
+    ],
+  },
+  {
     slug: 'gourmand',
     nom: 'Gourmand',
-    couleur: '#c8a455',
-    teinte: '#f2e8d2',
+    couleur: '#d4af37',
+    teinte: '#f7eed2',
     parfums: [
-      { slug: 'vanille', nom: 'Vanille', odeur: 'Ronde et sucrée, un peu lactée. La plus consensuelle des onze.' },
-      { slug: 'caramel', nom: 'Caramel', odeur: 'Sucre chauffé, beurré, avec ce fond légèrement brûlé qui l’empêche d’être écœurant.' },
-      { slug: 'miel', nom: 'Miel', odeur: 'Doux et cireux, un peu floral. Moins sucré qu’on ne l’attend.' },
-      { slug: 'coco-vanille', nom: 'Coco-vanille', odeur: 'La coco arrondit la vanille et la tire vers le monoï.' },
-      { slug: 'bubble-gum', nom: 'Bubble gum', odeur: 'Franchement enfantin, fraise-banane. C’est celui que les enfants choisissent.' },
+      { slug: 'bonbon', nom: 'Bonbon', odeur: 'Sucre pur, sans détour. Celui que les enfants choisissent.' },
+      { slug: 'bubble-gum', nom: 'Bubble Gum', odeur: 'Fraise-banane, franchement régressif.' },
+      { slug: 'pain-d-epices', nom: "Pain d'épices", odeur: 'Miel, cannelle et anis, chaud et enveloppant. Un parfum d’hiver.' },
+      { slug: 'pomme-cannelle', nom: 'Pomme cannelle', odeur: 'La pomme cuite adoucit la cannelle et la tire vers le dessert.' },
+    ],
+  },
+  {
+    slug: 'floral',
+    nom: 'Floral',
+    couleur: '#d9a8c4',
+    teinte: '#f6e7f0',
+    parfums: [
+      { slug: 'lavande', nom: 'Lavande', odeur: 'Sèche et propre, un peu camphrée. La plus reconnaissable.' },
+      { slug: 'magnolia', nom: 'Magnolia', odeur: 'Fleur blanche crémeuse, avec un fond citronné.' },
+      { slug: 'tulipe', nom: 'Tulipe', odeur: 'Verte et légère, à peine fleurie. Discrète.' },
+      { slug: 'fleurs-de-printemps', nom: 'Fleurs de printemps', odeur: 'Un bouquet plutôt qu’une fleur : frais, vert, léger.' },
     ],
   },
   {
     slug: 'torrefie',
     nom: 'Torréfié',
-    couleur: '#6f4526',
-    teinte: '#e8dbd0',
+    couleur: '#b5763f',
+    teinte: '#f2e4d7',
     parfums: [
       { slug: 'cafe', nom: 'Café', odeur: 'Grain torréfié, chaud, avec l’amertume qui va avec. Tient bien sur les mains.' },
     ],
   },
   {
-    slug: 'oriental',
-    nom: 'Oriental',
-    couleur: '#5a4668',
-    teinte: '#e6dfec',
+    slug: 'poudre',
+    nom: 'Poudré',
+    couleur: '#c3b7a6',
+    teinte: '#f1ece5',
     parfums: [
-      { slug: 'black-opium', nom: 'Black Opium', odeur: 'Café et vanille sur fond de fleur blanche. Le plus habillé de la série.' },
+      { slug: 'musc', nom: 'Musc', odeur: 'Doux et enveloppant, presque une odeur de linge propre.' },
     ],
   },
   {
-    slug: 'fruite',
-    nom: 'Fruité',
-    couleur: '#8a2b28',
-    teinte: '#f3ddda',
+    slug: 'parfumerie',
+    nom: 'Parfumerie',
+    couleur: '#a8a2b8',
+    teinte: '#eceaf1',
     parfums: [
-      { slug: 'fraise', nom: 'Fraise', odeur: 'Fruit mûr, sucré, sans acidité.' },
-      { slug: 'citron', nom: 'Citron', odeur: 'Zeste vif et net. C’est le plus réveillant du lot.' },
-    ],
-  },
-  {
-    slug: 'frais',
-    nom: 'Frais',
-    couleur: '#2f6b5a',
-    teinte: '#dceae4',
-    parfums: [
-      { slug: 'menthe', nom: 'Menthe', odeur: 'Piquante et froide, elle laisse une sensation de frais sur la peau.' },
-    ],
-  },
-  {
-    slug: 'vegetal',
-    nom: 'Végétal',
-    couleur: '#17503c',
-    teinte: '#dae6de',
-    parfums: [
-      { slug: 'olive', nom: 'Olive', odeur: 'Verte et discrète, presque savonneuse au sens propre. La plus sobre.' },
+      {
+        slug: 'black-opium',
+        nom: 'Black Opium',
+        odeur: 'Café et vanille sur fond de fleur blanche. Le plus habillé de la série.',
+      },
+      {
+        slug: 'angel',
+        nom: 'Angel',
+        odeur: 'Patchouli et caramel, franc et reconnaissable entre mille.',
+      },
+      {
+        slug: 'dior-j-adore',
+        nom: "Dior J'adore",
+        odeur: 'Bouquet de fleurs blanches, lumineux et enveloppant.',
+      },
     ],
   },
 ];
+
+/**
+ * ⚠️  À SURVEILLER — les allergènes, pas les marques.
+ *
+ * Les trois parfums de parfumerie sont faits avec le flacon d'origine, donc
+ * pas de contrefaçon. Mais un parfum fini apporte ses propres allergènes, et
+ * la réglementation cosmétique impose de déclarer les vingt-six allergènes
+ * listés dès qu'ils dépassent un seuil dans le produit fini.
+ *
+ * Didine ne peut pas les connaître : la composition d'un parfum commercial
+ * n'est pas publiée au détail. La question lui est posée dans le
+ * questionnaire ; en attendant, la fiche produit ne prétend rien sur la
+ * composition de ces trois-là.
+ */
 
 export const TOUS_LES_PARFUMS: Parfum[] = FAMILLES.flatMap((f) => f.parfums);
 

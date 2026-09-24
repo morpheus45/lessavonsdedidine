@@ -27,7 +27,7 @@ type Etat = 'saisie' | 'envoi' | 'envoye' | 'erreur';
 
 const ETIQUETTE = 'mb-2 block text-[14px] font-semibold';
 const CHAMP =
-  'w-full rounded-s border border-brume-2 bg-neige px-3.5 py-3 text-[15px] focus:border-foret focus:outline-none';
+  'w-full rounded-s border border-brume-2 bg-neige px-3.5 py-3 text-[15px] focus:border-encre focus:outline-none';
 
 export function Formulaire({ cle }: { cle: string }) {
   const [nom, setNom] = useState('');
@@ -76,7 +76,7 @@ export function Formulaire({ cle }: { cle: string }) {
     const donnees = new FormData(evenement.currentTarget);
     donnees.append('access_key', cle);
     donnees.append('subject', `Boutique — ${sujet}`);
-    donnees.append('from_name', 'Les Savons de Didine');
+    donnees.append('from_name', 'Les douceurs&Didine');
 
     try {
       const reponse = await fetch(POINT_ENVOI, {
@@ -105,8 +105,8 @@ export function Formulaire({ cle }: { cle: string }) {
 
   if (etat === 'envoye') {
     return (
-      <div className="rounded-l border border-foret bg-neige p-8">
-        <h2 className="mb-3 font-serif text-[28px] text-foret">Message envoyé</h2>
+      <div className="rounded-l border border-encre bg-neige p-8">
+        <h2 className="mb-3 font-serif text-[28px] text-encre">Message envoyé</h2>
         <p className="mb-2 text-[16px]">
           Didine l&rsquo;a reçu et vous répondra à <strong>{email.trim()}</strong>.
         </p>
@@ -214,7 +214,7 @@ export function Formulaire({ cle }: { cle: string }) {
       <button
         type="submit"
         disabled={etat === 'envoi'}
-        className="mt-7 min-h-[52px] w-full cursor-pointer rounded-s bg-grenat px-6 text-[15px] font-semibold text-nuage transition-opacity hover:opacity-90 disabled:opacity-60 sm:w-auto"
+        className="mt-7 min-h-[52px] w-full cursor-pointer rounded-s bg-onyx px-6 text-[15px] font-semibold text-nuage transition-opacity hover:opacity-90 disabled:opacity-60 sm:w-auto"
       >
         {etat === 'envoi' ? 'Envoi…' : 'Envoyer le message'}
       </button>

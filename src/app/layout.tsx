@@ -3,12 +3,12 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Les Savons de Didine — savons parfumés et vitrines faites main',
-    template: '%s · Les Savons de Didine',
+    default: 'Les douceurs&Didine — savons parfumés et vitrines faites main',
+    template: '%s · Les douceurs&Didine',
   },
   description:
     'Savons parfumés faits main sur base au beurre de karité bio sans SLS, et vitrines personnalisées à offrir. Petites séries.',
-  applicationName: 'Les Savons de Didine',
+  applicationName: 'Les douceurs&Didine',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#0f3a2c',
+  themeColor: '#12100f',
 };
 
 export default function RacineLayout({ children }: { children: React.ReactNode }) {
@@ -43,7 +43,7 @@ export default function RacineLayout({ children }: { children: React.ReactNode }
             doit pas avoir à traverser toute la navigation à chaque page. */}
         <a
           href="#contenu"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-sm focus:bg-grenat focus:px-4 focus:py-2 focus:text-nuage"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-sm focus:bg-onyx focus:px-4 focus:py-2 focus:text-nuage"
         >
           Aller au contenu
         </a>

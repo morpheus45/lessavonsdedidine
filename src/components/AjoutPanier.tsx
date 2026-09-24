@@ -66,7 +66,7 @@ export function AjoutPanier({
                   onClick={() => setChoisie(v.id)}
                   className={`rounded-s border px-5 py-3 text-[14px] transition-colors ${
                     actif
-                      ? 'border-foret bg-foret font-semibold text-nuage'
+                      ? 'border-encre bg-encre font-semibold text-nuage'
                       : 'border-brume-2 bg-neige text-graphite hover:border-taupe'
                   }`}
                 >
@@ -84,7 +84,7 @@ export function AjoutPanier({
             type="button"
             onClick={() => setQuantite((q) => Math.max(1, q - 1))}
             aria-label="Diminuer la quantité"
-            className="min-h-[48px] px-4 text-[18px] text-graphite hover:text-grenat"
+            className="min-h-[48px] px-4 text-[18px] text-graphite hover:text-onyx"
           >
             −
           </button>
@@ -99,7 +99,7 @@ export function AjoutPanier({
             type="button"
             onClick={() => setQuantite((q) => Math.min(50, q + 1))}
             aria-label="Augmenter la quantité"
-            className="min-h-[48px] px-4 text-[18px] text-graphite hover:text-grenat"
+            className="min-h-[48px] px-4 text-[18px] text-graphite hover:text-onyx"
           >
             +
           </button>
@@ -108,7 +108,7 @@ export function AjoutPanier({
         <button
           type="button"
           onClick={validerAjout}
-          className="min-h-[52px] flex-1 rounded-s bg-grenat px-6 text-[15px] font-semibold text-nuage transition-opacity hover:opacity-90"
+          className="min-h-[52px] flex-1 rounded-s bg-onyx px-6 text-[15px] font-semibold text-nuage transition-opacity hover:opacity-90"
         >
           {ajoute ? 'Ajouté au panier' : 'Ajouter au panier'}
         </button>
@@ -117,9 +117,9 @@ export function AjoutPanier({
       {/* Message d'état annoncé aux lecteurs d'écran, et visible pour tous. */}
       <p aria-live="polite" className="min-h-[24px] text-[14px]">
         {ajoute && (
-          <span className="text-foret">
+          <span className="text-encre">
             {quantite} × {variante.nom} ajouté.{' '}
-            <Link href="/panier" className="border-b border-grenat text-grenat">
+            <Link href="/panier" className="border-b border-onyx text-onyx">
               Voir le panier
             </Link>
           </span>

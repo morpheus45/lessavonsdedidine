@@ -74,7 +74,7 @@ export function Panier({
             <p className="mb-6 text-[17px] text-taupe">Votre panier est vide.</p>
             <Link
               href="/savons"
-              className="inline-block rounded-s bg-grenat px-7 py-3.5 text-[15px] font-semibold text-nuage"
+              className="inline-block rounded-s bg-onyx px-7 py-3.5 text-[15px] font-semibold text-nuage"
             >
               Voir la gamme
             </Link>
@@ -91,7 +91,7 @@ export function Panier({
                     <div>
                       <p className="mb-1 text-[15.5px] font-semibold">{l.libelle}</p>
                       {l.detailPersonnalisation && (
-                        <p className="mb-1 font-mono text-[12.5px] text-grenat">
+                        <p className="mb-1 font-mono text-[12.5px] text-onyx">
                           {l.detailPersonnalisation}
                         </p>
                       )}
@@ -113,7 +113,7 @@ export function Panier({
                           type="button"
                           onClick={() => changerQuantite(l.id, l.quantite - 1)}
                           aria-label={`Diminuer la quantité de ${l.libelle}`}
-                          className="min-h-[44px] cursor-pointer px-3.5 text-[17px] hover:text-grenat"
+                          className="min-h-[44px] cursor-pointer px-3.5 text-[17px] hover:text-onyx"
                         >
                           −
                         </button>
@@ -124,7 +124,7 @@ export function Panier({
                           type="button"
                           onClick={() => changerQuantite(l.id, l.quantite + 1)}
                           aria-label={`Augmenter la quantité de ${l.libelle}`}
-                          className="min-h-[44px] cursor-pointer px-3.5 text-[17px] hover:text-grenat"
+                          className="min-h-[44px] cursor-pointer px-3.5 text-[17px] hover:text-onyx"
                         >
                           +
                         </button>
@@ -151,7 +151,7 @@ export function Panier({
                     <dt>Livraison</dt>
                     <dd className="font-mono tabulaire">
                       {panier.livraisonCentimes === 0 ? (
-                        <span className="font-semibold text-foret">Offerte</span>
+                        <span className="font-semibold text-encre">Offerte</span>
                       ) : (
                         formaterPrix(panier.livraisonCentimes)
                       )}
@@ -171,7 +171,7 @@ export function Panier({
 
                 <Link
                   href="/commande"
-                  className="block cursor-pointer rounded-s bg-grenat py-3.5 text-center text-[15px] font-semibold text-nuage transition-opacity hover:opacity-90"
+                  className="block cursor-pointer rounded-s bg-onyx py-3.5 text-center text-[15px] font-semibold text-nuage transition-opacity hover:opacity-90"
                 >
                   Commander
                 </Link>

@@ -3,10 +3,10 @@ import { FAMILLES, type Parfum } from '@/donnees/parfums';
 /**
  * La roue des parfums.
  *
- * Choisir un savon, c'est choisir une odeur — et une liste de onze mots ne
- * dit pas lesquels se ressemblent. La roue les range par famille : on voit
- * d'un coup que le caramel et la vanille sont voisins, et que la menthe est
- * seule de son côté.
+ * Choisir un savon, c'est choisir une odeur — et une liste de dix-huit noms
+ * ne dit pas lesquels se ressemblent. La roue les range par famille : on voit
+ * d'un coup que le bonbon et le bubble gum sont voisins, et que le café est
+ * seul de son côté.
  *
  * Entièrement dessinée côté serveur, sans une ligne de JavaScript. Chaque
  * pétale est un lien vers la fiche du parfum plus bas dans la page : ça
@@ -87,7 +87,7 @@ export function RoueDesParfums() {
         role="img"
         aria-labelledby="roue-titre roue-desc"
       >
-        <title id="roue-titre">Les onze parfums, rangés par famille</title>
+        <title id="roue-titre">Les parfums, rangés par famille</title>
         <desc id="roue-desc">{description}</desc>
 
         {petales.map(({ parfum, famille, debut, fin }) => {
@@ -115,9 +115,9 @@ export function RoueDesParfums() {
                 transform={`rotate(${rotation.toFixed(2)} ${tx.toFixed(2)} ${ty.toFixed(2)})`}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fill="#2a2a28"
-                style={{ color: '#2a2a28' }}
-                className="pointer-events-none text-[14px] font-medium group-hover:fill-[#fbfaf8] group-focus-visible:fill-[#fbfaf8]"
+                fill="#1f1b1c"
+                style={{ color: '#1f1b1c' }}
+                className="pointer-events-none text-[14px] font-medium"
               >
                 {parfum.nom}
               </text>
@@ -141,8 +141,8 @@ export function RoueDesParfums() {
               <path d={secteur(debut + 0.45, fin - 0.45, BANDE_INT, BANDE_EXT)} fill={famille.couleur} />
               <path id={id} d={d} fill="none" />
               <text
-                fill="#f2f0eb"
-                style={{ color: '#f2f0eb' }}
+                fill="#1f1b1c"
+                style={{ color: '#1f1b1c' }}
                 className="text-[11px] font-semibold tracking-[0.16em] uppercase"
               >
                 <textPath
@@ -159,13 +159,13 @@ export function RoueDesParfums() {
           );
         })}
 
-        <circle cx={C} cy={C} r={RAYON_INT - 8} fill="#0f3a2c" />
+        <circle cx={C} cy={C} r={RAYON_INT - 8} fill="#12100f" />
         <text
           x={C}
           y={C - 8}
           textAnchor="middle"
-          fill="#f2f0eb"
-          style={{ color: '#f2f0eb' }}
+          fill="#faf3f4"
+          style={{ color: '#faf3f4' }}
           className="font-serif text-[46px]"
         >
           {total}
@@ -174,8 +174,8 @@ export function RoueDesParfums() {
           x={C}
           y={C + 22}
           textAnchor="middle"
-          fill="#a8c0a0"
-          style={{ color: '#a8c0a0' }}
+          fill="#e8bfc7"
+          style={{ color: '#e8bfc7' }}
           className="text-[12px] font-semibold tracking-[0.2em] uppercase"
         >
           parfums

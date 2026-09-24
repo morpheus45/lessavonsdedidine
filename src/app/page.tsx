@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { lireProduits } from '@/lib/catalogue';
 import { reglages } from '@/lib/reponses';
+import { TOUS_LES_PARFUMS } from '@/donnees/parfums';
 import { formaterPrix } from '@/lib/argent';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { CarteProduit, type ProduitCarte } from '@/components/CarteProduit';
@@ -101,7 +102,7 @@ export default function Accueil() {
           Il porte la méthode, pas une promotion. La référence empile
           une pastille « -10 % » sur toutes ses pages ; ici c'est le
           procédé qui défile. */}
-      <div className="bg-foret">
+      <div className="bg-encre">
         <Marquee duree="48s" className="py-2.5">
           {bandeau.map((a) => (
             <ElementMarquee key={a}>{a}</ElementMarquee>
@@ -123,7 +124,7 @@ export default function Accueil() {
               </BlurFade>
 
               <TitreAnime
-                texte={'Onze parfums,\ncoulés à la main.'}
+                texte={[`${TOUS_LES_PARFUMS.length} parfums,`, 'coulés à la main.'].join('\n')}
                 accent="coulés à la main."
                 className="mb-8 font-serif text-[clamp(48px,6.4vw,88px)] leading-[0.94] tracking-[-0.035em]"
               />
@@ -140,7 +141,7 @@ export default function Accueil() {
                 <div className="flex flex-wrap items-center gap-6">
                   <Link
                     href="/savons"
-                    className="cursor-pointer rounded-s bg-grenat px-8 py-4 text-[15px] font-semibold text-nuage transition-opacity duration-200 hover:opacity-90"
+                    className="cursor-pointer rounded-s bg-onyx px-8 py-4 text-[15px] font-semibold text-nuage transition-opacity duration-200 hover:opacity-90"
                   >
                     Voir les savons
                   </Link>
@@ -178,7 +179,7 @@ export default function Accueil() {
                 className={i < PREUVES.length - 1 ? 'md:border-r md:border-brume' : ''}
               >
                 <div className="px-6 py-12">
-                  <span className="mb-4 block font-serif text-[68px] leading-[0.86] tracking-[-0.04em] text-foret">
+                  <span className="mb-4 block font-serif text-[68px] leading-[0.86] tracking-[-0.04em] text-encre">
                     <NumberTicker valeur={p.valeur} suffixe={p.suffixe} />
                     {p.unite && <span className="ml-2 text-[34px]">{p.unite}</span>}
                   </span>
@@ -197,7 +198,7 @@ export default function Accueil() {
               <h2 className="font-serif text-[46px] tracking-[-0.03em]">La gamme</h2>
               <Link
                 href="/savons"
-                className="cursor-pointer border-b border-grenat pb-0.5 text-[14px] text-grenat transition-opacity hover:opacity-80"
+                className="cursor-pointer border-b border-onyx pb-0.5 text-[14px] text-onyx transition-opacity hover:opacity-80"
               >
                 Voir la série complète
               </Link>
@@ -226,14 +227,14 @@ export default function Accueil() {
         </section>
 
         {/* ── L'atelier ────────────────────────────────────────────── */}
-        <section className="bg-foret text-nuage">
+        <section className="bg-encre text-nuage">
           <div className="mx-auto max-w-[1240px] px-6 py-32">
             <BlurFade>
-              <p className="eyebrow mb-6 text-foret-3">Dans l&rsquo;atelier</p>
+              <p className="eyebrow mb-6 text-rose">Dans l&rsquo;atelier</p>
               <h2 className="mb-6 max-w-[19ch] font-serif text-[58px] tracking-[-0.035em] text-nuage">
-                Quatre gestes, et le savon est <em className="italic text-grenat-2">prêt en une heure</em>
+                Quatre gestes, et le savon est <em className="italic text-rose-clair">prêt en une heure</em>
               </h2>
-              <p className="mb-24 max-w-[58ch] text-[16.5px] text-foret-3">
+              <p className="mb-24 max-w-[58ch] text-[16.5px] text-rose">
                 Fondre, parfumer, colorer, couler. Le procédé est court, et c&rsquo;est
                 justement ce qui permet de faire du sur-mesure&nbsp;: un parfum demandé le matin
                 peut être coulé l&rsquo;après-midi, en petite série, sans stock à écouler.

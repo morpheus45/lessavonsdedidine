@@ -23,7 +23,7 @@ export function JetonPanier() {
   return (
     <Link
       href="/panier"
-      className="rounded-s bg-foret px-4 py-2 text-[12.5px] font-semibold text-nuage transition-opacity hover:opacity-90"
+      className="rounded-s bg-encre px-4 py-2 text-[12.5px] font-semibold text-nuage transition-opacity hover:opacity-90"
     >
       Panier{nombre !== null && nombre > 0 ? ` · ${nombre}` : ''}
     </Link>
