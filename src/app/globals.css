@@ -1,6 +1,14 @@
 @import 'tailwindcss';
 
 /*
+ * Tailwind balaie tout le projet à la recherche de classes. Sans cette
+ * exclusion, il ramasse aussi celles de `serveur-desactive/` — du code qui ne
+ * s'exécute plus — et les écrit dans la feuille de style servie aux
+ * visiteurs. C'est par là qu'un reste de vert forêt survivait à la refonte.
+ */
+@source not '../../serveur-desactive';
+
+/*
  * Palette demandée par Didine le 24 septembre 2026, à la lettre.
  *
  *   « Une je veux pas vert. Une j'adore or et noir. »

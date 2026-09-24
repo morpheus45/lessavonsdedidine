@@ -36,7 +36,7 @@ export function FormulairePaiements({ config }: { config: ConfigPaiements }) {
                   name="environnement"
                   value={env}
                   defaultChecked={config.paypal.environnement === env}
-                  className="h-4 w-4 accent-[#0F3A2C]"
+                  className="h-4 w-4 accent-[#12100F]"
                 />
                 {env === 'sandbox' ? 'Bac à sable (tests)' : 'Production (argent réel)'}
               </label>
@@ -192,7 +192,7 @@ function Bascule({
 }) {
   return (
     <label className="flex cursor-pointer items-center gap-2.5 whitespace-nowrap text-[14px]">
-      <input type="checkbox" name={nom} defaultChecked={defautCoche} className="h-5 w-5 accent-[#0F3A2C]" />
+      <input type="checkbox" name={nom} defaultChecked={defautCoche} className="h-5 w-5 accent-[#12100F]" />
       {libelle}
     </label>
   );
