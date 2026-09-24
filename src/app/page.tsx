@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { lireProduits } from '@/lib/catalogue';
-import { reponses } from '@/lib/reponses';
+import { reglages } from '@/lib/reponses';
+import { formaterPrix } from '@/lib/argent';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { CarteProduit, type ProduitCarte } from '@/components/CarteProduit';
 import { Photo } from '@/components/Photo';
@@ -80,8 +81,10 @@ const ETAPES: EtapeAtelier[] = [
 ];
 
 export default function Accueil() {
-  const seuil = reponses.livraison.seuilOffert;
-  const bandeau = seuil ? [...ARGUMENTS, `Livraison offerte dès ${seuil}`] : ARGUMENTS;
+  const seuil = reglages.seuilLivraisonOfferteCentimes;
+  const bandeau = seuil
+    ? [...ARGUMENTS, `Livraison offerte dès ${formaterPrix(seuil)}`]
+    : ARGUMENTS;
 
   const GAMME: ProduitCarte[] = lireProduits().map((p) => ({
     slug: p.slug,

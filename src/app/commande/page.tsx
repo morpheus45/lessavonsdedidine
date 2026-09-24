@@ -1,10 +1,6 @@
 import type { Metadata } from 'next';
-import {
-  lireProduits,
-  lireThemes,
-  LIVRAISON_CENTIMES,
-  SEUIL_LIVRAISON_OFFERTE_CENTIMES,
-} from '@/lib/catalogue';
+import { lireProduits, lireThemes } from '@/lib/catalogue';
+import { reglages } from '@/lib/reponses';
 import type { Tarif } from '@/lib/panier-calcul';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { Commande } from './Commande';
@@ -39,8 +35,8 @@ export default function PageCommande() {
       tarifs={tarifs}
       nomsDesThemes={Object.fromEntries(lireThemes().map((t) => [t.slug, t.nom]))}
       reglages={{
-        livraisonCentimes: LIVRAISON_CENTIMES,
-        seuilLivraisonOfferteCentimes: SEUIL_LIVRAISON_OFFERTE_CENTIMES,
+        livraisonCentimes: reglages.livraisonCentimes,
+        seuilLivraisonOfferteCentimes: reglages.seuilLivraisonOfferteCentimes,
       }}
       clientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? ''}
       />

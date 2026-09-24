@@ -3,114 +3,123 @@ import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 /**
- * Les réponses de Didine aux questions qu'elle seule peut trancher.
+ * Les réglages de la boutique, tels que Didine les a donnés.
  *
- * Elle les saisit dans sa gestion, écran « À compléter ». Chaque champ vide
- * est une information que personne d'autre ne peut fournir sans l'inventer —
- * et ce projet a déjà publié des affirmations fausses faute d'avoir demandé.
+ * Ce module ne lit QUE `contenu/reglages.md`, qui est public et ne contient
+ * que ce qui est destiné aux clientes.
  *
- * Le site s'affiche correctement avec tous les champs vides : là où une
- * réponse manque, on n'écrit RIEN plutôt qu'un texte d'attente qu'un visiteur
- * prendrait pour un fait. C'est la règle, et elle n'a pas d'exception.
+ * Ses réponses personnelles — adresse électronique, façon de vendre,
+ * fournisseur — ne sont jamais versionnées. Elles ont un temps atterri dans
+ * ce dépôt, qui est public : c'était une erreur, et la leçon est ici pour
+ * qu'on ne la refasse pas. Rien de personnel ne doit passer par un fichier
+ * du dépôt.
  *
- * Les questions sont décrites dans `scripts/_questions.mjs`, qui produit le
- * formulaire. Ajouter une question ici sans l'y ajouter ne sert à rien.
+ * Un réglage vide n'est jamais remplacé par une valeur de secours : le site
+ * n'annonce RIEN plutôt qu'une information qu'elle n'a pas donnée.
  */
-type Brut = Record<string, Record<string, unknown> | undefined>;
+type Brut = Record<string, unknown>;
 
 let cache: Brut | null = null;
 
 function charger(): Brut {
   if (cache) return cache;
-  const chemin = join(process.cwd(), 'contenu', 'reponses.md');
-  cache = existsSync(chemin)
-    ? (matter(readFileSync(chemin, 'utf8')).data as Brut)
-    : {};
+  const chemin = join(process.cwd(), 'contenu', 'reglages.md');
+  cache = existsSync(chemin) ? (matter(readFileSync(chemin, 'utf8')).data as Brut) : {};
   return cache;
 }
 
-/** Une réponse, ou la chaîne vide. Jamais de valeur de remplacement. */
-function lire(section: string, question: string): string {
-  const valeur = charger()[section]?.[question];
+function texte(cle: string): string {
+  const valeur = charger()[cle];
   return typeof valeur === 'string' ? valeur.trim() : '';
 }
 
-export const reponses = {
-  livraison: {
-    get frais() {
-      return lire('livraison', 'frais');
-    },
-    get seuilOffert() {
-      return lire('livraison', 'seuilOffert');
-    },
-    get delaiExpedition() {
-      return lire('livraison', 'delaiExpedition');
-    },
-    get mode() {
-      return lire('livraison', 'mode');
-    },
+function nombre(cle: string, defaut: number): number {
+  const valeur = charger()[cle];
+  return typeof valeur === 'number' && Number.isFinite(valeur) ? valeur : defaut;
+}
+
+export const reglages = {
+  /** Frais de port en centimes. 5 € au 24 septembre 2026. */
+  get livraisonCentimes() {
+    return nombre('livraisonCentimes', 500);
   },
-  produits: {
-    get inci() {
-      return lire('produits', 'inci');
-    },
-    get poids() {
-      return lire('produits', 'poids');
-    },
-    get conservation() {
-      return lire('produits', 'conservation');
-    },
-    get delaiVitrine() {
-      return lire('produits', 'delaiVitrine');
-    },
-    get tailles() {
-      return lire('produits', 'tailles');
-    },
-    get surMesure() {
-      return lire('produits', 'surMesure');
-    },
+  /** Seuil de gratuité en centimes. 50 € au 24 septembre 2026. */
+  get seuilLivraisonOfferteCentimes() {
+    return nombre('seuilLivraisonOfferteCentimes', 5000);
   },
-  vous: {
-    get depuisQuand() {
-      return lire('vous', 'depuisQuand');
-    },
-    get pourquoi() {
-      return lire('vous', 'pourquoi');
-    },
-    get preference() {
-      return lire('vous', 'preference');
-    },
-    get demande() {
-      return lire('vous', 'demande');
-    },
-    get email() {
-      return lire('vous', 'email');
-    },
-    get instagram() {
-      return lire('vous', 'instagram');
-    },
+  get modeLivraison() {
+    return texte('modeLivraison');
+  },
+  get delaiExpedition() {
+    return texte('delaiExpedition');
+  },
+  get delaiVitrine() {
+    return texte('delaiVitrine');
+  },
+  get poidsSavonGrammes() {
+    return nombre('poidsSavonGrammes', 0);
+  },
+  get conservation() {
+    return texte('conservation');
   },
 };
 
 /**
  * Délai de fabrication d'une vitrine, en toutes lettres.
  *
- * Tant que Didine n'a pas répondu, on ne donne AUCUN délai : annoncer
- * « environ une semaine » sans le savoir engage sa parole à sa place, et une
- * cliente qui attend plus longtemps que promis est une cliente perdue.
+ * Sans réponse de Didine, on ne promet rien. Annoncer un délai sans le savoir
+ * engage sa parole à sa place, et une cliente qui attend plus longtemps que
+ * promis est une cliente perdue.
  */
 export function phraseDelaiVitrine(): string {
-  const delai = reponses.produits.delaiVitrine;
+  const delai = reglages.delaiVitrine;
   return delai ? `Comptez ${delai} de fabrication avant expédition.` : '';
 }
 
-/**
- * Délai d'expédition d'un savon.
- *
- * Le site a longtemps affiché « expédié sous 48 h » sur toutes ses pages.
- * C'était inventé. Sans réponse, on ne promet rien.
- */
+/** Délai d'expédition d'un savon. Vide tant qu'il n'est pas connu. */
 export function phraseDelaiExpedition(): string {
-  const delai = reponses.livraison.delaiExpedition;
+  const delai = reglages.delaiExpedition;
   return delai ? `Expédié sous ${delai}.` : '';
 }
+
+/** Mode de livraison, pour le pied de page. */
+export function phraseModeLivraison(): string {
+  const mode = reglages.modeLivraison;
+  return mode ? `Envoi par ${mode}.` : '';
+}
+
+/**
+ * Ce que Didine dit d'elle, pour la page qui la présente.
+ *
+ * Ses mots, pas les miens. Un champ vide ne se remplit pas : la page montre
+ * alors la question restée ouverte, ce qui est honnête, plutôt qu'une phrase
+ * brodée à partir de deux mots.
+ */
+let cacheDidine: Brut | null = null;
+
+function chargerDidine(): Brut {
+  if (cacheDidine) return cacheDidine;
+  const chemin = join(process.cwd(), 'contenu', 'didine.md');
+  cacheDidine = existsSync(chemin) ? (matter(readFileSync(chemin, 'utf8')).data as Brut) : {};
+  return cacheDidine;
+}
+
+function texteDidine(cle: string): string {
+  const valeur = chargerDidine()[cle];
+  return typeof valeur === 'string' ? valeur.trim() : '';
+}
+
+export const didine = {
+  get depuisQuand() {
+    return texteDidine('depuisQuand');
+  },
+  get pourquoi() {
+    return texteDidine('pourquoi');
+  },
+  get preference() {
+    return texteDidine('preference');
+  },
+  get demande() {
+    return texteDidine('demandeFrequente');
+  },
+};

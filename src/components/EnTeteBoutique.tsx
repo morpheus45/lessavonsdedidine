@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { reponses, phraseDelaiExpedition } from '@/lib/reponses';
+import { formaterPrix } from '@/lib/argent';
+import { reglages, phraseDelaiExpedition, phraseModeLivraison } from '@/lib/reponses';
 import { Sceau } from './Sceau';
 import { JetonPanier } from './JetonPanier';
 
@@ -61,7 +62,8 @@ export function EnTeteBoutique({ actif }: { actif?: string }) {
 
 export function PiedBoutique() {
   const expedition = phraseDelaiExpedition();
-  const seuilOffert = reponses.livraison.seuilOffert;
+  const seuilOffert = reglages.seuilLivraisonOfferteCentimes;
+  const envoi = phraseModeLivraison();
 
   return (
     <footer className="mt-40 border-t border-brume">
@@ -147,7 +149,13 @@ export function PiedBoutique() {
               )}
               {seuilOffert && (
                 <>
-                  Livraison offerte dès {seuilOffert}.
+                  Livraison offerte dès {formaterPrix(seuilOffert)}.
+                  <br />
+                </>
+              )}
+              {envoi && (
+                <>
+                  {envoi}
                   <br />
                 </>
               )}

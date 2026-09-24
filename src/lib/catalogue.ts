@@ -204,20 +204,12 @@ export function themeParSlug(slug: string): Theme | undefined {
   return lireThemes().find((t) => t.slug === slug);
 }
 
-/**
- * Réglages commerciaux.
- *
- * Écrits ici et non dans `contenu/` : ils entrent dans le calcul du panier,
- * qui se fait dans le navigateur. Les exposer à la modification depuis le CMS
- * donnerait l'illusion qu'ils sont appliqués côté boutique — ils le sont, mais
- * seulement à la construction suivante.
+/*
+ * Les frais de port ne sont plus ici : ils viennent de contenu/reglages.md,
+ * donnés par Didine. Les valeurs qui étaient écrites à cet endroit — 4,90 €
+ * et gratuité à 39 € — étaient les miennes, et elles ont facturé de vraies
+ * clientes pendant des semaines. Voir src/lib/reponses.ts.
  */
-export const LIVRAISON_CENTIMES = 490;
-export const SEUIL_LIVRAISON_OFFERTE_CENTIMES = 3900;
-
-export function calculerLivraison(sousTotalCentimes: number): number {
-  return sousTotalCentimes >= SEUIL_LIVRAISON_OFFERTE_CENTIMES ? 0 : LIVRAISON_CENTIMES;
-}
 
 export const PARFUMS = [
   'Café',

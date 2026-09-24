@@ -1,10 +1,6 @@
 import type { Metadata } from 'next';
-import {
-  lireProduits,
-  lireThemes,
-  LIVRAISON_CENTIMES,
-  SEUIL_LIVRAISON_OFFERTE_CENTIMES,
-} from '@/lib/catalogue';
+import { lireProduits, lireThemes } from '@/lib/catalogue';
+import { reglages } from '@/lib/reponses';
 import type { Tarif } from '@/lib/panier-calcul';
 import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { Panier } from './Panier';
@@ -40,8 +36,8 @@ export default function PagePanier() {
       tarifs={tarifs}
       nomsDesThemes={nomsDesThemes}
       reglages={{
-        livraisonCentimes: LIVRAISON_CENTIMES,
-        seuilLivraisonOfferteCentimes: SEUIL_LIVRAISON_OFFERTE_CENTIMES,
+        livraisonCentimes: reglages.livraisonCentimes,
+        seuilLivraisonOfferteCentimes: reglages.seuilLivraisonOfferteCentimes,
       }}
       />
       <PiedBoutique />

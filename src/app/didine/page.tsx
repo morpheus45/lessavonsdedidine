@@ -4,7 +4,7 @@ import { EnTeteBoutique, PiedBoutique } from '@/components/EnTeteBoutique';
 import { BlurFade } from '@/components/magic/BlurFade';
 import { Photo } from '@/components/Photo';
 import { PARFUMS } from '@/lib/catalogue';
-import { reponses, phraseDelaiVitrine } from '@/lib/reponses';
+import { didine, phraseDelaiVitrine } from '@/lib/reponses';
 
 export const metadata: Metadata = {
   title: 'Didine',
@@ -75,7 +75,7 @@ const VITRINES = [
 ] as const;
 
 export default function PageDidine() {
-  const r = reponses.vous;
+  const r = didine;
   const delai = phraseDelaiVitrine();
 
   return (
